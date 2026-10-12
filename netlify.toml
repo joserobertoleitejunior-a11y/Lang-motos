@@ -1,0 +1,19 @@
+# Configuração de deploy para quando o projeto migrar do GitHub Pages
+# pro Netlify. Site estático puro (sem build/bundler).
+
+[build]
+  publish = "."
+  command = "echo 'Site estático — nenhum build necessário'"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
