@@ -60,7 +60,7 @@
     },
   };
 
-  var estado = { motivo: "", detalhe: "", moto: "", nome: "" };
+  var estado = { motivo: "", detalhe: "", moto: "", nome: "", telefone: "" };
   var widget, painel, mensagens, opcoesEl, form, input;
 
   function el(tag, classe, texto) {
@@ -134,6 +134,7 @@
   function montarResumo() {
     var linhas = ["Olá, Lang Motos! Fiz o pré-atendimento pelo site."];
     if (estado.nome) linhas.push("• Nome: " + estado.nome);
+    if (estado.telefone) linhas.push("• WhatsApp: " + estado.telefone);
     linhas.push("• Moto: " + (estado.moto || "não informada"));
     linhas.push("• Preciso de: " + estado.motivo);
     if (estado.detalhe) linhas.push("• Detalhe: " + estado.detalhe);
@@ -154,6 +155,12 @@
     wa.href = window.LangWhatsApp ? window.LangWhatsApp.montarLink(resumo) : "#";
     wa.target = "_blank";
     wa.rel = "noopener";
+    wa.addEventListener("click", function () {
+      if (window.LangLeads) window.LangLeads.registrar("assistente", {
+        nome: estado.nome, telefone: estado.telefone, moto: estado.moto,
+        servicos: [estado.motivo], mensagem: estado.detalhe,
+      });
+    });
     opcoesEl.appendChild(wa);
 
     var recomecar = el("button", "opcao opcao--fantasma", "Recomeçar");
@@ -162,17 +169,36 @@
     opcoesEl.appendChild(recomecar);
   }
 
+  function perguntarTelefone(depois) {
+    falaBot("Quer deixar seu WhatsApp pra gente te retornar? É opcional.").then(function () {
+      pedirTexto("(15) 90000-0000", "tel", function (tel) {
+        estado.telefone = tel;
+        depois();
+      });
+      var pular = el("button", "opcao opcao--fantasma", "Pular");
+      pular.type = "button";
+      pular.addEventListener("click", function () {
+        limparOpcoes();
+        falaVisitante("Pular");
+        depois();
+      });
+      opcoesEl.appendChild(pular);
+    });
+  }
+
   function perguntarNome() {
     falaBot("Pra fechar: como podemos te chamar?").then(function () {
       pedirTexto("Seu nome", "text", function (nome) {
         estado.nome = nome;
         var primeiro = nome.split(" ")[0];
-        var texto = "Prontinho, " + primeiro + "! Montei o resumo abaixo. É só tocar no botão que ele vai direto pro nosso atendente";
-        if (window.LangHorario) {
-          var s = window.LangHorario.status();
-          texto += s.aberto ? " — estamos abertos agora." : ". Agora estamos fora do horário, mas a mensagem fica lá e respondemos assim que abrirmos.";
-        }
-        falaBot(texto).then(finalizar);
+        perguntarTelefone(function () {
+          var texto = "Prontinho, " + primeiro + "! Montei o resumo abaixo. É só tocar no botão que ele vai direto pro nosso atendente";
+          if (window.LangHorario) {
+            var s = window.LangHorario.status();
+            texto += s.aberto ? " — estamos abertos agora." : ". Agora estamos fora do horário, mas a mensagem fica lá e respondemos assim que abrirmos.";
+          }
+          falaBot(texto).then(finalizar);
+        });
       });
     });
   }
@@ -204,7 +230,7 @@
   }
 
   function reiniciar() {
-    estado = { motivo: "", detalhe: "", moto: "", nome: "" };
+    estado = { motivo: "", detalhe: "", moto: "", nome: "", telefone: "" };
     mensagens.innerHTML = "";
     limparOpcoes();
     iniciarFluxo();

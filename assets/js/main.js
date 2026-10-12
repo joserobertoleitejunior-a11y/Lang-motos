@@ -194,6 +194,10 @@
       if (msg) linhas.push("• Detalhes: " + msg);
       status.textContent = "Abrindo o WhatsApp…";
       status.className = "status-msg status-msg--ok";
+      if (window.LangLeads) window.LangLeads.registrar("agendamento", {
+        nome: nome, telefone: tel, moto: d.get("moto"), servicos: [d.get("servico")],
+        periodo: d.get("periodo"), mensagem: msg,
+      });
       abrirWhatsApp(linhas.join("\n"));
       setTimeout(fechar, 900);
       form.reset();
@@ -293,14 +297,28 @@
       linhas.push("• Preciso de: " + (servicos.length ? servicos.join(", ") : "ainda não sei, quero avaliação"));
       var det = (d.get("detalhe") || "").toString().trim();
       if (det) linhas.push("• O que está acontecendo: " + det);
+      var cn = (d.get("contato_nome") || "").toString().trim();
+      var ct = (d.get("contato_tel") || "").toString().trim();
+      if (cn) linhas.push("• Nome: " + cn);
+      if (ct) linhas.push("• WhatsApp: " + ct);
       return linhas.join("\n");
+    }
+    function enviarOrcamento() {
+      var d = new FormData(form);
+      var moto = [d.get("marca"), d.get("modelo"), d.get("ano")]
+        .map(function (v) { return (v || "").toString().trim(); }).filter(Boolean).join(" ");
+      if (window.LangLeads) window.LangLeads.registrar("orcamento", {
+        nome: d.get("contato_nome"), telefone: d.get("contato_tel"), moto: moto,
+        servicos: d.getAll("servico"), mensagem: d.get("detalhe"),
+      });
+      abrirWhatsApp(mensagem());
     }
     function atualizar() { if (preview) preview.textContent = mensagem(); }
     form.addEventListener("input", atualizar);
     form.addEventListener("change", atualizar);
-    form.addEventListener("submit", function (e) { e.preventDefault(); abrirWhatsApp(mensagem()); });
+    form.addEventListener("submit", function (e) { e.preventDefault(); enviarOrcamento(); });
     var enviar = document.querySelector("[data-orcamento-enviar]");
-    if (enviar) enviar.addEventListener("click", function () { abrirWhatsApp(mensagem()); });
+    if (enviar) enviar.addEventListener("click", enviarOrcamento);
     atualizar();
 
     document.querySelectorAll("[data-consultar-servico]").forEach(function (gatilho) {

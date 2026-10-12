@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /painel.html
 
 Sitemap: https://joserobertoleitejunior-a11y.github.io/lang-motos/sitemap.xml

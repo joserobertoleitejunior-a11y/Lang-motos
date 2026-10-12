@@ -36,5 +36,13 @@ window.LANG_CONFIG = {
     6: null,
   },
   horarioObservacao: "Sábado: consulte pelo WhatsApp.",
+
+  // Banco da Lang Motos (Supabase, projeto exclusivo). A chave "anon" é PÚBLICA por
+  // desenho: a segurança está nas regras de linha (RLS) do banco, que só permitem ao
+  // visitante ENVIAR um lead/evento e nunca ler nada. Nunca colocar aqui a service_role.
+  supabase: {
+    url: "https://uuguxeijrbpwxcvgiakq.supabase.co",
+    anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV1Z3V4ZWlqcmJwd3hjdmdpYWtxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4MjI1MzEsImV4cCI6MjEwNzM5ODUzMX0.ZNuOsaTZSOcV_YWZ-hZC54J9i6155FWsLaZ3_nz0rrk",
+  },
   fusoHorario: "America/Sao_Paulo",
 };

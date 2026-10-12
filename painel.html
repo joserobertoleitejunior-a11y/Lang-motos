@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Painel | Lang Motos</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0D0D0E">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link data-fontes href="https://fonts.googleapis.com/css2?family=Saira:ital,wdth,wght@0,50..125,300..900;1,50..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Saira:ital,wdth,wght@0,50..125,300..900;1,50..125,300..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
+<link rel="stylesheet" href="assets/css/painel.css?v=20261012e">
+</head>
+<body>
+
+<div class="acesso" id="tela-carregando">
+  <div class="acesso__caixa"><p class="mono">Carregando o painel…</p></div>
+</div>
+
+<!-- ===================== ENTRAR ===================== -->
+<div class="acesso" id="tela-login" hidden>
+  <div class="acesso__caixa">
+    <span class="marca"><span class="marca__x" aria-hidden="true"></span><span><span class="marca__n">Lang<i>/</i>Motos</span><span class="marca__p">Painel da equipe</span></span></span>
+    <h1 id="login-titulo">Entrar</h1>
+    <p id="login-sub">Acompanhe os pedidos que chegam pelo site e organize o atendimento.</p>
+    <form id="form-login" novalidate>
+      <div class="campo"><label for="lg-email">E-mail</label><input id="lg-email" type="email" autocomplete="username" inputmode="email" required placeholder="voce@exemplo.com"></div>
+      <div class="campo"><label for="lg-senha">Senha</label><input id="lg-senha" type="password" autocomplete="current-password" required minlength="6" placeholder="••••••••"></div>
+      <div class="campo" id="lg-confirma-w" hidden><label for="lg-senha2">Repetir a senha</label><input id="lg-senha2" type="password" autocomplete="new-password" minlength="6" placeholder="••••••••"></div>
+      <p class="acesso__msg" id="lg-msg" role="status" aria-live="polite"></p>
+      <button class="b" type="submit" id="lg-enviar">Entrar</button>
+    </form>
+    <div class="acesso__rodape">
+      <button class="link" type="button" id="lg-alternar">Primeiro acesso? Criar minha senha</button>
+      <button class="link" type="button" id="lg-esqueci">Esqueci a senha</button>
+    </div>
+    <div class="acesso__rodape"><a class="link" href="painel.html#demo">Ver demonstração com dados de exemplo</a><a class="link" href="index.html">Voltar ao site</a></div>
+  </div>
+</div>
+
+<!-- ===================== NOVA SENHA (link de recuperação) ===================== -->
+<div class="acesso" id="tela-nova-senha" hidden>
+  <div class="acesso__caixa">
+    <h1>Nova senha</h1>
+    <p>Escolha uma senha nova para entrar no painel.</p>
+    <form id="form-nova-senha" novalidate>
+      <div class="campo"><label for="ns-senha">Nova senha</label><input id="ns-senha" type="password" autocomplete="new-password" minlength="6" required></div>
+      <p class="acesso__msg" id="ns-msg" role="status" aria-live="polite"></p>
+      <button class="b" type="submit">Salvar senha</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== SEM ACESSO AINDA ===================== -->
+<div class="acesso" id="tela-pendente" hidden>
+  <div class="acesso__caixa">
+    <span class="marca"><span class="marca__x" aria-hidden="true"></span><span><span class="marca__n">Lang<i>/</i>Motos</span><span class="marca__p">Painel da equipe</span></span></span>
+    <h1 id="pd-titulo">Falta liberar</h1>
+    <p id="pd-texto"></p>
+    <p class="acesso__msg" id="pd-msg" role="status" aria-live="polite" style="margin-top:12px;"></p>
+    <form style="margin-top:10px;" onsubmit="return false">
+      <button class="b" type="button" id="pd-reivindicar" hidden>Sou o administrador deste painel</button>
+      <button class="b b--linha" type="button" id="pd-atualizar">Já fui liberado, atualizar</button>
+      <button class="b b--linha" type="button" id="pd-sair">Sair</button>
+    </form>
+  </div>
+</div>
+
+<!-- ===================== PAINEL ===================== -->
+<div class="app" id="app" hidden>
+  <aside class="lado" aria-label="Menu">
+    <span class="marca"><span class="marca__x" aria-hidden="true"></span><span><span class="marca__n">Lang<i>/</i>Motos</span><span class="marca__p">Painel da equipe</span></span></span>
+    <nav class="nav" id="nav-lado" aria-label="Seções">
+      <button type="button" data-ir="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Visão geral</button>
+      <button type="button" data-ir="crm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="5" height="16"/><rect x="10" y="4" width="5" height="10"/><rect x="17" y="4" width="4" height="13"/></svg>CRM<span class="contagem" data-contagem hidden>0</span></button>
+      <button type="button" data-ir="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Todos os leads</button>
+      <button type="button" data-ir="equipe" data-so-admin><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.2 2.3 3.5 5.2"/></svg>Equipe</button>
+    </nav>
+    <div class="lado__fim">
+      <span class="mono" id="usuario-email"></span>
+      <a class="b b--p" href="index.html" target="_blank" rel="noopener">Abrir o site</a>
+      <button class="b b--p" type="button" data-acao="sair">Sair</button>
+    </div>
+  </aside>
+
+  <div class="principal">
+    <div class="faixa-demo" id="faixa-demo" hidden>Demonstração · dados de exemplo · nada é salvo</div>
+    <header class="cab">
+      <h1 id="titulo-view">Visão geral</h1>
+      <div class="cab__acoes">
+        <span class="mono vivo" id="vivo">Conectando</span>
+        <button class="b b--p" type="button" data-acao="novo-lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Novo lead</button>
+      </div>
+    </header>
+
+    <main class="conteudo" id="conteudo">
+      <!-- ================= VISÃO GERAL ================= -->
+      <section id="v-geral" aria-labelledby="titulo-view">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
+          <div class="periodo" role="group" aria-label="Período" id="periodo">
+            <button type="button" data-dias="7" aria-pressed="false">7 dias</button>
+            <button type="button" data-dias="30" aria-pressed="true">30 dias</button>
+            <button type="button" data-dias="90" aria-pressed="false">90 dias</button>
+          </div>
+          <span class="mono muted" id="periodo-txt"></span>
+        </div>
+        <div class="kpis" id="kpis"></div>
+        <div class="grade grade--21" style="margin-top:14px;">
+          <div class="cartao" id="c-dia"></div>
+          <div class="cartao" id="c-retornos"></div>
+        </div>
+        <div class="grade grade--2" style="margin-top:14px;">
+          <div class="cartao" id="c-funil"></div>
+          <div class="cartao" id="c-origem"></div>
+        </div>
+        <div class="grade grade--2" style="margin-top:14px;">
+          <div class="cartao" id="c-servicos"></div>
+          <div class="cartao" id="c-hora"></div>
+        </div>
+        <div class="cartao" id="c-site" style="margin-top:14px;"></div>
+      </section>
+
+      <!-- ================= CRM ================= -->
+      <section id="v-crm" hidden aria-label="Funil de atendimento">
+        <p class="muted" style="margin-bottom:12px;">Arraste os cartões entre as colunas, ou use a seta para avançar. Toque num cartão para ver os detalhes, anotar e chamar no WhatsApp.</p>
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+      <!-- ================= LEADS ================= -->
+      <section id="v-leads" hidden aria-label="Todos os leads">
+        <div class="filtros">
+          <div class="campo campo--caixa campo--busca"><label for="f-busca">Buscar</label><input id="f-busca" type="search" placeholder="Nome, telefone, moto ou serviço"></div>
+          <div class="campo campo--caixa"><label for="f-status">Etapa</label><select id="f-status"></select></div>
+          <div class="campo campo--caixa"><label for="f-origem">Origem</label><select id="f-origem"></select></div>
+          <button class="b b--linha b--p" type="button" data-acao="exportar">Exportar CSV</button>
+        </div>
+        <div class="tabela" style="margin-top:12px;"><table id="tabela-leads"></table></div>
+        <div class="rodape-lista"><span id="lista-info"></span><button class="b b--linha b--p" type="button" id="mais" hidden>Mostrar mais</button></div>
+      </section>
+
+      <!-- ================= EQUIPE ================= -->
+      <section id="v-equipe" hidden aria-label="Equipe">
+        <div class="cartao">
+          <div class="cartao__cab"><div><h2>Liberar acesso</h2><p>A pessoa abre o painel, toca em “Primeiro acesso? Criar minha senha” com este e-mail e confirma pelo link que chega na caixa de entrada.</p></div></div>
+          <form class="equipe-form" id="form-equipe" novalidate>
+            <div class="campo campo--caixa"><label for="eq-email">E-mail</label><input id="eq-email" type="email" required placeholder="funcionario@exemplo.com"></div>
+            <div class="campo campo--caixa"><label for="eq-papel">Papel</label><select id="eq-papel"><option value="cliente">Cliente (vê e atende leads)</option><option value="admin">Administrador (também gerencia a equipe)</option></select></div>
+            <button class="b" type="submit">Liberar</button>
+          </form>
+          <p class="acesso__msg" id="eq-msg" role="status" aria-live="polite" style="margin-top:8px;"></p>
+        </div>
+        <div class="tabela" style="margin-top:14px;"><table id="tabela-equipe"></table></div>
+      </section>
+    </main>
+  </div>
+
+  <nav class="abas" id="nav-abas" aria-label="Seções">
+    <button type="button" data-ir="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Geral</button>
+    <button type="button" data-ir="crm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="5" height="16"/><rect x="10" y="4" width="5" height="10"/><rect x="17" y="4" width="4" height="13"/></svg>CRM<span class="contagem" data-contagem hidden>0</span></button>
+    <button type="button" data-ir="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Leads</button>
+    <button type="button" data-ir="equipe" data-so-admin><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.2 2.3 3.5 5.2"/></svg>Equipe</button>
+  </nav>
+</div>
+
+<!-- ===================== GAVETA DO LEAD ===================== -->
+<div class="veu" id="veu"></div>
+<aside class="gaveta" id="gaveta" role="dialog" aria-modal="true" aria-label="Detalhes do lead" aria-hidden="true">
+  <div class="gaveta__cab">
+    <div style="min-width:0;flex:1;">
+      <label class="sr" for="g-nome">Nome</label>
+      <input id="g-nome" type="text" placeholder="Sem nome" autocomplete="off">
+      <span class="mono" id="g-meta"></span>
+    </div>
+    <button class="gaveta__fechar" type="button" data-acao="fechar-gaveta" aria-label="Fechar">×</button>
+  </div>
+  <div class="gaveta__corpo" id="g-corpo"></div>
+</aside>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<div class="dica" id="dica" role="tooltip"></div>
+
+<script src="assets/js/config.js?v=20261012e"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
+<script src="assets/js/painel.js?v=20261012e" defer></script>
+</body>
+</html>
