@@ -491,7 +491,7 @@
       <div class="card__topo"><span class="card__nome">${esc(l.nome || (l.telefone ? fmtTel(l.telefone) : "Sem nome"))}</span><span class="card__quando">${esc(quando(l.criado_em))}</span></div>
       <div class="card__moto">${esc(l.moto || "Moto não informada")}${l.telefone && l.nome ? " · " + esc(fmtTel(l.telefone)) : ""}</div>
       <div class="card__serv">${serv.map((s) => `<span class="chip"><i style="background:${SERV_COR[s] || "var(--s8)"}"></i>${esc(s)}</span>`).join("")}${!l.telefone ? `<span class="chip chip--org">sem contato</span>` : ""}</div>
-      <div class="card__rod"><span class="chip chip--org">${esc(ORIGENS[l.origem] || l.origem)}</span>${l.valor != null ? `<span class="muted num" style="font-size:.78rem">${brl(l.valor)}</span>` : ""}${atraso ? `<span class="atrasado" style="font-size:.74rem">retorno atrasado</span>` : ""}${prox ? `<button class="b b--linha b--p" type="button" data-acao="avancar" data-id="${esc(l.id)}" title="Mover para ${esc(prox.nome)}" aria-label="Mover para ${esc(prox.nome)}">→</button>` : ""}</div>
+      <div class="card__rod"><span class="chip chip--org">${esc(ORIGENS[l.origem] || l.origem)}</span>${l.valor != null ? `<span class="muted num" style="font-size:.9rem">${brl(l.valor)}</span>` : ""}${atraso ? `<span class="atrasado" style="font-size:.86rem">retorno atrasado</span>` : ""}${prox ? `<button class="b b--linha b--p" type="button" data-acao="avancar" data-id="${esc(l.id)}" title="Mover para ${esc(prox.nome)}" aria-label="Mover para ${esc(prox.nome)}">→</button>` : ""}</div>
     </div>`;
   }
   function renderCrm() {
@@ -564,7 +564,7 @@
         ${l.telefone ? `<select id="g-modelo" aria-label="Mensagem pronta" class="campo--caixa" style="padding:8px 10px;border:1px solid var(--linha-forte);background:var(--osso);max-width:100%">${MODELOS_ZAP.map((m) => `<option value="${m.id}">${esc(m.nome)}</option>`).join("")}</select>
         <button class="b b--zap b--p" type="button" data-acao="zap">WhatsApp</button>
         <a class="b b--linha b--p" href="tel:${esc(digitos(l.telefone))}">Ligar</a>
-        <button class="b b--linha b--p" type="button" data-acao="copiar">Copiar</button>` : `<span class="muted" style="font-size:.88rem">Sem telefone: o pedido chegou pelo site. Responda pelo WhatsApp da loja ou peça o número ao cliente.</span>`}
+        <button class="b b--linha b--p" type="button" data-acao="copiar">Copiar</button>` : `<span class="muted" style="font-size:1rem">Sem telefone: o pedido chegou pelo site. Responda pelo WhatsApp da loja ou peça o número ao cliente.</span>`}
       </div>
       <div class="linha2">${campoGaveta("WhatsApp / telefone", "telefone", l.telefone ? fmtTel(l.telefone) : "", "tel", 'inputmode="tel" autocomplete="off"')}${campoGaveta("Moto", "moto", l.moto)}</div>
       <div class="campo"><label for="g-servicos">Serviços (separe por vírgula)</label><input id="g-servicos" data-campo="servicos" type="text" value="${esc((l.servicos || []).join(", "))}"></div>
