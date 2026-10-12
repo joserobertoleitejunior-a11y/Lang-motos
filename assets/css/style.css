@@ -158,28 +158,7 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
 .link-corre::after { content: ''; position: absolute; left: 0; right: 0; bottom: -4px; height: 1.5px; background: currentColor; transform-origin: right; transition: transform .45s var(--curva-forte); }
 .link-corre:hover::after { transform: scaleX(0); }
 
-/* ---------- Abertura: odômetro + porta de enrolar ---------- */
-.abertura { display: none; }
-.com-abertura { overflow: hidden; }
-.com-abertura .abertura {
-  position: fixed; inset: 0; z-index: 1000;
-  display: grid; place-items: center;
-  background: var(--tinta); color: var(--osso);
-  animation: aberturaSeguranca .4s 3.4s forwards; /* se o JS falhar, some sozinha */
-}
-@keyframes aberturaSeguranca { to { opacity: 0; visibility: hidden; } }
-.abertura::before { /* lâminas da porta de enrolar */
-  content: ''; position: absolute; inset: 0;
-  background: repeating-linear-gradient(180deg, transparent 0 26px, rgba(255,255,255,.04) 26px 28px);
-}
-.abertura::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 6px; background: var(--laranja); }
-.abertura__miolo { position: relative; text-align: center; }
-.abertura__odo { display: flex; gap: 6px; justify-content: center; font-family: var(--f-stencil); font-size: clamp(3.6rem, 17vw, 8.4rem); line-height: 1; }
-.abertura__odo span { display: block; width: .7em; height: 1em; overflow: hidden; background: var(--tinta-3); box-shadow: inset 0 0 0 1px var(--linha-clara); }
-.abertura__odo i { display: block; font-style: normal; text-align: center; transition: transform 1.1s var(--curva-forte); }
-.abertura__odo i b { display: block; height: 1em; font-weight: 400; }
-.abertura__legenda { margin-top: 18px; color: rgba(255,255,255,.5); }
-.abertura--sobe { transition: transform .9s var(--curva-forte); transform: translateY(-100%); }
+/* Splash: CSS crítico inline no <head> de cada página (pinta no 1º frame, sem depender deste arquivo). */
 
 /* ---------- Cabeçalho ---------- */
 .topo {
@@ -806,3 +785,12 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
 
 .hero__midia--baixo img { object-position: center 78%; }
 .local__fallback { position: absolute; left: 12px; bottom: 12px; z-index: 3; white-space: nowrap; }
+
+/* Entrada do hero: o estado inicial vem do CSS enquanto a splash está na tela, então nada pisca.
+   O JS troca por estilo inline e remove a classe; se o JS/GSAP não vier, um timer também remove. */
+html.hero-entra .hero [data-linhas] .linha-mask > span { opacity: 0; }
+html.hero-entra .hero__texto,
+html.hero-entra .hero__acoes,
+html.hero-entra .hero .rotulo,
+html.hero-entra .hero__placa,
+html.hero-entra .hero__base { opacity: 0; }

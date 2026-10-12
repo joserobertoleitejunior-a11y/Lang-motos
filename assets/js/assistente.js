@@ -231,7 +231,7 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  (document.readyState === "loading" ? function (f) { document.addEventListener("DOMContentLoaded", f); } : function (f) { f(); })(function () {
     widget = document.querySelector("[data-chat-widget]");
     if (!widget) return;
     painel = widget;

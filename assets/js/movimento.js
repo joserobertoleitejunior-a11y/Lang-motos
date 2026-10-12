@@ -1,102 +1,68 @@
 /**
  * Lang Motos — movimento.
  * Coreografia de rolagem própria do projeto:
- *  - abertura: odômetro rola 0000 → 1997 e a "porta de enrolar" sobe
  *  - rolagem suave com inércia (Lenis), sincronizada com o ScrollTrigger
  *  - títulos revelados linha a linha (máscara), sem quebrar em letras
  *  - fotos abrem como porta de enrolar (clip de baixo pra cima)
  *  - letreiro corre sozinho e acelera/inverte com a velocidade da rolagem
  *  - faixa de cravos de pneu "roda" conforme a página desce
  *  - indicador lateral com o número e o nome da seção atual
- * Sem GSAP/Lenis tudo continua visível e funcional (degrada para nativo).
+ *  - lightbox das fotos
+ *
+ * A splash NÃO mora aqui: ela é CSS + um controlador inline no <head> de cada
+ * página, então não depende deste arquivo nem das bibliotecas externas.
+ *
+ * Internet ou celular fracos:
+ *  - GSAP/ScrollTrigger/Lenis chegam por <script async>; esta página nunca espera por eles.
+ *  - Se chegarem tarde, o conteúdo que já está na tela fica como está (nada "pisca"
+ *    nem reanima); só o que ainda está abaixo da dobra recebe a animação de entrada.
+ *  - Trabalho pesado (ScrollTrigger.refresh, decode da foto do topo) roda fora da splash.
+ *  - Sem as bibliotecas, tudo continua visível e funcional (rolagem nativa).
  */
 (function () {
   "use strict";
 
   var raiz = document.documentElement;
   var reduz = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var temGsap = typeof window.gsap !== "undefined" && typeof window.ScrollTrigger !== "undefined";
+  var AB = window.__langAbertura || { fim: true, lento: false };
+  var T0 = performance.now();
   var lenis = null;
 
-  /* ================= Abertura ================= */
-  var aberturaAtiva = raiz.classList.contains("com-abertura");
-  function fimAbertura() {
-    raiz.classList.remove("com-abertura");
-    document.dispatchEvent(new CustomEvent("lang:abertura-fim"));
+  function pronto(fn) {
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", fn);
+    else fn();
   }
-  function iniciarAbertura() {
-    var el = document.querySelector("[data-abertura]");
-    if (!el || !aberturaAtiva) { if (el) el.remove(); aberturaAtiva = false; return; }
-    try { sessionStorage.setItem("lang-abertura", "1"); } catch (e) {}
-    var alvo = "1997";
-    var odo = el.querySelector(".abertura__odo");
-    odo.innerHTML = "";
-    var colunas = [];
-    alvo.split("").forEach(function () {
-      var span = document.createElement("span");
-      var rolo = document.createElement("i");
-      for (var n = 0; n <= 9; n++) { var b = document.createElement("b"); b.textContent = n; rolo.appendChild(b); }
-      span.appendChild(rolo); odo.appendChild(span); colunas.push(rolo);
-    });
-    requestAnimationFrame(function () {
-      setTimeout(function () {
-        colunas.forEach(function (rolo, i) {
-          rolo.style.transitionDelay = (i * 0.08) + "s";
-          rolo.style.transform = "translateY(-" + alvo[i] + "em)";
-        });
-      }, 120);
-    });
-    var saiu = false;
-    function sair() {
-      if (saiu) return; saiu = true;
-      el.classList.add("abertura--sobe");
-      setTimeout(fimAbertura, 250);
-      setTimeout(function () { el.remove(); }, 1000);
-    }
-    var t0 = performance.now();
-    window.addEventListener("load", function () { setTimeout(sair, Math.max(0, 1700 - (performance.now() - t0))); });
-    setTimeout(sair, 3000);
-    el.addEventListener("click", sair);
+  function splashAtiva() { return !AB.fim; }
+  function aposSplash(fn) {
+    if (!splashAtiva()) { fn(); return; }
+    document.addEventListener("lang:abertura-fim", function () { fn(); }, { once: true });
+  }
+  function ocioso(fn) {
+    if ("requestIdleCallback" in window) window.requestIdleCallback(fn, { timeout: 1500 });
+    else setTimeout(fn, 200);
+  }
+  /** Espera uma condição (ex.: biblioteca carregada) sem travar nada. */
+  function esperar(cond, ok, limiteMs) {
+    var gasto = 0;
+    (function tenta() {
+      if (cond()) { ok(true); return; }
+      if (gasto >= limiteMs) { ok(false); return; }
+      gasto += 100; setTimeout(tenta, 100);
+    })();
+  }
+
+  /* ================= Foto do topo: decodifica fora da thread principal ================= */
+  function predecodificarHero() {
+    var img = document.querySelector(".hero__midia img");
+    if (!img || !img.decode) return;
+    var feito = function () { img.decode().catch(function () {}); };
+    if (img.complete) feito(); else img.addEventListener("load", feito, { once: true });
   }
 
   /* ================= Rolagem suave ================= */
   function alturaTopo() {
     var t = document.querySelector(".topo");
     return t ? t.offsetHeight : 0;
-  }
-  function iniciarRolagem() {
-    var podeLenis = typeof window.Lenis !== "undefined" && !reduz;
-    if (podeLenis) {
-      lenis = new window.Lenis({
-        duration: 1.15,
-        easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
-        smoothWheel: true,
-        wheelMultiplier: 0.95,
-      });
-      if (temGsap) {
-        lenis.on("scroll", window.ScrollTrigger.update);
-        window.gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
-        window.gsap.ticker.lagSmoothing(0);
-      } else {
-        (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
-      }
-      if (aberturaAtiva) { lenis.stop(); document.addEventListener("lang:abertura-fim", function () { lenis.start(); }); }
-    }
-
-    // Âncoras internas passam pela mesma curva de rolagem
-    document.addEventListener("click", function (e) {
-      var a = e.target.closest('a[href*="#"]');
-      if (!a) return;
-      var url = new URL(a.href, location.href);
-      if (url.pathname !== location.pathname || !url.hash || url.hash === "#") return;
-      var alvo = document.querySelector(url.hash);
-      if (!alvo) return;
-      e.preventDefault();
-      ir(alvo);
-      history.replaceState(null, "", url.hash);
-    });
-
-    window.LangScroll = { ir: ir, travar: travar };
   }
   function ir(alvo) {
     if (!alvo) return;
@@ -107,6 +73,48 @@
     if (!lenis) return;
     if (sim) lenis.stop(); else lenis.start();
   }
+  function iniciarRolagem() {
+    // Âncoras internas: funcionam já, com ou sem Lenis
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href*="#"]');
+      if (!a) return;
+      var url = new URL(a.href, location.href);
+      if (url.pathname !== location.pathname || !url.hash || url.hash === "#") return;
+      var alvo = document.querySelector(url.hash);
+      if (!alvo) return;
+      e.preventDefault();
+      ir(alvo);
+      history.replaceState(null, "", url.hash);
+    });
+    window.LangScroll = { ir: ir, travar: travar };
+
+  }
+  function iniciarLenis() {
+    if (reduz) return;
+    esperar(function () { return typeof window.Lenis !== "undefined"; }, function (tem) {
+      if (!tem) return;
+      lenis = new window.Lenis({
+        duration: 1.15,
+        easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+        smoothWheel: true,
+        wheelMultiplier: 0.95,
+      });
+      ligarLenisAoGsap();
+    }, 15000);
+  }
+  var lenisLigado = false;
+  function ligarLenisAoGsap() {
+    if (!lenis || lenisLigado) return;
+    if (window.gsap && window.ScrollTrigger) {
+      lenisLigado = true;
+      lenis.on("scroll", window.ScrollTrigger.update);
+      window.gsap.ticker.add(function (t) { lenis.raf(t * 1000); });
+      window.gsap.ticker.lagSmoothing(0);
+    } else if (!lenisLigado) {
+      lenisLigado = true;
+      (function raf(t) { lenis.raf(t); requestAnimationFrame(raf); })(performance.now());
+    }
+  }
 
   /* ================= Letreiro guiado pela rolagem (sem GSAP) ================= */
   function iniciarLetreiros() {
@@ -116,10 +124,10 @@
       trilha.appendChild(grupo.cloneNode(true)).setAttribute("aria-hidden", "true");
       var largura = grupo.offsetWidth;
       window.addEventListener("resize", function () { largura = grupo.offsetWidth; });
-      var x = 0, base = reduz ? 0 : -0.6, impulso = 0, direcao = 1, ultimoY = window.scrollY, visivel = true;
+      var x = 0, base = reduz ? 0 : -0.6, impulso = 0, direcao = 1, ultimoY = window.scrollY, visivel = false;
       if ("IntersectionObserver" in window) {
         new IntersectionObserver(function (es) { visivel = es[0].isIntersecting; }).observe(trilha);
-      }
+      } else visivel = true;
       window.addEventListener("scroll", function () {
         var dy = window.scrollY - ultimoY; ultimoY = window.scrollY;
         if (reduz) return;
@@ -141,72 +149,99 @@
   }
 
   /* ================= Coreografia GSAP ================= */
+  function liberarHero() { raiz.classList.remove("hero-entra"); }
+
   function iniciarCoreografia() {
-    if (!temGsap || reduz) return;
-    var gsap = window.gsap, ST = window.ScrollTrigger;
-    gsap.registerPlugin(ST);
+    if (reduz) { liberarHero(); return; }
+    esperar(function () { return window.gsap && window.ScrollTrigger; }, function (tem) {
+      if (!tem) { liberarHero(); return; }
+      var gsap = window.gsap, ST = window.ScrollTrigger;
+      gsap.registerPlugin(ST);
+      ligarLenisAoGsap();
 
-    // Títulos: linhas sobem de dentro da máscara
-    gsap.utils.toArray("[data-linhas]").forEach(function (titulo) {
-      if (titulo.closest(".hero")) return; // hero tem entrada própria
-      gsap.from(titulo.querySelectorAll(".linha-mask > span"), {
-        yPercent: 108, duration: 1.05, ease: "expo.out", stagger: 0.09,
-        scrollTrigger: { trigger: titulo, start: "top 88%", once: true },
+      /* FASE 1 — só leituras (um único layout). */
+      var vh = window.innerHeight;
+      function fora(el) { return el.getBoundingClientRect().top > vh * 0.88; }
+      function lista(sel, extra) {
+        return Array.prototype.filter.call(document.querySelectorAll(sel), function (el) {
+          return !(extra && extra(el)) && fora(el);
+        });
+      }
+      var titulos = lista("[data-linhas]", function (el) { return el.closest(".hero"); });
+      var blocos = lista("[data-revela]");
+      var grupos = lista("[data-revela-grupo]");
+      var portas = lista("[data-porta]");
+
+      /* FASE 2 — só escritas (estado inicial) + observador que dispara a entrada uma vez. */
+      var jobs = new Map();
+      var io = "IntersectionObserver" in window ? new IntersectionObserver(function (es) {
+        es.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          io.unobserve(e.target);
+          var f = jobs.get(e.target); if (f) f();
+        });
+      }, { rootMargin: "100000px 0px -12% 0px" }) : null;
+      /* O topo expandido faz o observador também disparar nos blocos que ficaram acima da tela
+         (ex.: salto por âncora do menu), que antes ficariam escondidos. */
+      function aoEntrar(el, f) { if (io) { jobs.set(el, f); io.observe(el); } else f(); }
+
+      titulos.forEach(function (t) {
+        var linhas = t.querySelectorAll(".linha-mask > span");
+        gsap.set(linhas, { yPercent: 108 });
+        aoEntrar(t, function () { gsap.to(linhas, { yPercent: 0, duration: 1.05, ease: "expo.out", stagger: 0.09 }); });
       });
-    });
+      blocos.forEach(function (el) {
+        gsap.set(el, { y: 36, opacity: 0 });
+        aoEntrar(el, function () { gsap.to(el, { y: 0, opacity: 1, duration: 0.9, ease: "power3.out" }); });
+      });
+      grupos.forEach(function (g) {
+        var filhos = g.children;
+        gsap.set(filhos, { y: 30, opacity: 0 });
+        aoEntrar(g, function () { gsap.to(filhos, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out", stagger: 0.07 }); });
+      });
+      portas.forEach(function (m) {
+        var img = m.querySelector("img");
+        gsap.set(m, { clipPath: "inset(100% 0% 0% 0%)" });
+        if (img) gsap.set(img, { scale: 1.25 });
+        aoEntrar(m, function () {
+          gsap.to(m, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.3, ease: "expo.inOut" });
+          if (img) gsap.to(img, { scale: 1, duration: 1.6, delay: 0.1, ease: "expo.out" });
+        });
+      });
 
-    // Blocos de texto e listas: entram de leve, em sequência
-    gsap.utils.toArray("[data-revela]").forEach(function (el) {
-      gsap.from(el, { y: 36, opacity: 0, duration: 0.9, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 90%", once: true } });
-    });
-    gsap.utils.toArray("[data-revela-grupo]").forEach(function (grupo) {
-      gsap.from(grupo.children, { y: 30, opacity: 0, duration: 0.8, ease: "power3.out", stagger: 0.07, scrollTrigger: { trigger: grupo, start: "top 86%", once: true } });
-    });
+      /* Entrada do hero. O estado inicial veio do CSS (html.hero-entra), então nada pisca. */
+      var linhasHero = ".hero [data-linhas] .linha-mask > span";
+      var restoHero = ".hero__texto, .hero__acoes, .hero .rotulo";
+      var heroImg = document.querySelector(".hero__midia img");
+      if (document.querySelector(".hero") && raiz.classList.contains("hero-entra")) {
+        var tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+        tl.fromTo(linhasHero, { yPercent: 110, opacity: 1 }, { yPercent: 0, duration: 1.2, stagger: 0.1 })
+          .fromTo(restoHero, { y: 24, opacity: 0 }, { y: 0, opacity: 1, duration: 0.9, stagger: 0.08 }, "-=0.8")
+          .fromTo(".hero__placa", { y: 40, rotate: -18, opacity: 0 }, { y: 0, rotate: 0, opacity: 1, duration: 1.1 }, "-=0.9")
+          .fromTo(".hero__base", { opacity: 0 }, { opacity: 1, duration: 0.8 }, "-=0.6");
+        if (heroImg) gsap.from(heroImg, { scale: 1.18, duration: 2.4, ease: "expo.out" });
+        liberarHero(); // os valores iniciais já estão em estilo inline: troca sem piscar
+      } else liberarHero();
 
-    // Fotos: porta de enrolar subindo + leve zoom-out
-    gsap.utils.toArray("[data-porta]").forEach(function (moldura) {
-      var img = moldura.querySelector("img");
-      var tl = gsap.timeline({ scrollTrigger: { trigger: moldura, start: "top 85%", once: true } });
-      tl.fromTo(moldura, { clipPath: "inset(100% 0% 0% 0%)" }, { clipPath: "inset(0% 0% 0% 0%)", duration: 1.3, ease: "expo.inOut" });
-      if (img) tl.fromTo(img, { scale: 1.25 }, { scale: 1, duration: 1.6, ease: "expo.out" }, 0.1);
-    });
+      /* Efeitos presos à rolagem (poucos; criados depois das escritas). */
+      if (heroImg) {
+        gsap.to(heroImg, { yPercent: 16, scale: 1.08, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
+        gsap.to(".hero__in", { yPercent: -18, opacity: 0.15, ease: "none", scrollTrigger: { trigger: ".hero", start: "40% top", end: "bottom top", scrub: true } });
+      }
+      gsap.utils.toArray(".pneu__trilha").forEach(function (t) {
+        gsap.fromTo(t, { x: 0 }, { x: -88, ease: "none", scrollTrigger: { trigger: t, start: "top bottom", end: "bottom top", scrub: 0.3 } });
+      });
+      gsap.utils.toArray("[data-placa-gira]").forEach(function (pl) {
+        gsap.fromTo(pl, { rotate: -14 }, { rotate: 6, ease: "none", scrollTrigger: { trigger: pl, start: "top bottom", end: "bottom top", scrub: true } });
+      });
 
-    // Hero: foto desce mais devagar (parallax) e o conteúdo sai de cena
-    var heroImg = document.querySelector(".hero__midia img");
-    if (heroImg) {
-      gsap.to(heroImg, { yPercent: 16, scale: 1.08, ease: "none", scrollTrigger: { trigger: ".hero", start: "top top", end: "bottom top", scrub: true } });
-      gsap.to(".hero__in", { yPercent: -18, opacity: 0.15, ease: "none", scrollTrigger: { trigger: ".hero", start: "40% top", end: "bottom top", scrub: true } });
-    }
-
-    // Entrada do hero (depois da abertura, se houver)
-    function entradaHero() {
-      var tl = gsap.timeline({ defaults: { ease: "expo.out" } });
-      tl.from(".hero [data-linhas] .linha-mask > span", { yPercent: 110, duration: 1.2, stagger: 0.1 })
-        .from(".hero__texto, .hero__acoes, .hero .rotulo", { y: 24, opacity: 0, duration: 0.9, stagger: 0.08 }, "-=0.8")
-        .from(".hero__placa", { y: 40, rotate: -18, opacity: 0, duration: 1.1 }, "-=0.9")
-        .from(".hero__base", { opacity: 0, duration: 0.8 }, "-=0.6");
-      if (heroImg) gsap.from(heroImg, { scale: 1.18, duration: 2.4, ease: "expo.out" }, 0);
-    }
-    if (document.querySelector(".hero")) {
-      if (aberturaAtiva) {
-        gsap.set(".hero [data-linhas] .linha-mask > span", { yPercent: 110 });
-        document.addEventListener("lang:abertura-fim", function () { gsap.set(".hero [data-linhas] .linha-mask > span", { clearProps: "transform" }); entradaHero(); }, { once: true });
-      } else entradaHero();
-    }
-
-    // Cravos do pneu rodam com a rolagem
-    gsap.utils.toArray(".pneu__trilha").forEach(function (t) {
-      gsap.fromTo(t, { x: 0 }, { x: -88, ease: "none", repeat: 0, scrollTrigger: { trigger: t, start: "top bottom", end: "bottom top", scrub: 0.3 } });
-    });
-
-    // Placa na seção de história gira levemente com a rolagem
-    gsap.utils.toArray("[data-placa-gira]").forEach(function (p) {
-      gsap.fromTo(p, { rotate: -14 }, { rotate: 6, ease: "none", scrollTrigger: { trigger: p, start: "top bottom", end: "bottom top", scrub: true } });
-    });
-
-    // Recalcula depois de imagens/fontes
-    window.addEventListener("load", function () { ST.refresh(); });
-    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { ST.refresh(); });
+      // Recalcula posições uma vez, com o navegador ocioso
+      function recalcular() { ocioso(function () { ST.refresh(); }); }
+      if (document.readyState === "complete") recalcular(); else window.addEventListener("load", recalcular, { once: true });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(recalcular);
+    }, 15000);
+    // Rede muito lenta: se as bibliotecas não vierem logo, o hero aparece como está (sem animar).
+    setTimeout(function () { if (raiz.classList.contains("hero-entra")) liberarHero(); }, 2200);
   }
 
   /* ================= Indicador lateral de seção ================= */
@@ -288,12 +323,18 @@
     });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
-    iniciarAbertura();
-    iniciarRolagem();
-    iniciarCoreografia();
-    iniciarLetreiros();
-    iniciarIndicador();
-    iniciarLightbox();
+  pronto(function () {
+    iniciarRolagem();        // âncoras: leve, funciona já
+    predecodificarHero();
+    // Todo o resto espera a splash terminar e o navegador ficar ocioso.
+    aposSplash(function () {
+      ocioso(function () {
+        iniciarLenis();
+        iniciarCoreografia();
+        iniciarLetreiros();
+        iniciarIndicador();
+        iniciarLightbox();
+      });
+    });
   });
 })();

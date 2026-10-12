@@ -368,7 +368,9 @@
     document.querySelectorAll("[data-ano]").forEach(function (el) { el.textContent = new Date().getFullYear(); });
   }
 
-  document.addEventListener("DOMContentLoaded", function () {
+  (document.readyState === "loading" ? function (f) { document.addEventListener("DOMContentLoaded", f); } : function (f) { f(); })(function () {
+    // Reforço: fontes do Google carregam sem bloquear a pintura (media=print -> all)
+    document.querySelectorAll("link[data-fontes]").forEach(function (l) { l.media = "all"; });
     preencherLinksWhatsApp();
     iniciarMenu();
     iniciarCabecalho();
