@@ -657,14 +657,14 @@
   }
 
   /* ============================== navegação ============================== */
-  const TITULOS = { geral: "Visão geral", crm: "CRM", leads: "Todos os leads", equipe: "Equipe" };
+  const TITULOS = { geral: "Visão geral", crm: "CRM", leads: "Todos os leads", equipe: "Equipe", ajuda: "Ajuda" };
   function renderAtual() {
     if (S.view === "geral") renderGeral(); else if (S.view === "crm") renderCrm(); else if (S.view === "leads") renderLeads(); else if (S.view === "equipe") renderEquipe();
   }
   function ir(view) {
     if (view === "equipe" && !(S.acesso && S.acesso.papel === "admin")) view = "geral";
     S.view = view;
-    ["geral", "crm", "leads", "equipe"].forEach((v) => { $("#v-" + v).hidden = v !== view; });
+    ["geral", "crm", "leads", "equipe", "ajuda"].forEach((v) => { $("#v-" + v).hidden = v !== view; });
     $$("[data-ir]").forEach((b) => b.setAttribute("aria-current", b.dataset.ir === view ? "page" : "false"));
     $("#titulo-view").textContent = TITULOS[view];
     try { sessionStorage.setItem("lang-painel-view", view); } catch (e) {}
@@ -870,5 +870,5 @@
 
   window.addEventListener("hashchange", () => { if ((location.hash === "#demo") !== DEMO) location.reload(); });
   (document.readyState === "loading" ? (f) => document.addEventListener("DOMContentLoaded", f) : (f) => f())(iniciar);
-  window.LangPainel = { S, calc };
+  window.LangPainel = { S, calc, ir, abrirLead, fecharGaveta };
 })();
