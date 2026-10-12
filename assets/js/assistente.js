@@ -12,7 +12,7 @@
 
   var FLUXO = {
     inicio: {
-      pergunta: "Oi! Sou o assistente da Lang Motos 🏍️ Em 4 toques eu organizo seu pedido e mando direto pro nosso atendente. O que a sua moto está precisando?",
+      pergunta: "Opa! Aqui é o pré-atendimento da Lang Motos. Em 4 toques eu organizo seu pedido e passo pro nosso atendente. O que a moto está precisando?",
       opcoes: [
         { rotulo: "Revisão / troca de óleo", valor: "Revisão / troca de óleo", proximo: "revisao" },
         { rotulo: "Barulho estranho", valor: "Barulho estranho", proximo: "barulho" },
@@ -41,7 +41,7 @@
     freio: {
       pergunta: "O que você percebeu no freio?",
       opcoes: ["Chiando", "Freando pouco", "Manete / pedal mole", "Trepidando"],
-      dica: "⚠️ Freio falhando é segurança: se possível, evite rodar até avaliar.",
+      dica: "Freio é segurança: se estiver falhando, evite rodar até a gente avaliar.",
     },
     chassi: {
       pergunta: "O que está acontecendo?",
@@ -103,7 +103,7 @@
     limparOpcoes();
     lista.forEach(function (item) {
       var opcao = typeof item === "string" ? { rotulo: item, valor: item } : item;
-      var b = el("button", "chip-opcao", opcao.rotulo);
+      var b = el("button", "opcao", opcao.rotulo);
       b.type = "button";
       b.addEventListener("click", function () {
         limparOpcoes();
@@ -150,13 +150,13 @@
     rolarFim();
 
     limparOpcoes();
-    var wa = el("a", "botao botao--whatsapp botao--bloco", "Enviar pro atendente no WhatsApp");
+    var wa = el("a", "btn btn--bloco", "Enviar pro atendente");
     wa.href = window.LangWhatsApp ? window.LangWhatsApp.montarLink(resumo) : "#";
     wa.target = "_blank";
     wa.rel = "noopener";
     opcoesEl.appendChild(wa);
 
-    var recomecar = el("button", "chip-opcao chip-opcao--fantasma", "Recomeçar");
+    var recomecar = el("button", "opcao opcao--fantasma", "Recomeçar");
     recomecar.type = "button";
     recomecar.addEventListener("click", reiniciar);
     opcoesEl.appendChild(recomecar);
@@ -170,7 +170,7 @@
         var texto = "Prontinho, " + primeiro + "! Montei o resumo abaixo. É só tocar no botão que ele vai direto pro nosso atendente";
         if (window.LangHorario) {
           var s = window.LangHorario.status();
-          texto += s.aberto ? " — estamos abertos agora 👍" : ". Agora estamos fora do horário, mas a mensagem fica lá e respondemos assim que abrirmos.";
+          texto += s.aberto ? " — estamos abertos agora." : ". Agora estamos fora do horário, mas a mensagem fica lá e respondemos assim que abrirmos.";
         }
         falaBot(texto).then(finalizar);
       });
@@ -212,6 +212,7 @@
 
   var iniciado = false;
   function abrir() {
+    if (window.LangWidgets) window.LangWidgets.fechar();
     widget.classList.add("aberto");
     painel.setAttribute("aria-hidden", "false");
     document.querySelectorAll("[data-chat-abrir]").forEach(function (b) {
@@ -233,7 +234,7 @@
   document.addEventListener("DOMContentLoaded", function () {
     widget = document.querySelector("[data-chat-widget]");
     if (!widget) return;
-    painel = widget.querySelector("[data-chat-painel]");
+    painel = widget;
     mensagens = widget.querySelector("[data-chat-mensagens]");
     opcoesEl = widget.querySelector("[data-chat-opcoes]");
     form = widget.querySelector("[data-chat-form]");

@@ -2,45 +2,41 @@
 
 Site estático (HTML/CSS/JS puro, sem build/bundler) da Lang Motos, Itapetininga-SP.
 Projeto da agência **VIBE CODING PROCESS**. Contratos do projeto: `PADROES-AGENCIA.md`
-e `BRIEFING-LANG-MOTOS.md` na raiz. Padrões herdados do projeto Remop Retífica.
+e `BRIEFING-LANG-MOTOS.md` na raiz. Padrões de engenharia herdados do projeto Remop Retífica (identidade visual própria).
 
 ## Estrutura
 
 ```
-index.html                 home: hero, serviços, orçamento, loja, sobre, FAQ
-institucional.html         história, linha do tempo, diferenciais, galeria
-localizacao.html           mapa, como chegar, horário com o dia de hoje
+index.html                 home: hero, ficha técnica, serviços, galeria, ordem de serviço,
+                           loja, história, FAQ, chamada final
+institucional.html         história, linha do tempo, pilares, galeria
+localizacao.html           mapa, contato, horário com o dia de hoje
 
-assets/css/style.css       estilos gerais, mobile-first, tokens da marca em :root
+assets/css/style.css       sistema visual próprio (tokens em :root, mobile-first)
 assets/js/config.js        ÚNICO ponto de config: WhatsApp, telefone, horário, links
-assets/js/main.js          WhatsApp pré-preenchido, menu, modal de agendamento,
-                           selo "Aberto agora", montador de orçamento, FAQ,
-                           contadores, faixa arrastável (padrão Remop)
-assets/js/assistente.js    pré-atendimento guiado (sem backend) → handoff WhatsApp
-assets/js/scroll-reveal.js animações GSAP + ScrollTrigger (padrão de motion da agência)
-assets/js/efeitos.js       camada premium: abertura com a marca, barra de progresso,
-                           holofote + tilt 3D nos cards, botões magnéticos, lightbox
+assets/js/main.js          WhatsApp pré-preenchido, menu em tela cheia, dock de widgets,
+                           agendamento, horário ao vivo, ordem de serviço, FAQ, contadores
+assets/js/assistente.js    pré-atendimento guiado (sem backend) → handoff pro WhatsApp
+assets/js/movimento.js     abertura (odômetro), rolagem suave (Lenis), coreografia GSAP,
+                           letreiro guiado pela rolagem, indicador de seção, lightbox
 assets/img/                fotos reais em HD (WebP responsivo + JPG), logo, OG, favicon
-robots.txt / sitemap.xml   SEO técnico
-netlify.toml               pronto pra migração (headers de segurança e cache)
+robots.txt / sitemap.xml   SEO técnico · netlify.toml pronto pra migração
 ```
 
-Header, footer, assistente, modal e lista de scripts são idênticos nas 3 páginas
-(site sem build → compartilhamento por duplicação, mesmo trade-off do Remop).
-Alterou um desses blocos? Replique nas 3.
+## Identidade visual (própria da Lang Motos)
 
-## Funcionalidades
+Minimalista com pegada motocross: tinta preta, papel de oficina e o laranja do letreiro.
+O xadrez vermelho/azul da fachada aparece só como detalhe (marca, rodapé do botão).
 
-- **Selo "Aberto agora / Fechado · abre às 9h"** calculado no fuso de São Paulo a
-  partir de `LANG_CONFIG.horario` (atualiza a cada minuto).
-- **Orçamento em 3 passos** com prévia ao vivo em balão de WhatsApp.
-- **Assistente de pré-atendimento**: 4 toques (motivo → detalhe → moto → nome),
-  dicas de segurança (ex.: freio) e resumo enviado ao atendente humano.
-  Nunca fecha orçamento sozinho (regra da agência).
-- **Agendamento** em modal → mensagem estruturada no WhatsApp.
-- **SEO**: JSON-LD `MotorcycleRepair` com nota agregada, `FAQPage`, Open Graph, canonical.
-- **Acessibilidade**: skip-link, foco visível, `aria-*` em menus/acordeão/diálogos,
-  `prefers-reduced-motion` respeitado; o site funciona sem JS e sem GSAP.
+- **Fontes**: Saira condensada itálica (títulos, de corrida), Saira Stencil One (números de
+  placa/peça) e IBM Plex Mono (ficha técnica, rótulos).
+- **Botões**: placa chanfrada, sem gradiente, com preenchimento que corre no hover.
+- **Widgets flutuantes**: dock de vidro (WhatsApp, telefone, rota, horário, pré-atendimento);
+  cada ícone abre um painel transparente, um por vez. No desktop o dock fica na lateral.
+- **Orçamento**: formulário em formato de ordem de serviço, com prévia em "ticket".
+- **Rolagem**: suave com inércia (Lenis), cabeçalho que some ao descer, fotos que abrem como
+  porta de enrolar, letreiro que acelera com a rolagem e cravos de pneu que giram.
+  Respeita `prefers-reduced-motion` e degrada para a rolagem nativa sem JS.
 
 ## Imagens em HD
 
