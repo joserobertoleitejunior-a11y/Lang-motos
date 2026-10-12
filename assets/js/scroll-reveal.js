@@ -13,23 +13,39 @@
 
   gsap.registerPlugin(ScrollTrigger);
 
+  /**
+   * Quebra o título em letras preservando trechos em destaque (<em>):
+   * cada letra de um <em> ganha a classe "letra-destaque", então a cor
+   * da marca continua aplicada depois da quebra.
+   */
   function dividirEmLetras(elemento) {
-    var textoOriginal = elemento.textContent.trim();
+    var textoOriginal = elemento.textContent.replace(/\s+/g, " ").trim();
+    var trechos = [];
+    elemento.childNodes.forEach(function (no) {
+      trechos.push({ texto: no.textContent, destaque: no.nodeType === 1 && no.tagName === "EM" });
+    });
     elemento.setAttribute("aria-label", textoOriginal);
     elemento.innerHTML = "";
-    var palavras = textoOriginal.split(/\s+/);
-    palavras.forEach(function (palavra, indice) {
-      var spanPalavra = document.createElement("span");
-      spanPalavra.className = "palavra-montavel";
-      spanPalavra.setAttribute("aria-hidden", "true");
-      Array.from(palavra).forEach(function (letra) {
+    var palavraAtual = null;
+    function novaPalavra() {
+      palavraAtual = document.createElement("span");
+      palavraAtual.className = "palavra-montavel";
+      palavraAtual.setAttribute("aria-hidden", "true");
+      elemento.appendChild(palavraAtual);
+    }
+    trechos.forEach(function (trecho) {
+      Array.from(trecho.texto.replace(/\s+/g, " ")).forEach(function (letra) {
+        if (letra === " ") {
+          if (palavraAtual) elemento.appendChild(document.createTextNode(" "));
+          palavraAtual = null;
+          return;
+        }
+        if (!palavraAtual) novaPalavra();
         var spanLetra = document.createElement("span");
-        spanLetra.className = "letra-montavel";
+        spanLetra.className = "letra-montavel" + (trecho.destaque ? " letra-destaque" : "");
         spanLetra.textContent = letra;
-        spanPalavra.appendChild(spanLetra);
+        palavraAtual.appendChild(spanLetra);
       });
-      elemento.appendChild(spanPalavra);
-      if (indice < palavras.length - 1) elemento.appendChild(document.createTextNode(" "));
     });
     return elemento.querySelectorAll(".letra-montavel");
   }

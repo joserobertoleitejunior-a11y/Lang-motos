@@ -24,11 +24,13 @@
 <meta name="twitter:image" content="https://joserobertoleitejunior-a11y.github.io/lang-motos/assets/img/og-image-lang-motos.jpg">
 
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
-<link rel="apple-touch-icon" href="assets/img/logo-cartao-lang-motos.jpg">
+<link rel="apple-touch-icon" href="assets/img/logo-lang-motos-640.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Russo+One&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=20261012a">
+<link rel="stylesheet" href="assets/css/style.css?v=20261012b">
+
+<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('lang-abertura')!=='1'&&!matchMedia('(prefers-reduced-motion: reduce)').matches)d.classList.add('com-abertura')}catch(e){}})(document.documentElement)</script>
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -37,7 +39,7 @@
   "alternateName": "Lang Motos — Oficina, Peças e Acessórios",
   "description": "Oficina de motos, peças, acessórios, retífica e alinhamento de chassis em Itapetininga-SP desde 1997.",
   "image": "https://joserobertoleitejunior-a11y.github.io/lang-motos/assets/img/og-image-lang-motos.jpg",
-  "logo": "https://joserobertoleitejunior-a11y.github.io/lang-motos/assets/img/logo-cartao-lang-motos.jpg",
+  "logo": "https://joserobertoleitejunior-a11y.github.io/lang-motos/assets/img/logo-lang-motos-640.jpg",
   "url": "https://joserobertoleitejunior-a11y.github.io/lang-motos/",
   "telephone": "+55-15-3271-9398",
   "foundingDate": "1997",
@@ -85,6 +87,12 @@
 </head>
 <body>
 <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo</a>
+<div class="abertura" data-abertura aria-hidden="true">
+  <div class="abertura__marca"><span>L</span><span>A</span><span>N</span><span>G</span><span>&nbsp;</span><span>M</span><span>O</span><span>T</span><span>O</span><span>S</span></div>
+  <div class="abertura__barra"></div>
+  <div class="abertura__sub">Desde 1997 · Itapetininga</div>
+</div>
+<div class="progresso-leitura" aria-hidden="true"></div>
 
 <!-- ===================== HEADER ===================== -->
 <header class="cabecalho">
@@ -113,7 +121,8 @@
 
 <main id="conteudo-principal">
   <section class="hero hero--secundario">
-    <div class="hero__foto hero__foto--loja" role="img" aria-label="Interior da Lang Motos com motos e prateleiras de peças"></div>
+    <div class="hero__foto hero__foto--loja"><picture><source type="image/webp" srcset="assets/img/loja-interna-lang-motos-1200.webp 1200w, assets/img/loja-interna-lang-motos-2240.webp 2240w" sizes="100vw"><img src="assets/img/loja-interna-lang-motos-1200.jpg" alt="Interior da Lang Motos com motos e prateleiras de peças" width="2240" height="1240" decoding="async" fetchpriority="high"></picture></div>
+    <span class="hero__fantasma" aria-hidden="true">1997</span>
     <div class="container hero__conteudo">
       <span class="eyebrow" style="color:var(--cor-amarelo);">Nossa história</span>
       <h1 class="hero__titulo">Sonho de um servo, <em>realidade de Deus</em></h1>
@@ -124,7 +133,7 @@
   <section class="secao">
     <div class="container sobre__layout">
       <figure class="sobre__foto" style="margin:0;">
-        <img src="assets/img/fachada-lang-motos.jpg" alt="Fachada da Lang Motos com o letreiro laranja e azul e motos estacionadas" loading="lazy" width="1080" height="812">
+        <picture><source type="image/webp" srcset="assets/img/fachada-lang-motos-960.webp 960w, assets/img/fachada-lang-motos-1600.webp 1600w, assets/img/fachada-lang-motos-2560.webp 2560w" sizes="(min-width: 900px) 50vw, 100vw"><img src="assets/img/fachada-lang-motos-1600.jpg" alt="Fachada da Lang Motos com o letreiro laranja e azul e motos estacionadas" width="2560" height="1925" loading="lazy" decoding="async"></picture>
         <span class="sobre__selo"><b>28</b>anos</span>
       </figure>
       <div class="sobre__texto">
@@ -185,12 +194,12 @@
     <div class="container">
       <span class="eyebrow eyebrow--centro">Galeria</span>
       <h2 class="secao__titulo">Nossa loja</h2>
-      <p class="secao__subtitulo">Fotos reais da Lang Motos.</p>
+      <p class="secao__subtitulo">Fotos reais da Lang Motos. Toque para ampliar em HD.</p>
       <div class="grid-galeria">
-        <figure class="foto-galeria foto-galeria--larga foto-galeria--alta"><img src="assets/img/fachada-lang-motos.jpg" alt="Fachada da Lang Motos" loading="lazy" width="1080" height="812"><figcaption>Nossa fachada na Av. Cinco de Novembro</figcaption></figure>
-        <figure class="foto-galeria foto-galeria--larga"><img src="assets/img/loja-interna-lang-motos.jpg" alt="Interior da loja com motos e prateleiras de peças" loading="lazy" width="560" height="310"><figcaption>Oficina e loja</figcaption></figure>
-        <figure class="foto-galeria"><img src="assets/img/lateral-lang-motos.jpg" alt="Vista lateral da Lang Motos" loading="lazy" width="350" height="618"><figcaption>Vista da avenida</figcaption></figure>
-        <figure class="foto-galeria"><img src="assets/img/logo-cartao-lang-motos.jpg" alt="Logo da Lang Motos: Oficina, Peças e Acessórios" loading="lazy" width="322" height="328"><figcaption>Nossa marca</figcaption></figure>
+        <figure class="foto-galeria foto-galeria--larga foto-galeria--alta" data-lightbox="assets/img/fachada-lang-motos-2560.webp"><picture><source type="image/webp" srcset="assets/img/fachada-lang-motos-960.webp 960w, assets/img/fachada-lang-motos-1600.webp 1600w, assets/img/fachada-lang-motos-2560.webp 2560w" sizes="(min-width: 900px) 50vw, 100vw"><img src="assets/img/fachada-lang-motos-1600.jpg" alt="Fachada da Lang Motos" width="2560" height="1925" loading="lazy" decoding="async"></picture><figcaption>Nossa fachada na Av. Cinco de Novembro</figcaption></figure>
+        <figure class="foto-galeria foto-galeria--larga" data-lightbox="assets/img/loja-interna-lang-motos-2240.webp"><picture><source type="image/webp" srcset="assets/img/loja-interna-lang-motos-1200.webp 1200w, assets/img/loja-interna-lang-motos-2240.webp 2240w" sizes="(min-width: 900px) 50vw, 50vw"><img src="assets/img/loja-interna-lang-motos-1200.jpg" alt="Interior da loja com motos e prateleiras de peças" width="2240" height="1240" loading="lazy" decoding="async"></picture><figcaption>Oficina e loja</figcaption></figure>
+        <figure class="foto-galeria" data-lightbox="assets/img/fachada2-lang-motos-2400.webp"><picture><source type="image/webp" srcset="assets/img/fachada2-lang-motos-1280.webp 1280w, assets/img/fachada2-lang-motos-2400.webp 2400w" sizes="(min-width: 900px) 25vw, 50vw"><img src="assets/img/fachada2-lang-motos-1280.jpg" alt="Vista da fachada com motos estacionadas" width="2400" height="2119" loading="lazy" decoding="async"></picture><figcaption>Movimento de todo dia</figcaption></figure>
+        <figure class="foto-galeria" data-lightbox="assets/img/lateral-lang-motos-1400.webp"><picture><source type="image/webp" srcset="assets/img/lateral-lang-motos-800.webp 800w, assets/img/lateral-lang-motos-1400.webp 1400w" sizes="(min-width: 900px) 25vw, 50vw"><img src="assets/img/lateral-lang-motos-800.jpg" alt="Vista lateral da Lang Motos" width="1400" height="2472" loading="lazy" decoding="async"></picture><figcaption>Vista da avenida</figcaption></figure>
       </div>
     </div>
   </section>
@@ -201,8 +210,8 @@
       <h2 class="faixa-cta__titulo">Sua moto merece quem entende</h2>
       <p>Chama no WhatsApp, liga ou passa aqui na Av. Cinco de Novembro. A gente avalia e explica tudo antes de mexer.</p>
       <div class="faixa-cta__botoes">
-        <a class="botao botao--whatsapp" data-whatsapp-link href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.83 9.83 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.36.101 11.943c0 2.105.55 4.16 1.595 5.986L0 24l6.335-1.652a11.86 11.86 0 0 0 5.71 1.451h.006c6.598 0 11.972-5.339 11.977-11.958a11.94 11.94 0 0 0-3.508-8.392"/></svg> Chamar no WhatsApp</a>
-        <a class="botao botao--secundario" href="tel:+551532719398"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (15) 3271-9398</a>
+        <a class="botao botao--whatsapp" data-magnetico data-whatsapp-link href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.83 9.83 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.36.101 11.943c0 2.105.55 4.16 1.595 5.986L0 24l6.335-1.652a11.86 11.86 0 0 0 5.71 1.451h.006c6.598 0 11.972-5.339 11.977-11.958a11.94 11.94 0 0 0-3.508-8.392"/></svg> Chamar no WhatsApp</a>
+        <a class="botao botao--secundario" data-magnetico href="tel:+551532719398"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg> (15) 3271-9398</a>
       </div>
     </div>
   </section>
@@ -331,17 +340,19 @@
       </ul>
     </div>
   </div>
+  <div class="rodape__gigante" aria-hidden="true">LANG MOTOS</div>
   <div class="container rodape__base">
     <p>© <span data-ano>2026</span> Lang Motos · CNPJ 02.063.586/0001-69</p>
     <p>Site por <strong>VIBE CODING PROCESS</strong></p>
   </div>
 </footer>
 
-<script src="assets/js/config.js?v=20261012a"></script>
-<script src="assets/js/main.js?v=20261012a" defer></script>
-<script src="assets/js/assistente.js?v=20261012a" defer></script>
+<script src="assets/js/config.js?v=20261012b"></script>
+<script src="assets/js/main.js?v=20261012b" defer></script>
+<script src="assets/js/assistente.js?v=20261012b" defer></script>
+<script src="assets/js/efeitos.js?v=20261012b" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" defer></script>
-<script src="assets/js/scroll-reveal.js?v=20261012a" defer></script>
+<script src="assets/js/scroll-reveal.js?v=20261012b" defer></script>
 </body>
 </html>

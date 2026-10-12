@@ -18,7 +18,9 @@ assets/js/main.js          WhatsApp pré-preenchido, menu, modal de agendamento,
                            contadores, faixa arrastável (padrão Remop)
 assets/js/assistente.js    pré-atendimento guiado (sem backend) → handoff WhatsApp
 assets/js/scroll-reveal.js animações GSAP + ScrollTrigger (padrão de motion da agência)
-assets/img/                fotos reais (fachada, loja, lateral), logo, OG 1200×630, favicon
+assets/js/efeitos.js       camada premium: abertura com a marca, barra de progresso,
+                           holofote + tilt 3D nos cards, botões magnéticos, lightbox
+assets/img/                fotos reais em HD (WebP responsivo + JPG), logo, OG, favicon
 robots.txt / sitemap.xml   SEO técnico
 netlify.toml               pronto pra migração (headers de segurança e cache)
 ```
@@ -39,6 +41,24 @@ Alterou um desses blocos? Replique nas 3.
 - **SEO**: JSON-LD `MotorcycleRepair` com nota agregada, `FAQPage`, Open Graph, canonical.
 - **Acessibilidade**: skip-link, foco visível, `aria-*` em menus/acordeão/diálogos,
   `prefers-reduced-motion` respeitado; o site funciona sem JS e sem GSAP.
+
+## Imagens em HD
+
+As fotos originais eram de baixa resolução (prints de ~1080px). Foram ampliadas 4×
+com **Real-ESRGAN x4plus** (super-resolução por IA, rodado localmente via ONNX),
+com leve acabamento de contraste/nitidez, e exportadas em tamanhos responsivos:
+
+| Arquivo | Tamanhos (WebP) | Fallback JPG |
+|---|---|---|
+| `fachada-lang-motos` | 960 · 1600 · 2560 | 1600 |
+| `loja-interna-lang-motos` | 1200 · 2240 | 1200 |
+| `fachada2-lang-motos` | 1280 · 2400 | 1280 |
+| `lateral-lang-motos` | 800 · 1400 | 800 |
+| `logo-lang-motos` | 1288 | 640 |
+
+O HTML usa `<picture>` + `srcset/sizes`: o celular baixa a versão leve e telas
+grandes/retina a HD. A foto do hero tem `preload` + `fetchpriority="high"`.
+Ao trocar por fotos novas do cliente, manter os mesmos nomes e larguras.
 
 ## Editar dados do negócio
 
