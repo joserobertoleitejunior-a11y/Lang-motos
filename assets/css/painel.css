@@ -160,7 +160,7 @@ h1, h2, h3, p { margin: 0; }
 .delta { font-family: var(--f-mono); font-size: .7rem; font-weight: 600; }
 .delta--up { color: #1f8a1f; } .delta--down { color: var(--alerta); } .delta--flat { color: var(--texto-3); }
 .kpi--hero .delta--up { color: #5fd35f; } .kpi--hero .delta--down { color: #ff8a8a; }
-@media (min-width: 720px) { .kpis { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 720px) { .kpis { grid-template-columns: repeat(4, 1fr); } .kpi--hero { grid-column: 1 / -1; } }
 @media (min-width: 1100px) {
   .kpis { grid-template-columns: 1.4fr repeat(4, 1fr); }
   .kpi--hero { grid-column: auto; grid-row: span 1; }
@@ -229,14 +229,26 @@ h1, h2, h3, p { margin: 0; }
 .chip--org { background: transparent; box-shadow: inset 0 0 0 1px var(--linha-forte); }
 
 /* ---------- CRM (kanban) ---------- */
-.kanban { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(260px, 1fr); gap: 12px; overflow-x: auto; padding-bottom: 12px; scroll-snap-type: x proximity; min-height: 60vh; align-items: start; }
-.kanban__col { background: var(--papel-2); display: flex; flex-direction: column; min-height: 220px; scroll-snap-align: start; transition: box-shadow .15s, background .15s; }
+.kanban { display: grid; gap: 12px; grid-template-columns: repeat(6, minmax(0, 1fr)); min-height: 60vh; align-items: start; }
+.kanban-abas { display: none; }
+@media (max-width: 1279px) { .kanban { grid-template-columns: repeat(3, minmax(0, 1fr)); min-height: 0; } }
+@media (max-width: 759px) {
+  .kanban { grid-template-columns: minmax(0, 1fr); }
+  .kanban__col { display: none; }
+  .kanban__col.on { display: flex; }
+  .kanban-abas { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin-bottom: 12px; }
+  .kanban-abas button { border: 0; background: var(--osso); box-shadow: inset 0 0 0 1px var(--linha-forte); padding: 8px 4px; font-size: .74rem; font-weight: 700; display: grid; gap: 1px; justify-items: center; min-width: 0; }
+  .kanban-abas button small { font-family: var(--f-mono); font-weight: 600; color: var(--texto-2); font-size: .7rem; }
+  .kanban-abas button[aria-pressed="true"] { background: var(--tinta); color: var(--osso); box-shadow: inset 0 0 0 1px var(--tinta); }
+  .kanban-abas button[aria-pressed="true"] small { color: rgba(255,255,255,.7); }
+}
+.kanban__col { min-width: 0; background: var(--papel-2); display: flex; flex-direction: column; min-height: 220px; scroll-snap-align: start; transition: box-shadow .15s, background .15s; }
 .kanban__col.alvo { background: #e1ddd3; box-shadow: inset 0 0 0 2px var(--laranja); }
 .kanban__cab { padding: 11px 12px 9px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .kanban__cab h3 { font-weight: 700; font-size: .92rem; display: flex; align-items: center; gap: 8px; }
 .kanban__cab .n { font-family: var(--f-mono); font-size: .72rem; color: var(--texto-2); }
 .kanban__cab .soma { margin-left: auto; font-size: .76rem; color: var(--texto-2); font-variant-numeric: tabular-nums; }
-.kanban__lista { padding: 0 8px 10px; display: grid; gap: 8px; align-content: start; flex: 1; min-height: 60px; }
+.kanban__lista { padding: 0 8px 10px; display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-content: start; flex: 1; min-height: 60px; }
 .card { background: var(--osso); border: 1px solid var(--linha); padding: 10px 12px 10px; text-align: left; width: 100%; transition: box-shadow .18s, transform .18s var(--curva), border-color .18s; position: relative; }
 .card:hover { border-color: var(--linha-forte); box-shadow: 0 6px 18px -10px rgba(0,0,0,.35); transform: translateY(-1px); }
 .card.arrastando { opacity: .45; }
@@ -245,7 +257,7 @@ h1, h2, h3, p { margin: 0; }
 .card__quando { margin-left: auto; font-size: .72rem; color: var(--texto-2); white-space: nowrap; flex-shrink: 0; }
 .card__moto { font-size: .86rem; color: var(--texto-2); margin-top: 1px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .card__serv { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 7px; }
-.card__rod { display: flex; align-items: center; gap: 6px; margin-top: 9px; }
+.card__rod { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 9px; }
 .card__rod .b { margin-left: auto; }
 .card--atraso { border-left: 3px solid var(--alerta); }
 .vazio-col { color: var(--texto-3); font-size: .8rem; text-align: center; padding: 18px 6px; border: 1px dashed var(--linha-forte); }
@@ -335,7 +347,30 @@ h1, h2, h3, p { margin: 0; }
   .toasts { bottom: calc(var(--aba) + 12px + env(safe-area-inset-bottom, 0px)); }
   .gaveta { width: 100%; }
   .cab__acoes .mono.vivo { display: none; }
-  .kanban { grid-auto-columns: 82%; }
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; } }
+
+/* ---------- Rankings e números do site ---------- */
+.rank { list-style: none; margin: 4px 0 0; padding: 0; display: grid; }
+.rank li { display: grid; grid-template-columns: 26px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--linha); }
+.rank li:first-child { border-top: 0; }
+.rank__n { font-family: var(--f-mono); font-size: .78rem; font-weight: 700; color: var(--texto-2); background: var(--papel-2); width: 26px; height: 26px; display: grid; place-items: center; }
+.rank li:nth-child(-n+3) .rank__n { background: var(--tinta); color: var(--osso); }
+.rank__t { min-width: 0; }
+.rank__t b, .rank__t small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rank__t small, .rank__v small { color: var(--texto-2); font-size: .74rem; font-weight: 400; }
+.rank__v { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+.rank__v small { display: block; }
+.site-nums--3 { grid-template-columns: repeat(3, 1fr) !important; }
+.tabela-alt table { width: 100%; }
+html, body { max-width: 100%; }
+* { -webkit-tap-highlight-color: transparent; }
+html { touch-action: pan-x pan-y; }
+input, select, textarea { font-size: max(16px, 1em); }
+.card, .card * { min-width: 0; }
+.card__nome, .card__moto { overflow-wrap: anywhere; }
+.gaveta:not(.on) { visibility: hidden; }
+html, body { overflow-x: clip; }
+.card .chip { max-width: 100%; white-space: normal; overflow-wrap: anywhere; line-height: 1.25; }
+.card__serv .chip { display: inline-flex; align-items: center; gap: 6px; }

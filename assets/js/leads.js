@@ -142,3 +142,8 @@
     if (os) os.addEventListener("focusin", function () { evento("abre_orcamento"); }, { once: true });
   });
 })();
+
+/* Sem zoom por pinça (iOS ignora user-scalable=no): o layout já se ajusta a qualquer tela. */
+["gesturestart", "gesturechange", "gestureend"].forEach(function (g) {
+  document.addEventListener(g, function (e) { e.preventDefault(); }, { passive: false });
+});

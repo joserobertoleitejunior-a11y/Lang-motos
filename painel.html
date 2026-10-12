@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Painel | Lang Motos</title>
 <meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#0D0D0E">
@@ -108,23 +108,40 @@
         </div>
         <div class="kpis" id="kpis"></div>
         <div class="grade grade--21" style="margin-top:14px;">
+          <div class="cartao" id="c-visitas"></div>
+          <div class="cartao" id="c-funilsite"></div>
+        </div>
+        <div class="grade grade--21" style="margin-top:14px;">
           <div class="cartao" id="c-dia"></div>
           <div class="cartao" id="c-retornos"></div>
         </div>
         <div class="grade grade--2" style="margin-top:14px;">
-          <div class="cartao" id="c-funil"></div>
-          <div class="cartao" id="c-origem"></div>
+          <div class="cartao" id="c-orc"></div>
+          <div class="cartao" id="c-servicos"></div>
         </div>
         <div class="grade grade--2" style="margin-top:14px;">
-          <div class="cartao" id="c-servicos"></div>
+          <div class="cartao" id="c-compram"></div>
+          <div class="cartao" id="c-frequentes"></div>
+        </div>
+        <div class="grade grade--2" style="margin-top:14px;">
+          <div class="cartao" id="c-paginas"></div>
+          <div class="cartao" id="c-canais"></div>
+        </div>
+        <div class="grade grade--2" style="margin-top:14px;">
+          <div class="cartao" id="c-motos"></div>
+          <div class="cartao" id="c-funil"></div>
+        </div>
+        <div class="grade grade--2" style="margin-top:14px;">
+          <div class="cartao" id="c-origem"></div>
           <div class="cartao" id="c-hora"></div>
         </div>
-        <div class="cartao" id="c-site" style="margin-top:14px;"></div>
+        <div class="cartao" id="c-site" style="margin-top:14px;" hidden></div>
       </section>
 
       <!-- ================= CRM ================= -->
       <section id="v-crm" hidden aria-label="Funil de atendimento">
         <p class="muted" style="margin-bottom:12px;">Arraste os cartões entre as colunas, ou use a seta para avançar. Toque num cartão para ver os detalhes, anotar e chamar no WhatsApp.</p>
+        <div class="kanban-abas" id="kanban-abas" role="group" aria-label="Etapa"></div>
         <div class="kanban" id="kanban"></div>
       </section>
 
@@ -183,6 +200,7 @@
 
 <script src="assets/js/config.js?v=20261012e"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js" defer></script>
+<script src="assets/js/zoom.js" defer></script>
 <script src="assets/js/painel.js?v=20261012e" defer></script>
 </body>
 </html>

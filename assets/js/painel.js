@@ -100,6 +100,8 @@
 
   /* ============================== estado ============================== */
   const cfg = (window.LANG_CONFIG && window.LANG_CONFIG.supabase) || {};
+  const LOCAL_ZAP = { dock: "Barra fixa do site", widget: "Botão flutuante", topo: "Topo da página", final: "Chamada final", rodape: "Rodapé", pagina: "Dentro do conteúdo" };
+  const NOME_PAG = { "index.html": "Início", "institucional.html": "Institucional", "localizacao.html": "Localização", "privacidade.html": "Privacidade" };
   const DEMO = location.hash === "#demo";
   const S = {
     acesso: null, leads: [], eventos: [], equipe: [], notas: [],
@@ -156,15 +158,21 @@
       }
     }
     const eventos = [];
+    const PAG = [["index.html", 0.62], ["institucional.html", 0.14], ["localizacao.html", 0.24]];
+    const LOCAIS = [["dock", 0.34], ["widget", 0.22], ["topo", 0.16], ["final", 0.14], ["rodape", 0.08], ["pagina", 0.06]];
     for (let d = 89; d >= 0; d--) {
       const dt = new Date(agora - d * MS), dd = dia(dt), sem = dt.getDay();
       const vis = Math.round((sem === 0 ? 14 : 28 + rnd() * 40) * (1 + (90 - d) / 220));
-      eventos.push({ dia: dd, tipo: "visita", total: Math.round(vis * 1.5), sessoes: vis });
-      eventos.push({ dia: dd, tipo: "clique_whatsapp", total: Math.round(vis * (0.2 + rnd() * 0.1)), sessoes: Math.round(vis * 0.18) });
-      eventos.push({ dia: dd, tipo: "clique_telefone", total: Math.round(vis * 0.05), sessoes: Math.round(vis * 0.04) });
-      eventos.push({ dia: dd, tipo: "clique_rota", total: Math.round(vis * 0.07), sessoes: Math.round(vis * 0.06) });
-      eventos.push({ dia: dd, tipo: "clique_instagram", total: Math.round(vis * 0.04), sessoes: Math.round(vis * 0.035) });
+      PAG.forEach(([pg, f]) => eventos.push({ dia: dd, tipo: "visita", pagina: pg, detalhe: "", total: Math.round(vis * f * 1.4), sessoes: Math.round(vis * f) }));
+      const zap = Math.round(vis * (0.2 + rnd() * 0.1));
+      LOCAIS.forEach(([lc, f]) => eventos.push({ dia: dd, tipo: "clique_whatsapp", pagina: "index.html", detalhe: lc, total: Math.round(zap * f), sessoes: Math.round(zap * f * 0.9) }));
+      eventos.push({ dia: dd, tipo: "clique_telefone", pagina: "index.html", detalhe: "", total: Math.round(vis * 0.05), sessoes: Math.round(vis * 0.04) });
+      eventos.push({ dia: dd, tipo: "clique_rota", pagina: "localizacao.html", detalhe: "", total: Math.round(vis * 0.07), sessoes: Math.round(vis * 0.06) });
+      eventos.push({ dia: dd, tipo: "clique_instagram", pagina: "index.html", detalhe: "", total: Math.round(vis * 0.04), sessoes: Math.round(vis * 0.035) });
     }
+    // clientes recorrentes na demonstração: alguns telefones voltam a pedir serviço
+    const fixos = ["(15) 99871-2040", "(15) 99622-7788", "(15) 99144-3050", "(15) 98830-1177"];
+    leads.forEach((l, i) => { if (i % 9 === 0) l.telefone = fixos[(i / 9) % fixos.length | 0]; });
     let equipe = [{ email: "dono@langmotos.com.br", papel: "admin", criado_em: new Date(agora - 40 * MS).toISOString() }, { email: "balcao@langmotos.com.br", papel: "cliente", criado_em: new Date(agora - 12 * MS).toISOString() }];
     let ouvinte = null;
     const clone = (x) => JSON.parse(JSON.stringify(x));
@@ -211,7 +219,7 @@
         const desde = new Date(Date.now() - 190 * MS).toISOString();
         return ok(await sb.from("leads").select("*").or(`criado_em.gte.${desde},status.in.(novo,contato,orcamento,agendado)`).order("criado_em", { ascending: false }).limit(5000));
       },
-      eventos: async () => ok(await sb.rpc("resumo_eventos", { p_dias: 90 })),
+      eventos: async () => ok(await sb.rpc("resumo_eventos_det", { p_dias: 90 })),
       atualizar: async (lid, patch) => ok(await sb.from("leads").update(patch).eq("id", lid).select().single()),
       criar: async (obj) => ok(await sb.from("leads").insert(obj).select().single()),
       notas: async (lid) => ok(await sb.from("lead_notas").select("*").eq("lead_id", lid).order("criado_em", { ascending: true })),
@@ -293,8 +301,37 @@
     // site
     const ev = { visita: 0, clique_whatsapp: 0, clique_telefone: 0, clique_rota: 0, clique_instagram: 0 };
     const iniDia = dia(new Date(ini));
-    S.eventos.forEach((e) => { if (e.dia >= iniDia && e.tipo in ev) ev[e.tipo] += e.tipo === "visita" ? Number(e.sessoes) : Number(e.total); });
-    return { per, ant, hoje: L.filter((l) => dia(l.criado_em) === hojeStr).length, conc, receita, ticket: comValor ? receita / comValor : 0, abertos, retornar, atrasados, dias, porDia, porHora, porOrigem, porServ, porEtapa, atencao, ev };
+    const visDia = Object.fromEntries(dias.map((x) => [x, 0]));
+    const paginas = {}, canais = {};
+    S.eventos.forEach((e) => {
+      if (e.dia < iniDia) return;
+      const v = e.tipo === "visita" ? Number(e.sessoes) : Number(e.total);
+      if (e.tipo in ev) ev[e.tipo] += v;
+      if (e.tipo === "visita") { if (e.dia in visDia) visDia[e.dia] += v; paginas[e.pagina] = (paginas[e.pagina] || 0) + v; }
+      if (e.tipo === "clique_whatsapp") { const k = LOCAL_ZAP[e.detalhe] || "WhatsApp (outros)"; canais[k] = (canais[k] || 0) + v; }
+    });
+    // clientes (por telefone): quem mais compra e quem mais entra em contato
+    const porTel = {};
+    L.forEach((l) => {
+      const k = digitos(l.telefone); if (k.length < 10) return;
+      const c = porTel[k] || (porTel[k] = { tel: l.telefone, nome: l.nome, pedidos: 0, compras: 0, receita: 0, ultimo: 0 });
+      c.pedidos++; if (l.nome && !c.nome) c.nome = l.nome;
+      const tt = t(l); if (tt > c.ultimo) c.ultimo = tt;
+      if (l.status === "concluido") { c.compras++; c.receita += Number(l.valor) || 0; }
+    });
+    const clientes = Object.values(porTel);
+    const compram = clientes.filter((c) => c.compras > 0).sort((a, b) => b.receita - a.receita || b.compras - a.compras).slice(0, 7);
+    const frequentes = clientes.filter((c) => c.pedidos > 1).sort((a, b) => b.pedidos - a.pedidos || b.ultimo - a.ultimo).slice(0, 7);
+    const recorrentes = clientes.filter((c) => c.pedidos > 1).length;
+    // orçamentos
+    const orcs = per.filter((l) => l.origem === "orcamento");
+    const orcEtapa = Object.fromEntries(STATUS.map((x) => [x.id, 0])); orcs.forEach((l) => { orcEtapa[l.status]++; });
+    const orcAberto = L.filter((l) => l.status === "orcamento");
+    const orcValor = orcAberto.reduce((x, l) => x + (Number(l.valor) || 0), 0);
+    const orcFechados = orcs.filter((l) => l.status === "concluido").length;
+    // motos
+    const porMoto = {}; per.forEach((l) => { if (l.moto) { const k = l.moto.trim(); porMoto[k] = (porMoto[k] || 0) + 1; } });
+    return { per, ant, hoje: L.filter((l) => dia(l.criado_em) === hojeStr).length, conc, receita, ticket: comValor ? receita / comValor : 0, abertos, retornar, atrasados, dias, porDia, porHora, porOrigem, porServ, porEtapa, atencao, ev, visDia, paginas, canais, compram, frequentes, recorrentes, orcs, orcEtapa, orcAberto, orcValor, orcFechados, porMoto };
   }
 
   /* ============================== componentes de gráfico ============================== */
@@ -329,66 +366,113 @@
   }
 
   /* ============================== renderização: visão geral ============================== */
+  function vazioCartao(titulo, sub, msg) { return `<div class="cartao__cab"><div><h2>${esc(titulo)}</h2>${sub ? `<p>${esc(sub)}</p>` : ""}</div></div><div class="vazio"><strong>${esc(msg || "Sem dados no período")}</strong></div>`; }
+  function ranking(itens) {
+    return `<ol class="rank">${itens.map((i, k) => `<li><span class="rank__n">${k + 1}</span><span class="rank__t"><b>${esc(i.t)}</b><small>${esc(i.s)}</small></span><span class="rank__v">${esc(i.v)}<small>${esc(i.vs || "")}</small></span></li>`).join("")}</ol>`;
+  }
   function renderGeral() {
     const c = calc();
     $("#periodo-txt").textContent = `${fDM.format(new Date(Date.now() - S.dias * MS))} a ${fDM.format(new Date())}`;
     $$("#periodo button").forEach((b) => b.setAttribute("aria-pressed", String(Number(b.dataset.dias) === S.dias)));
-    const conv = pct(c.conc.length, c.per.length);
+    const e = c.ev, totalPer = c.per.length;
+    const rec = c.ant.length;
     $("#kpis").innerHTML = `
-      <div class="kpi kpi--hero"><div class="kpi__rot">Leads nos últimos ${S.dias} dias</div><div class="kpi__val">${num(c.per.length)}</div><div class="kpi__sub">${delta(c.per.length, c.ant.length)}<span>· hoje: ${c.hoje}</span></div></div>
-      <div class="kpi"><div class="kpi__rot">Em atendimento</div><div class="kpi__val">${num(c.abertos.length)}</div><div class="kpi__sub">${c.atrasados.length ? `<span class="atrasado">${c.atrasados.length} com retorno atrasado</span>` : c.retornar.length ? `${c.retornar.length} para retornar hoje` : "nenhum retorno atrasado"}</div></div>
-      <div class="kpi"><div class="kpi__rot">Agendados</div><div class="kpi__val">${num(S.leads.filter((l) => l.status === "agendado").length)}</div><div class="kpi__sub">aguardando atendimento</div></div>
-      <div class="kpi"><div class="kpi__rot">Concluídos</div><div class="kpi__val">${num(c.conc.length)}</div><div class="kpi__sub">${c.per.length ? conv + "% dos leads" : "—"}</div></div>
-      <div class="kpi"><div class="kpi__rot">Receita dos concluídos</div><div class="kpi__val">${brl(c.receita)}</div><div class="kpi__sub">${c.ticket ? "ticket médio " + brl(c.ticket) : "informe o valor ao concluir"}</div></div>`;
+      <div class="kpi kpi--hero"><div class="kpi__rot">Visitas ao site · ${S.dias} dias</div><div class="kpi__val">${num(e.visita)}</div><div class="kpi__sub">${e.visita ? `<span>${pct(e.clique_whatsapp + e.clique_telefone, e.visita)}% chamaram no WhatsApp ou ligaram</span>` : "aparece após publicar o site"}</div></div>
+      <div class="kpi"><div class="kpi__rot">Leads</div><div class="kpi__val">${num(totalPer)}</div><div class="kpi__sub">${delta(totalPer, rec)}<span>· hoje: ${c.hoje}</span></div></div>
+      <div class="kpi"><div class="kpi__rot">Orçamentos pedidos</div><div class="kpi__val">${num(c.orcs.length)}</div><div class="kpi__sub">${c.orcAberto.length} aguardando · ${brl(c.orcValor)}</div></div>
+      <div class="kpi"><div class="kpi__rot">Em atendimento</div><div class="kpi__val">${num(c.abertos.length)}</div><div class="kpi__sub">${c.atrasados.length ? `<span class="atrasado">${c.atrasados.length} com retorno atrasado</span>` : "nenhum retorno atrasado"}</div></div>
+      <div class="kpi"><div class="kpi__rot">Receita dos concluídos</div><div class="kpi__val">${brl(c.receita)}</div><div class="kpi__sub">${c.conc.length} concluídos${c.ticket ? " · ticket " + brl(c.ticket) : ""}</div></div>`;
 
-    // leads por dia
     const passo = S.dias <= 7 ? 1 : S.dias <= 30 ? 5 : 14;
     const sem = (k) => fSem.format(new Date(k + "T12:00:00")).replace(".", "");
-    const valoresDia = c.dias.map((k) => c.porDia[k]);
     const rotDia = c.dias.map((k) => k.slice(8) + "/" + k.slice(5, 7));
-    const tipsDia = c.dias.map((k, i) => `${sem(k)}, ${rotDia[i]}|${valoresDia[i]} ${valoresDia[i] === 1 ? "lead" : "leads"}`);
-    $("#c-dia").innerHTML = c.per.length
-      ? cartaoGrafico("dia", "Leads por dia", `Pedidos recebidos pelo site, últimos ${S.dias} dias`, colunas(valoresDia, rotDia, tipsDia, { passo, aria: `Leads por dia, total ${c.per.length}` }), tabelaSimples(["Dia", "Leads"], c.dias.map((k, i) => [rotDia[i], valoresDia[i]])))
-      : `<div class="cartao__cab"><div><h2>Leads por dia</h2><p>Pedidos recebidos pelo site</p></div></div><div class="vazio"><strong>Nenhum lead neste período</strong>Quando alguém enviar um orçamento, agendamento ou pré-atendimento pelo site, ele aparece aqui.</div>`;
+
+    // visitas por dia
+    const vv = c.dias.map((k) => c.visDia[k]);
+    $("#c-visitas").innerHTML = e.visita
+      ? cartaoGrafico("vis", "Visitas por dia", `Pessoas que abriram o site, últimos ${S.dias} dias`, colunas(vv, rotDia, c.dias.map((k, i) => `${sem(k)}, ${rotDia[i]}|${vv[i]} ${vv[i] === 1 ? "visita" : "visitas"}`), { passo, aria: `Visitas por dia, total ${e.visita}` }), tabelaSimples(["Dia", "Visitas"], c.dias.map((k, i) => [rotDia[i], vv[i]])))
+      : vazioCartao("Visitas por dia", "", "Ainda sem visitas medidas — os números aparecem assim que o site for publicado");
+
+    // funil do site
+    const contatos = e.clique_whatsapp + e.clique_telefone;
+    const itensFS = [{ nome: "Visitaram o site", valor: e.visita, cor: "var(--f1)" }, { nome: "Clicaram para contato", valor: contatos, cor: "var(--f2)" }, { nome: "Enviaram um pedido", valor: totalPer, cor: "var(--f3)" }, { nome: "Serviço concluído", valor: c.conc.length, cor: "var(--f4)" }];
+    $("#c-funilsite").innerHTML = e.visita
+      ? cartaoGrafico("fs", "Da visita ao serviço", "Quantos chegam em cada passo", barrasH(itensFS, e.visita, { aria: "Funil do site" }), tabelaSimples(["Passo", "Total", "% das visitas"], itensFS.map((i) => [i.nome, i.valor, pct(i.valor, e.visita) + "%"])))
+      : vazioCartao("Da visita ao serviço", "", "Sem visitas medidas ainda");
+
+    // leads por dia
+    const valoresDia = c.dias.map((k) => c.porDia[k]);
+    $("#c-dia").innerHTML = totalPer
+      ? cartaoGrafico("dia", "Leads por dia", `Pedidos recebidos pelo site, últimos ${S.dias} dias`, colunas(valoresDia, rotDia, c.dias.map((k, i) => `${sem(k)}, ${rotDia[i]}|${valoresDia[i]} ${valoresDia[i] === 1 ? "lead" : "leads"}`), { passo, aria: `Leads por dia, total ${totalPer}` }), tabelaSimples(["Dia", "Leads"], c.dias.map((k, i) => [rotDia[i], valoresDia[i]])))
+      : vazioCartao("Leads por dia", "Pedidos recebidos pelo site", "Nenhum lead neste período");
 
     // atenção
     $("#c-retornos").innerHTML = `<div class="cartao__cab"><div><h2>Precisa de atenção</h2><p>Retornos marcados e leads novos sem resposta</p></div></div>` +
       (c.atencao.length
-        ? `<div class="lista-mini">${c.atencao.slice(0, 7).map((a) => `<button type="button" data-lead="${esc(a.l.id)}"><span class="t">${esc(a.l.nome || (a.l.telefone ? fmtTel(a.l.telefone) : "Sem nome"))}</span><span class="s">${esc(a.l.moto || "")}${a.l.moto && a.l.servicos && a.l.servicos[0] ? " · " : ""}${esc((a.l.servicos && a.l.servicos[0]) || "")}</span><span class="d ${a.atraso ? "atrasado" : ""}">${esc(a.rot)}</span></button>`).join("")}</div>`
+        ? `<div class="lista-mini">${c.atencao.slice(0, 7).map((a) => `<button type="button" data-lead="${esc(a.l.id)}"><span class="t">${esc(a.l.nome || (a.l.telefone ? fmtTel(a.l.telefone) : "Sem nome"))}</span><span class="s">${esc(a.l.moto || "")}${a.l.moto && servicosDe(a.l).length ? " · " : ""}${esc(servicosDe(a.l).join(", "))}</span><span class="r ${a.atraso ? "atrasado" : ""}">${esc(a.rot)}</span></button>`).join("")}</div>`
         : `<div class="vazio"><strong>Tudo em dia</strong>Nenhum retorno atrasado nem lead novo esperando.</div>`);
 
+    // orçamentos
+    const itensOrc = STATUS.map((x) => ({ nome: x.nome, valor: c.orcEtapa[x.id], cor: x.cor })).filter((i) => i.valor > 0);
+    $("#c-orc").innerHTML = c.orcs.length
+      ? cartaoGrafico("orc", "Orçamentos", "Pedidos feitos no formulário de orçamento e como estão", `<div class="site-nums site-nums--3"><div><b>${num(c.orcs.length)}</b><span>Pedidos</span></div><div><b>${num(c.orcFechados)}</b><span>Fechados</span></div><div><b>${pct(c.orcFechados, c.orcs.length)}%</b><span>Taxa de fechamento</span></div></div><div style="height:14px"></div>` + barrasH(itensOrc, c.orcs.length, { aria: "Orçamentos por etapa" }), tabelaSimples(["Etapa", "Orçamentos"], itensOrc.map((i) => [i.nome, i.valor])))
+      : vazioCartao("Orçamentos", "Pedidos feitos no formulário de orçamento", "Nenhum orçamento pedido no período");
+
+    // serviços
+    const itensServ = Object.keys(c.porServ).map((k) => ({ nome: k, valor: c.porServ[k], cor: SERV_COR[k] || "var(--s8)" })).sort((a, b) => b.valor - a.valor).slice(0, 7);
+    $("#c-servicos").innerHTML = totalPer
+      ? cartaoGrafico("serv", "Mais procurados", "Serviços mais pedidos (um lead pode pedir mais de um)", barrasH(itensServ, null, { aria: "Serviços mais pedidos" }), tabelaSimples(["Serviço", "Pedidos"], itensServ.map((i) => [i.nome, i.valor])))
+      : vazioCartao("Mais procurados", "", "Sem pedidos no período");
+
+    // clientes que mais compram
+    $("#c-compram").innerHTML = c.compram.length
+      ? `<div class="cartao__cab"><div><h2>Clientes que mais compram</h2><p>Por valor dos serviços concluídos (todo o histórico)</p></div></div>` + ranking(c.compram.map((x) => ({ t: x.nome || fmtTel(x.tel), s: `${fmtTel(x.tel)} · ${x.compras} ${x.compras === 1 ? "serviço" : "serviços"}`, v: brl(x.receita), vs: x.compras > 1 ? "cliente fiel" : "" })))
+      : vazioCartao("Clientes que mais compram", "Por valor dos serviços concluídos", "Conclua leads com telefone e valor para ver o ranking");
+
+    // clientes que mais acessam / voltam
+    $("#c-frequentes").innerHTML = c.frequentes.length
+      ? `<div class="cartao__cab"><div><h2>Clientes que mais voltam</h2><p>Quem mais entrou em contato · ${c.recorrentes} ${c.recorrentes === 1 ? "cliente recorrente" : "clientes recorrentes"}</p></div></div>` + ranking(c.frequentes.map((x) => ({ t: x.nome || fmtTel(x.tel), s: `${fmtTel(x.tel)} · último ${quando(new Date(x.ultimo).toISOString())}`, v: x.pedidos + "×", vs: "contatos" })))
+      : vazioCartao("Clientes que mais voltam", "Quem mais entra em contato", "Ainda não há clientes que voltaram a pedir");
+
+    // páginas mais acessadas
+    const itensPag = Object.keys(c.paginas).map((k, i) => ({ nome: NOME_PAG[k] || k, valor: c.paginas[k], cor: `var(--s${(i % 8) + 1})` })).sort((a, b) => b.valor - a.valor);
+    $("#c-paginas").innerHTML = itensPag.length
+      ? cartaoGrafico("pag", "Páginas mais acessadas", "Quantas visitas cada página recebeu", barrasH(itensPag, e.visita, { aria: "Visitas por página" }), tabelaSimples(["Página", "Visitas"], itensPag.map((i) => [i.nome, i.valor])))
+      : vazioCartao("Páginas mais acessadas", "", "Sem visitas medidas ainda");
+
+    // canais de contato
+    const itensCan = Object.keys(c.canais).map((k) => ({ nome: k, valor: c.canais[k], cor: "var(--s1)" }));
+    if (e.clique_telefone) itensCan.push({ nome: "Ligar (telefone fixo)", valor: e.clique_telefone, cor: "var(--s2)" });
+    if (e.clique_rota) itensCan.push({ nome: "Como chegar (mapa)", valor: e.clique_rota, cor: "var(--s3)" });
+    if (e.clique_instagram) itensCan.push({ nome: "Instagram", valor: e.clique_instagram, cor: "var(--s4)" });
+    itensCan.sort((a, b) => b.valor - a.valor);
+    $("#c-canais").innerHTML = itensCan.length
+      ? cartaoGrafico("can", "Onde clicam para falar com você", "Cliques por botão do site", barrasH(itensCan, null, { aria: "Cliques por canal" }), tabelaSimples(["Botão", "Cliques"], itensCan.map((i) => [i.nome, i.valor])))
+      : vazioCartao("Onde clicam para falar com você", "", "Sem cliques medidos ainda");
+
+    // motos
+    const itensMoto = Object.keys(c.porMoto).map((k) => ({ nome: k, valor: c.porMoto[k], cor: "var(--s5)" })).sort((a, b) => b.valor - a.valor).slice(0, 7);
+    $("#c-motos").innerHTML = itensMoto.length
+      ? cartaoGrafico("moto", "Motos mais atendidas", "Modelos que mais aparecem nos pedidos", barrasH(itensMoto, null, { aria: "Motos mais atendidas" }), tabelaSimples(["Moto", "Pedidos"], itensMoto.map((i) => [i.nome, i.valor])))
+      : vazioCartao("Motos mais atendidas", "", "Sem pedidos no período");
+
     // funil
-    const totalPer = c.per.length;
-    const itensFunil = STATUS.map((s) => ({ nome: s.nome, valor: c.porEtapa[s.id], cor: s.cor }));
+    const itensFunil = STATUS.map((x) => ({ nome: x.nome, valor: c.porEtapa[x.id], cor: x.cor }));
     $("#c-funil").innerHTML = totalPer
       ? cartaoGrafico("funil", "Em que etapa estão", `Leads dos últimos ${S.dias} dias, pela etapa atual`, barrasH(itensFunil, totalPer, { aria: "Leads por etapa do funil" }), tabelaSimples(["Etapa", "Leads", "%"], itensFunil.map((i) => [i.nome, i.valor, pct(i.valor, totalPer) + "%"])))
-      : `<div class="cartao__cab"><div><h2>Em que etapa estão</h2></div></div><div class="vazio">Sem leads no período.</div>`;
+      : vazioCartao("Em que etapa estão", "", "Sem leads no período");
 
     // origem
     const itensOrigem = Object.keys(ORIGENS).map((k) => ({ nome: ORIGENS[k], valor: c.porOrigem[k] || 0, cor: ORIGEM_COR[k] })).filter((i) => i.valor > 0).sort((a, b) => b.valor - a.valor);
     $("#c-origem").innerHTML = totalPer
       ? cartaoGrafico("origem", "De onde vêm", "Qual formulário do site gerou o lead", barrasH(itensOrigem, totalPer, { aria: "Leads por origem" }), tabelaSimples(["Origem", "Leads", "%"], itensOrigem.map((i) => [i.nome, i.valor, pct(i.valor, totalPer) + "%"])))
-      : `<div class="cartao__cab"><div><h2>De onde vêm</h2></div></div><div class="vazio">Sem leads no período.</div>`;
-
-    // serviços
-    const itensServ = Object.keys(c.porServ).map((k) => ({ nome: k, valor: c.porServ[k], cor: SERV_COR[k] || "var(--s8)" })).sort((a, b) => b.valor - a.valor).slice(0, 7);
-    $("#c-servicos").innerHTML = totalPer
-      ? cartaoGrafico("serv", "Serviços mais pedidos", "Um lead pode pedir mais de um serviço", barrasH(itensServ, null, { aria: "Serviços mais pedidos" }), tabelaSimples(["Serviço", "Pedidos"], itensServ.map((i) => [i.nome, i.valor])))
-      : `<div class="cartao__cab"><div><h2>Serviços mais pedidos</h2></div></div><div class="vazio">Sem leads no período.</div>`;
+      : vazioCartao("De onde vêm", "", "Sem leads no período");
 
     // horário
-    const h0 = 6, h1 = 23, hs = [];
-    for (let h = h0; h <= h1; h++) hs.push(h);
+    const hs = []; for (let h = 6; h <= 23; h++) hs.push(h);
     $("#c-hora").innerHTML = totalPer
       ? cartaoGrafico("hora", "Horário dos pedidos", "Hora em que o lead chegou (horário de Brasília)", colunas(hs.map((h) => c.porHora[h]), hs.map((h) => h + "h"), hs.map((h) => `${h}h às ${h + 1}h|${c.porHora[h]} ${c.porHora[h] === 1 ? "lead" : "leads"}`), { passo: 3, aria: "Leads por hora do dia" }), tabelaSimples(["Hora", "Leads"], hs.map((h) => [h + "h", c.porHora[h]])))
-      : `<div class="cartao__cab"><div><h2>Horário dos pedidos</h2></div></div><div class="vazio">Sem leads no período.</div>`;
-
-    // site
-    const e = c.ev, temSite = e.visita > 0;
-    $("#c-site").innerHTML = `<div class="cartao__cab"><div><h2>Uso do site</h2><p>Medição anônima, sem dado pessoal. Visitantes contados uma vez por dia de visita.</p></div></div>` +
-      (temSite
-        ? `<div class="site-nums"><div><b>${num(e.visita)}</b><span>Visitantes</span></div><div><b>${num(e.clique_whatsapp)}</b><span>Cliques no WhatsApp</span></div><div><b>${num(e.clique_telefone)}</b><span>Cliques em ligar</span></div><div><b>${num(e.clique_rota)}</b><span>Cliques em rota</span></div><div><b>${num(e.clique_instagram)}</b><span>Cliques no Instagram</span></div><div><b>${pct(e.clique_whatsapp, e.visita)}%</b><span>Visitantes que clicaram no WhatsApp</span></div><div><b>${num(c.per.length)}</b><span>Pedidos enviados (leads)</span></div><div><b>${pct(c.per.length, e.visita)}%</b><span>Visitantes que enviaram um pedido</span></div></div>`
-        : `<div class="vazio"><strong>Ainda sem dados do site</strong>Os números aparecem assim que o site for publicado e receber visitas.</div>`);
+      : vazioCartao("Horário dos pedidos", "", "Sem leads no período");
     atualizarContagem();
   }
 
@@ -412,6 +496,8 @@
   }
   function renderCrm() {
     const agoraMenos = Date.now() - 45 * MS;
+    if (!S.etapaMob) S.etapaMob = "novo";
+    $("#kanban-abas").innerHTML = STATUS.map((s) => `<button type="button" data-aba-etapa="${s.id}" aria-pressed="${s.id === S.etapaMob}"><span>${esc(s.nome)}</span><small>${S.leads.filter((l) => l.status === s.id).length}</small></button>`).join("");
     $("#kanban").innerHTML = STATUS.map((s) => {
       let itens = S.leads.filter((l) => l.status === s.id);
       let nota = "";
@@ -419,7 +505,7 @@
       itens.sort((a, b) => (ABERTOS.includes(s.id) ? new Date(a.proximo_contato || a.criado_em).getTime() - new Date(b.proximo_contato || b.criado_em).getTime() : new Date(b.atualizado_em || b.criado_em) - new Date(a.atualizado_em || a.criado_em)));
       if (ABERTOS.includes(s.id)) itens.sort((a, b) => { const A = a.proximo_contato ? new Date(a.proximo_contato).getTime() : Infinity, B = b.proximo_contato ? new Date(b.proximo_contato).getTime() : Infinity; return A === B ? new Date(b.criado_em) - new Date(a.criado_em) : A - B; });
       const soma = itens.reduce((x, l) => x + (Number(l.valor) || 0), 0);
-      return `<section class="kanban__col" data-status="${s.id}" aria-label="${esc(s.nome)}">
+      return `<section class="kanban__col${s.id === S.etapaMob ? " on" : ""}" data-status="${s.id}" aria-label="${esc(s.nome)}">
         <div class="kanban__cab"><h3><span class="sw" style="background:${s.cor}"></span>${esc(s.nome)}</h3><span class="n">${itens.length}</span>${soma ? `<span class="soma">${brl(soma)}</span>` : ""}</div>
         <div class="kanban__lista">${itens.length ? itens.map(cardLead).join("") : `<div class="vazio-col">Nenhum lead aqui</div>`}${nota}</div></section>`;
     }).join("");
@@ -633,6 +719,7 @@
       const t = e.target;
       const ir_ = t.closest("[data-ir]"); if (ir_) { ir(ir_.dataset.ir); return; }
       const dias = t.closest("[data-dias]"); if (dias) { S.dias = Number(dias.dataset.dias); renderGeral(); return; }
+      const ab = t.closest("[data-aba-etapa]"); if (ab) { S.etapaMob = ab.dataset.abaEtapa; renderCrm(); return; }
       const et = t.closest("[data-etapa]"); if (et && S.aberto) { mudarEtapa(S.aberto, et.dataset.etapa); return; }
       const acao = t.closest("[data-acao]");
       if (acao) {
