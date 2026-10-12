@@ -805,3 +805,4 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
 @media (min-width: 900px) { .rodape__base { padding-bottom: 30px; } }
 
 .hero__midia--baixo img { object-position: center 78%; }
+.local__fallback { position: absolute; left: 12px; bottom: 12px; z-index: 3; white-space: nowrap; }

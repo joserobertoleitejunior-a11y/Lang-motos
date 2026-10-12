@@ -27,7 +27,14 @@
     return "https://wa.me/" + (config.whatsappNumero || "") + "?text=" + texto;
   }
   function abrirWhatsApp(mensagem) {
-    window.open(montarLinkWhatsApp(mensagem), "_blank", "noopener");
+    var url = montarLinkWhatsApp(mensagem);
+    var janela = null;
+    try { janela = window.open(url, "_blank", "noopener"); } catch (e) {}
+    if (janela) return;
+    // Bloqueio de pop-up ou frame restrito: abre por um link real.
+    var a = document.createElement("a");
+    a.href = url; a.target = "_blank"; a.rel = "noopener";
+    document.body.appendChild(a); a.click(); a.remove();
   }
   function preencherLinksWhatsApp() {
     document.querySelectorAll("[data-whatsapp-mensagem]").forEach(function (link) {
