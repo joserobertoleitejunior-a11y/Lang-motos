@@ -953,3 +953,16 @@ html.hero-entra .hero__atalhos { opacity: 0; }
 @keyframes atalhoOnda { from { opacity: .9; transform: scale(.7); } to { opacity: 0; transform: scale(2.3); } }
 @media (min-width: 900px) { .hero__atalhos { top: calc(var(--topo) + 26px); width: 600px; } .atalho { --s: 46px; } .atalho:nth-child(2) { --s: 34px; } .atalho:nth-child(3) { --s: 62px; } }
 @media (prefers-reduced-motion: reduce) { .atalho { animation: none; } .atalho.onda::after { animation: none; } }
+
+/* Computador: a placa "LANG MOTOS" aparece inteira (sem gradiente lateral nem título por cima); o texto fica abaixo dela */
+@media (min-width: 900px) {
+  .hero__midia--inteira img { object-position: center top; }
+  .hero__midia--inteira::after { background: linear-gradient(180deg, rgba(13,13,14,.55) 0, rgba(13,13,14,0) 16%, rgba(13,13,14,0) calc(max(75.2vw, 100svh) * .42), rgba(13,13,14,.82) calc(max(75.2vw, 100svh) * .42 + 170px), rgba(13,13,14,.97) 100%); }
+  .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(3rem, min(6.2vw, 10.5vh), 7rem); }
+  .hero:has(.hero__midia--inteira) .hero__in { gap: 18px; }
+}
+@media (min-width: 900px) and (max-height: 860px) {
+  .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(2.6rem, min(5vw, 8vh), 5.2rem); }
+  .hero:has(.hero__midia--inteira) .hero__texto { display: none; }
+  .hero:has(.hero__midia--inteira) .hero__acoes { margin-top: 14px !important; }
+}
