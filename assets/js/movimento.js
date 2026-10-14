@@ -125,6 +125,7 @@
       var largura = grupo.offsetWidth;
       window.addEventListener("resize", function () { largura = grupo.offsetWidth; });
       var x = 0, base = reduz ? 0 : -0.6, impulso = 0, direcao = 1, ultimoY = window.scrollY, visivel = false;
+      var secao = trilha.parentElement, arrasto = null, inercia = 0, vel = 0;
       if ("IntersectionObserver" in window) {
         new IntersectionObserver(function (es) { visivel = es[0].isIntersecting; }).observe(trilha);
       } else visivel = true;
@@ -134,13 +135,54 @@
         if (dy !== 0) direcao = dy > 0 ? 1 : -1;
         impulso = Math.max(-28, Math.min(28, impulso + dy * 0.12));
       }, { passive: true });
+
+      /* Arrastar com o dedo ou o mouse: a faixa acompanha o gesto e continua com inércia ao soltar */
+      var dica = document.createElement("span");
+      dica.className = "letreiro__dica"; dica.setAttribute("aria-hidden", "true"); dica.textContent = "← arraste →";
+      secao.appendChild(dica);
+      function soltar(e) {
+        if (!arrasto || (e && e.pointerId !== arrasto.id)) return;
+        if (arrasto.ativo) {
+          inercia = Math.max(-60, Math.min(60, vel));
+          if (Math.abs(inercia) > 0.5) direcao = inercia > 0 ? -1 : 1;
+        }
+        try { secao.releasePointerCapture(arrasto.id); } catch (err) {}
+        secao.classList.remove("arrastando"); arrasto = null;
+      }
+      secao.addEventListener("pointerdown", function (e) {
+        if (e.pointerType === "mouse" && e.button !== 0) return;
+        arrasto = { id: e.pointerId, x0: e.clientX, ult: e.clientX, ativo: false };
+        vel = 0; inercia = 0;
+      });
+      secao.addEventListener("pointermove", function (e) {
+        if (!arrasto || e.pointerId !== arrasto.id) return;
+        if (!arrasto.ativo) {
+          if (Math.abs(e.clientX - arrasto.x0) < 5) return;
+          arrasto.ativo = true; secao.classList.add("arrastando");
+          try { secao.setPointerCapture(e.pointerId); } catch (err) {}
+          if (dica.parentNode) { dica.classList.add("some"); }
+        }
+        var d = e.clientX - arrasto.ult; arrasto.ult = e.clientX;
+        x += d; vel = vel * 0.6 + d * 0.4;
+        e.preventDefault();
+      });
+      secao.addEventListener("pointerup", soltar);
+      secao.addEventListener("pointercancel", soltar);
+      secao.addEventListener("lostpointercapture", soltar);
+      secao.addEventListener("dragstart", function (e) { e.preventDefault(); });
+
       (function quadro() {
-        if (visivel && largura) {
-          x += base * direcao - Math.abs(impulso) * direcao * 0.5;
-          impulso *= 0.9;
-          if (x <= -largura) x += largura;
-          if (x > 0) x -= largura;
-          var inclina = Math.max(-10, Math.min(10, impulso * -0.5));
+        var segurando = arrasto && arrasto.ativo;
+        if ((visivel || segurando) && largura) {
+          if (segurando) { vel *= 0.9; impulso *= 0.9; }
+          else {
+            x += base * direcao - Math.abs(impulso) * direcao * 0.5 + inercia;
+            impulso *= 0.9; inercia *= 0.94;
+            if (Math.abs(inercia) < 0.05) inercia = 0;
+          }
+          while (x <= -largura) x += largura;
+          while (x > 0) x -= largura;
+          var inclina = Math.max(-10, Math.min(10, (segurando ? vel * 0.35 : impulso * -0.5 + inercia * 0.35)));
           trilha.style.transform = "translate3d(" + x + "px,0,0) skewX(" + inclina + "deg)";
         }
         requestAnimationFrame(quadro);
