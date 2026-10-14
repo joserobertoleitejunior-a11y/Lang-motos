@@ -15,67 +15,59 @@
 
   /* ---------------------------------------------------------------- passos do passeio */
   var PASSOS = [
-    { t: "geral", ir: "geral", alvo: "#periodo", titulo: "Escolha o período", texto: "Toque em 7, 30 ou 90 dias. Todos os números e gráficos da tela mudam juntos. Teste agora: toque em outro período." },
-    { t: "geral", ir: "geral", alvo: "#kpis", titulo: "Seus números principais", texto: "Visitas são as pessoas que abriram o site. Leads são as que mandaram um pedido. Abaixo: orçamentos pedidos, quantos você está atendendo e o dinheiro dos serviços concluídos. A seta compara com o período anterior." },
-    { t: "geral", ir: "geral", alvo: "#c-visitas", titulo: "Gráficos que respondem ao toque", texto: "Passe o mouse ou encoste o dedo numa barra para ver o número exato daquele dia. O botão “Ver tabela” mostra os mesmos dados em lista." },
-    { t: "geral", ir: "geral", alvo: "#c-funilsite", titulo: "Da visita ao serviço", texto: "Mostra quantos visitantes clicaram para falar com você, quantos mandaram pedido e quantos viraram serviço feito. Se a barra de baixo for pequena, vale melhorar o atendimento." },
-    { t: "geral", ir: "geral", alvo: "#c-retornos", titulo: "Precisa de atenção", texto: "Aqui ficam os clientes esperando resposta e os retornos atrasados. Toque no nome para abrir o cliente e resolver na hora." },
-    { t: "geral", ir: "geral", alvo: "#c-orc", titulo: "Orçamentos", texto: "Quantos orçamentos pediram, quantos você fechou e a taxa de fechamento. Embaixo, em que etapa cada orçamento está." },
-    { t: "geral", ir: "geral", alvo: "#c-servicos", titulo: "O que mais procuram", texto: "Serviços mais pedidos. Use para decidir o que divulgar e que peças manter em estoque." },
-    { t: "geral", ir: "geral", alvo: "#c-compram", titulo: "Quem mais compra e quem mais volta", texto: "O primeiro ranking soma o valor dos serviços concluídos de cada cliente. O segundo mostra quem mais entrou em contato. São seus melhores clientes: cuide bem deles." },
-    { t: "geral", ir: "geral", alvo: "#c-canais", titulo: "Onde clicam para falar com você", texto: "Mostra qual botão do site mais gera contato: WhatsApp da barra fixa, botão flutuante, ligar, mapa e Instagram." },
-    { t: "crm", ir: "crm", alvo: function () { return celular() ? primeiroVisivel("#kanban-abas") : primeiroVisivel("#kanban"); }, titulo: "CRM: o caminho de cada cliente", texto: function () { return celular() ? "Cada botão é uma etapa: Novo, Em contato, Orçamento enviado, Agendado, Concluído, Perdido. O número mostra quantos clientes há em cada uma. Toque para trocar de etapa." : "Cada coluna é uma etapa do atendimento, da esquerda para a direita. Os clientes novos entram sozinhos na primeira coluna. Arraste o cartão de uma coluna para outra para avançar."; } },
-    { t: "crm", ir: "crm", alvo: function () { return primeiroVisivel(".kanban__col.on .card, .kanban__col .card"); }, titulo: "Cada cartão é um cliente", texto: "Mostra nome, moto, serviço e de onde veio. Borda vermelha e “retorno atrasado” significam que você prometeu voltar e passou do prazo. Toque no cartão para abrir tudo sobre o cliente." },
-    { t: "crm", ir: "crm", alvo: function () { return primeiroVisivel(".kanban__col.on .card .b, .kanban__col .card .b"); }, titulo: "A seta avança a etapa", texto: "Respondeu o cliente? Toque na seta e o cartão vai para a próxima etapa. É o jeito mais rápido de manter o painel em dia." },
-    { t: "lead", ir: "leads", abrirLead: true, alvo: ".etapas", titulo: "Mude a etapa do cliente", texto: "Este é o cliente aberto. Toque numa etapa para mover. Ao escolher “Perdido”, aparece um campo para anotar o motivo. Isso ajuda a entender por que ele não fechou." },
-    { t: "lead", ir: "leads", abrirLead: true, alvo: ".acoes-contato", titulo: "Chame no WhatsApp com mensagem pronta", texto: "Escolha uma mensagem pronta (por exemplo, orçamento ou lembrete), toque em WhatsApp e a conversa abre já escrita. Também dá para ligar ou copiar o número." },
-    { t: "lead", ir: "leads", abrirLead: true, alvo: function () { var i = $("#g-valor"); return i ? i.closest(".linha2") : null; }, titulo: "Valor e próximo contato", texto: "Quando fechar o serviço, preencha o valor: ele entra na receita da Visão geral. Marque a data para voltar a falar com o cliente: se passar, ele aparece em “Precisa de atenção”. Tudo salva sozinho." },
-    { t: "lead", ir: "leads", abrirLead: true, alvo: function () { var i = $("#g-nota"); return i ? i.closest(".campo") : null; }, titulo: "Anote tudo no histórico", texto: "Escreva o que combinou (“vem sábado de manhã”) e toque em Salvar anotação. Todo mundo da equipe vê o histórico, e as mudanças de etapa ficam registradas automaticamente." },
-    { t: "leads", ir: "leads", alvo: ".filtros", titulo: "Todos os leads: busque e filtre", texto: "Digite nome, telefone, moto ou serviço. Use os filtros de etapa e origem para achar rápido. Toque numa linha para abrir o cliente." },
-    { t: "leads", ir: "leads", alvo: "[data-acao=\"exportar\"]", titulo: "Leve para uma planilha", texto: "“Exportar CSV” baixa a lista que você está vendo, pronta para abrir no Excel ou no Google Planilhas." },
-    { t: "novo", ir: "geral", alvo: function () { return primeiroVisivel(".cab__acoes [data-acao=\"novo-lead\"]"); }, titulo: "Cadastre o cliente do balcão", texto: "Atendeu alguém pessoalmente ou por telefone? Toque em “Novo lead”, preencha o básico e ele entra no CRM junto com os do site." },
-    { t: "equipe", ir: "equipe", admin: true, alvo: "#form-equipe", titulo: "Libere a sua equipe", texto: "Só o administrador vê esta tela. Digite o e-mail do funcionário, escolha o papel e toque em Liberar. A pessoa cria a senha na tela de entrada e já acessa. Para tirar o acesso, use o botão da lista." },
-    { t: "fim", ir: "ajuda", alvo: null, titulo: "Pronto, você já conhece o painel", texto: "Na tela Ajuda e tutorial você revê qualquer função, com o passo a passo e o botão “Mostrar na tela”. Dúvida? Toque em “Passeio guiado” a qualquer momento." },
+    { t: "inicio", ir: "inicio", alvo: ".ini__cards", titulo: "Aqui você vê quem está esperando", texto: "O quadro laranja mostra quantos clientes pediram serviço e ainda esperam a sua resposta. Toque nele para ver quem são. O outro quadro mostra com quem você marcou de falar hoje." },
+    { t: "inicio", ir: "inicio", alvo: ".ini__nums", titulo: "Como está o movimento", texto: "Quantas pessoas olharam o site esta semana, quantas pediram serviço e quanto dinheiro entrou com os serviços feitos no mês." },
+    { t: "inicio", ir: "inicio", alvo: ".ini__botoes", titulo: "Atalhos para o que você mais faz", texto: "Ver os clientes, cadastrar alguém que veio na loja, ver os gráficos ou abrir a ajuda. É só tocar." },
+    { t: "clientes", ir: "clientes", alvo: "#c-busca", titulo: "Procure um cliente", texto: "Escreva um pedaço do nome, do telefone ou da moto. A lista mostra só quem combina." },
+    { t: "clientes", ir: "clientes", alvo: "#c-filtros", titulo: "Escolha quem você quer ver", texto: "“Esperando resposta” são os novos. “Falar hoje” são os que você marcou para voltar a falar. “Conversando” são os que estão em andamento. “Todos” mostra a lista inteira." },
+    { t: "clientes", ir: "clientes", alvo: function () { return primeiroVisivel(".cli .cli__zap"); }, titulo: "O botão verde chama no WhatsApp", texto: "Toque nele e o WhatsApp abre com uma mensagem pronta para aquele cliente. Você só precisa apertar enviar." },
+    { t: "clientes", ir: "clientes", alvo: function () { return primeiroVisivel(".cli"); }, titulo: "Toque no cliente para abrir a ficha", texto: "Na ficha você vê tudo sobre ele, marca como está o atendimento e faz anotações." },
+    { t: "lead", ir: "clientes", abrirLead: true, alvo: ".g-contato", titulo: "Chamar ou ligar", texto: "O botão verde abre o WhatsApp. O botão branco liga para o cliente. Logo abaixo você pode trocar a mensagem que já vai escrita." },
+    { t: "lead", ir: "clientes", abrirLead: true, alvo: ".etapas--grandes", titulo: "Como está este cliente?", texto: "Toque na opção que combina: ainda conversando, você passou o preço, marcou o dia, o serviço foi feito ou ele não fechou. Assim você nunca perde o fio da meada." },
+    { t: "lead", ir: "clientes", abrirLead: true, alvo: function () { var i = $("#g-proximo_contato"); return i ? i.closest(".campo") : null; }, titulo: "Lembrar de falar de novo", texto: "Escolha o dia e a hora. Quando chegar o momento, o cliente aparece em “Falar hoje” na tela inicial. Quando o serviço estiver feito, aparece aqui também o campo para escrever o valor." },
+    { t: "lead", ir: "clientes", abrirLead: true, alvo: function () { var i = $("#g-nota"); return i ? i.closest(".campo") : null; }, titulo: "Anote o que combinaram", texto: "Escreva, por exemplo, “vem sábado de manhã” e toque em Guardar anotação. Todos da equipe conseguem ler depois." },
+    { t: "lead", ir: "clientes", abrirLead: true, alvo: ".g-mais", titulo: "Mais detalhes, se precisar", texto: "Aqui ficam o telefone, a moto e o que o cliente escreveu no site. Tudo o que você muda é guardado sozinho." },
+    { t: "novo", ir: "inicio", alvo: function () { return primeiroVisivel(".cab__acoes [data-acao=\"novo-lead\"]"); }, titulo: "Cadastrar quem veio na loja", texto: "Atendeu alguém no balcão ou por telefone? Toque aqui, preencha o nome e o telefone e guarde. Ele entra na lista junto com os do site." },
+    { t: "mais", ir: "mais", alvo: ".mais", titulo: "Mais opções", texto: "Aqui estão os gráficos, o quadro por etapas, a lista completa para levar ao Excel e, para o administrador, a equipe. Para sair do painel, toque em Sair." },
+    { t: "fim", ir: "ajuda", alvo: null, titulo: "Pronto! Já pode usar", texto: "Para rever qualquer parte, abra Ajuda e toque em “Mostrar na tela”. O painel foi feito para ser simples: o mais importante é olhar o Início todos os dias." },
   ];
 
   /* ---------------------------------------------------------------- tela de ajuda */
   var TOPICOS = [
-    { id: "geral", ico: "📊", nome: "Visão geral: os números do negócio", oque: "A tela inicial resume o site e o atendimento: visitas, pedidos, orçamentos, dinheiro e rankings.", passos: ["Escolha 7, 30 ou 90 dias no alto.", "Olhe os quadros grandes: visitas, leads, orçamentos, atendimento e receita.", "Passe o mouse (ou o dedo) nas barras para ver o número exato.", "Toque em “Ver tabela” para ver o mesmo gráfico em lista.", "Use “Precisa de atenção” como sua lista de tarefas do dia."] },
-    { id: "crm", ico: "🗂️", nome: "CRM: acompanhar cada cliente", oque: "Um quadro com uma coluna para cada etapa do atendimento. O cliente novo entra sozinho na primeira coluna.", passos: ["No computador, arraste o cartão para a coluna seguinte.", "No celular, escolha a etapa nos botões e use a seta do cartão para avançar.", "Borda vermelha: retorno atrasado.", "Toque no cartão para abrir os detalhes."] },
-    { id: "lead", ico: "👤", nome: "Dentro do cliente: WhatsApp, valor e anotações", oque: "A ficha do cliente abre ao lado. Tudo o que você digita salva sozinho.", passos: ["Troque a etapa tocando em Novo, Em contato, Orçamento…", "Escolha a mensagem pronta e toque em WhatsApp.", "Preencha moto, serviços, valor e próximo contato.", "Escreva uma anotação e toque em Salvar anotação.", "Feche no X para voltar."] },
-    { id: "leads", ico: "📋", nome: "Todos os leads: buscar, filtrar, exportar", oque: "Lista completa de pedidos, do mais novo para o mais antigo.", passos: ["Digite no campo Buscar (nome, telefone, moto ou serviço).", "Filtre por etapa ou por origem.", "Toque numa linha para abrir o cliente.", "Toque em “Exportar CSV” para levar a lista para o Excel."] },
-    { id: "novo", ico: "➕", nome: "Novo lead: cliente do balcão ou do telefone", oque: "Cadastro manual, para quem não veio pelo site.", passos: ["Toque em “Novo lead” no alto.", "Preencha nome, telefone, moto e serviço.", "Salve: ele aparece no CRM na etapa Novo."] },
-    { id: "equipe", ico: "🔑", nome: "Equipe: quem pode entrar", oque: "Só o administrador vê. Aqui você libera e remove o acesso de cada pessoa.", passos: ["Digite o e-mail da pessoa.", "Escolha o papel: Cliente (atende leads) ou Administrador (faz tudo).", "Toque em Liberar.", "A pessoa abre o painel, toca em “Primeiro acesso? Criar minha senha” e confirma pelo e-mail."] },
+    { id: "inicio", ico: "🏠", nome: "Tela inicial: o que fazer hoje", oque: "É a primeira tela. Mostra quem está esperando resposta e como está o movimento.", passos: ["Veja o quadro laranja: quantos clientes novos estão esperando.", "Toque nele para ver quem são.", "Veja “Falar hoje”: clientes com quem você marcou de voltar a falar.", "Mais embaixo, o movimento da semana e o dinheiro do mês."] },
+    { id: "clientes", ico: "👥", nome: "Clientes: ver, procurar e chamar", oque: "A lista de todos que pediram serviço, com o botão verde do WhatsApp em cada um.", passos: ["Escolha em cima: esperando resposta, falar hoje, conversando ou todos.", "Para procurar, escreva o nome, o telefone ou a moto.", "Toque no botão verde para chamar no WhatsApp com a mensagem pronta.", "Toque no nome para abrir a ficha do cliente."] },
+    { id: "lead", ico: "📝", nome: "Ficha do cliente: etapa, lembrete e anotação", oque: "Aqui você cuida de um cliente de cada vez. Tudo é guardado sozinho.", passos: ["Chame no WhatsApp ou ligue pelos botões grandes.", "Toque em como está o cliente: conversando, passei o preço, dia marcado, serviço feito ou não fechou.", "Escolha quando quer falar com ele de novo.", "Quando o serviço for feito, escreva o valor.", "Escreva uma anotação e toque em Guardar anotação."] },
+    { id: "novo", ico: "➕", nome: "Cadastrar quem veio na loja", oque: "Para quem não veio pelo site: balcão, telefone ou indicação.", passos: ["Toque em “Cadastrar cliente” no alto.", "Escreva o nome, o telefone e a moto.", "Toque em Guardar cliente."] },
+    { id: "mais", ico: "⋯", nome: "Mais opções: gráficos, quadro e equipe", oque: "Para quem quer ver mais detalhes. Não precisa usar todo dia.", passos: ["“Números e gráficos”: visitas, orçamentos e o que mais procuram.", "“Quadro por etapas”: os clientes em colunas.", "“Lista completa”: tudo em lista, para levar ao Excel.", "“Equipe”: libera quem pode entrar no painel (só o administrador)."] },
   ];
   var ETAPAS = [
-    ["Novo", "var(--f1)", "Acabou de chegar. Ninguém respondeu ainda."],
-    ["Em contato", "var(--f2)", "Você já falou com o cliente."],
-    ["Orçamento enviado", "var(--f3)", "Você passou o valor e espera a resposta."],
-    ["Agendado", "var(--f4)", "O cliente vai trazer a moto em dia marcado."],
-    ["Concluído", "var(--f5)", "Serviço feito. Preencha o valor para entrar na receita."],
-    ["Perdido", "var(--f6)", "Não fechou. Anote o motivo para aprender."],
+    ["Novo", "var(--f1)", "Acabou de chegar. Ainda ninguém respondeu."],
+    ["Conversando", "var(--f2)", "Você já falou com o cliente."],
+    ["Passei o preço", "var(--f3)", "Você mandou o valor e espera a resposta."],
+    ["Dia marcado", "var(--f4)", "O cliente vai trazer a moto no dia combinado."],
+    ["Serviço feito", "var(--f5)", "Terminou. Escreva o valor para entrar na conta do mês."],
+    ["Não fechou", "var(--f6)", "Não deu certo. Anote o motivo para aprender."],
   ];
   var DUVIDAS = [
-    ["Os números estão zerados. É normal?", "Sim, até o site ser publicado e receber visitas. Em “Passeio guiado” e no modo demonstração (painel.html#demo) você vê tudo preenchido com dados de exemplo."],
-    ["Como sei que chegou um cliente novo?", "O botão CRM e a aba Todos os leads mostram o contador laranja de clientes novos. Com o painel aberto, o cliente aparece sozinho, sem recarregar."],
-    ["Preciso salvar?", "Não. Valor, moto, serviços e próximo contato salvam sozinhos. Só a anotação precisa do botão Salvar anotação."],
-    ["Apaguei um cliente sem querer.", "Só o administrador pode apagar e não há como desfazer. Na dúvida, mova o cliente para “Perdido” em vez de apagar."],
-    ["O que é “origem”?", "É o formulário do site que gerou o pedido: Orçamento, Agendamento ou Pré-atendimento (assistente). “Manual” é o que você cadastrou."],
-    ["Por que não vejo “clientes que mais acessam”?", "O site conta visitas sem identificar a pessoa, por privacidade (LGPD). Por isso o painel mostra quem mais volta a pedir contato, usando o telefone."],
-    ["Esqueci a senha.", "Na tela de entrada, digite o e-mail e toque em “Esqueci a senha”. Chega um link para criar outra."],
+    ["Os números estão zerados. É normal?", "Sim, até o site ser publicado e receber visitas. No modo demonstração (painel.html#demo) tudo aparece preenchido com dados de exemplo."],
+    ["Como sei que chegou um cliente novo?", "Na tela inicial, o quadro laranja mostra quantos estão esperando. No menu, ao lado de Clientes, aparece um número laranja. Com o painel aberto, o novo cliente chega sozinho."],
+    ["Preciso apertar para salvar?", "Não. Tudo que você escreve ou escolhe é guardado sozinho. Só a anotação tem o botão Guardar anotação."],
+    ["Mexi errado, e agora?", "É só tocar na opção certa de novo. A ficha mostra tudo o que já aconteceu com o cliente."],
+    ["Posso apagar um cliente?", "Só o administrador, no fim da ficha, e não dá para desfazer. Se ele não fechou, prefira marcar “Não fechou”."],
+    ["Esqueci a senha.", "Na tela de entrada, escreva o e-mail e toque em “Esqueci a senha”. Chega um link para criar outra."],
   ];
 
   function montarAjuda() {
     var s = $("#v-ajuda"); if (!s || s.dataset.pronto) return; s.dataset.pronto = "1";
     s.innerHTML =
-      '<div class="aj-heroi"><div><h2>Comece por aqui</h2><p>Em 2 minutos você conhece todas as funções do painel. O passeio guiado abre cada tela, destaca os botões e explica em palavras simples.</p></div><button class="b" type="button" data-tour-iniciar="tudo">▶ Fazer o passeio guiado</button></div>' +
+      '<div class="aj-heroi"><div><h2>Comece por aqui</h2><p>Em 2 minutos você aprende tudo. O passeio guiado abre cada tela, mostra cada botão e explica em palavras simples.</p></div><button class="b" type="button" data-tour-iniciar="tudo">▶ Fazer o passeio guiado</button></div>' +
       '<h3 class="aj-t">Seu dia a dia em 4 passos</h3>' +
       '<ol class="aj-passos">' +
-      '<li><b>Veja quem chegou</b><span>Abra o CRM. Os clientes novos ficam na primeira coluna, com a hora que chegaram.</span></li>' +
-      '<li><b>Responda no WhatsApp</b><span>Toque no cartão, escolha a mensagem pronta e toque em WhatsApp.</span></li>' +
-      '<li><b>Avance a etapa</b><span>Falou com o cliente? Toque na seta do cartão. Passou o preço? Mova para Orçamento enviado.</span></li>' +
-      '<li><b>Marque o retorno e feche</b><span>Defina o próximo contato. Ao concluir, coloque o valor para o dinheiro aparecer na Visão geral.</span></li></ol>' +
-      '<h3 class="aj-t">Cada tela, em linguagem simples</h3>' +
+      '<li><b>Abra o Início</b><span>Veja o quadro laranja: quantos clientes novos estão esperando.</span></li>' +
+      '<li><b>Chame no WhatsApp</b><span>Toque no botão verde do cliente. A mensagem já vai escrita.</span></li>' +
+      '<li><b>Marque como está</b><span>Na ficha, toque em “Conversando”, “Passei o preço”, “Dia marcado”…</span></li>' +
+      '<li><b>Anote e lembre de voltar</b><span>Escreva o que combinou e escolha o dia de falar de novo. Quando o serviço for feito, escreva o valor.</span></li></ol>' +
+      '<h3 class="aj-t">Cada parte, em linguagem simples</h3>' +
       '<div class="aj-lista">' + TOPICOS.map(function (t, i) {
         return '<details class="aj-item"' + (i === 0 ? " open" : "") + '><summary><span class="aj-ico" aria-hidden="true">' + t.ico + '</span><span>' + t.nome + '</span></summary><div class="aj-corpo"><p>' + t.oque + '</p><ol>' + t.passos.map(function (p) { return "<li>" + p + "</li>"; }).join("") + '</ol><button class="b b--linha b--p" type="button" data-tour-iniciar="' + t.id + '">Mostrar na tela</button></div></details>';
       }).join("") + '</div>' +
@@ -87,11 +79,20 @@
 
   /* ---------------------------------------------------------------- dicas no alto de cada tela */
   var DICAS = {
-    "v-geral": "Aqui você vê, de relance, como o site e o atendimento estão indo. Comece por “Precisa de atenção”.",
-    "v-leads": "Todos os pedidos em lista. Busque, filtre e toque numa linha para abrir o cliente.",
+    "v-clientes": "Toque no botão verde para chamar no WhatsApp. Toque no nome para abrir a ficha do cliente.",
+    "v-geral": "Para quem quer entender melhor o movimento: visitas, pedidos, orçamentos e o que mais procuram.",
+    "v-leads": "Todos os pedidos em lista. Procure, filtre e leve para o Excel.",
     "v-equipe": "Quem tem acesso ao painel. Só o administrador vê esta tela.",
   };
+  function voltar() {
+    ["v-geral", "v-crm", "v-leads", "v-equipe"].forEach(function (id) {
+      var sec = document.getElementById(id); if (!sec || sec.querySelector(".voltar")) return;
+      var b = document.createElement("button"); b.type = "button"; b.className = "voltar"; b.setAttribute("data-ir", "mais"); b.textContent = "‹ Voltar para Mais opções";
+      sec.insertBefore(b, sec.firstChild);
+    });
+  }
   function dicas() {
+    voltar();
     Object.keys(DICAS).forEach(function (id) {
       var s = document.getElementById(id); if (!s || s.querySelector(".dica-pag")) return;
       var p = document.createElement("p"); p.className = "dica-pag"; p.textContent = DICAS[id]; s.insertBefore(p, s.firstChild);
@@ -220,7 +221,7 @@
     if (ler("lang-tour-visto") || $("#aviso-tour")) return;
     var c = $("#conteudo"); if (!c) return;
     var a = document.createElement("div"); a.id = "aviso-tour"; a.className = "aviso-tour";
-    a.innerHTML = '<div><b>Primeira vez por aqui?</b><span>Faça o passeio guiado de 2 minutos e conheça todas as funções.</span></div><div class="aviso-tour__b"><button class="b b--p" type="button" data-tour-iniciar="tudo">Começar passeio</button><button class="b b--linha b--p" type="button" data-tour-dispensar>Agora não</button></div>';
+    a.innerHTML = '<div><b>Primeira vez por aqui?</b><span>Faça o passeio guiado de 2 minutos. É bem fácil.</span></div><div class="aviso-tour__b"><button class="b b--p" type="button" data-tour-iniciar="tudo">Começar passeio</button><button class="b b--linha b--p" type="button" data-tour-dispensar>Agora não</button></div>';
     c.insertBefore(a, c.firstChild);
   }
 

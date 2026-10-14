@@ -73,11 +73,10 @@
   <aside class="lado" aria-label="Menu">
     <span class="marca"><span class="marca__x" aria-hidden="true"></span><span><span class="marca__n">Lang<i>/</i>Motos</span><span class="marca__p">Painel da equipe</span></span></span>
     <nav class="nav" id="nav-lado" aria-label="Seções">
-      <button type="button" data-ir="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Visão geral</button>
-      <button type="button" data-ir="crm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="5" height="16"/><rect x="10" y="4" width="5" height="10"/><rect x="17" y="4" width="4" height="13"/></svg>CRM<span class="contagem" data-contagem hidden>0</span></button>
-      <button type="button" data-ir="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Todos os leads</button>
-      <button type="button" data-ir="equipe" data-so-admin><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.2 2.3 3.5 5.2"/></svg>Equipe</button>
-      <button type="button" data-ir="ajuda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.7.4-1.1 1-1.1 1.8M12 17h.01"/></svg>Ajuda e tutorial</button>
+      <button type="button" data-ir="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Início</button>
+      <button type="button" data-ir="clientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.3 2.3 3.7 5.2"/></svg>Clientes<span class="contagem" data-contagem hidden></span></button>
+      <button type="button" data-ir="mais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>Mais opções</button>
+      <button type="button" data-ir="ajuda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.7.4-1.1 1-1.1 1.8M12 17h.01"/></svg>Ajuda</button>
     </nav>
     <div class="lado__fim">
       <span class="mono" id="usuario-email"></span>
@@ -89,17 +88,26 @@
   <div class="principal">
     <div class="faixa-demo" id="faixa-demo" hidden>Demonstração · dados de exemplo · nada é salvo</div>
     <header class="cab">
-      <h1 id="titulo-view">Visão geral</h1>
+      <h1 id="titulo-view">Início</h1>
       <div class="cab__acoes">
         <span class="mono vivo" id="vivo">Conectando</span>
-        <button class="b b--linha b--p" type="button" data-tour-iniciar="tudo"><span class="cel-nao">Passeio guiado</span><span class="cel-sim">Passeio</span></button>
-        <button class="b b--p" type="button" data-acao="novo-lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>Novo lead</button>
+        <button class="b b--linha b--p" type="button" data-tour-iniciar="tudo"><span class="cel-nao">Como usar</span><span class="cel-sim">Como usar</span></button>
+        <button class="b b--p" type="button" data-acao="novo-lead"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span class="cel-nao">Cadastrar cliente</span><span class="cel-sim">Cadastrar</span></button>
       </div>
     </header>
 
     <main class="conteudo" id="conteudo">
+      <!-- ================= INÍCIO ================= -->
+      <section id="v-inicio" aria-label="Início"></section>
+
+      <!-- ================= CLIENTES ================= -->
+      <section id="v-clientes" hidden aria-label="Clientes"></section>
+
+      <!-- ================= MAIS OPÇÕES ================= -->
+      <section id="v-mais" hidden aria-label="Mais opções"></section>
+
       <!-- ================= VISÃO GERAL ================= -->
-      <section id="v-geral" aria-labelledby="titulo-view">
+      <section id="v-geral" hidden aria-labelledby="titulo-view">
         <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;">
           <div class="periodo" role="group" aria-label="Período" id="periodo">
             <button type="button" data-dias="7" aria-pressed="false">7 dias</button>
@@ -178,10 +186,9 @@
   </div>
 
   <nav class="abas" id="nav-abas" aria-label="Seções">
-    <button type="button" data-ir="geral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Geral</button>
-    <button type="button" data-ir="crm"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="5" height="16"/><rect x="10" y="4" width="5" height="10"/><rect x="17" y="4" width="4" height="13"/></svg>CRM<span class="contagem" data-contagem hidden>0</span></button>
-    <button type="button" data-ir="leads"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Leads</button>
-    <button type="button" data-ir="equipe" data-so-admin><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.2 2.3 3.5 5.2"/></svg>Equipe</button>
+    <button type="button" data-ir="inicio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3 11l9-8 9 8M5 10v10h5v-6h4v6h5V10"/></svg>Início</button>
+    <button type="button" data-ir="clientes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3-5.5 6.5-5.5s5.9 1.9 6.5 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c2 .6 3.3 2.3 3.7 5.2"/></svg>Clientes<span class="contagem" data-contagem hidden></span></button>
+    <button type="button" data-ir="mais"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>Mais</button>
     <button type="button" data-ir="ajuda"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.6 2.6 0 1 1 3.6 2.4c-.7.4-1.1 1-1.1 1.8M12 17h.01"/></svg>Ajuda</button>
   </nav>
 </div>

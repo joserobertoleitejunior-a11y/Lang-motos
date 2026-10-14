@@ -63,11 +63,11 @@
   /* ============================== domínio ============================== */
   const STATUS = [
     { id: "novo", nome: "Novo", cor: "var(--f1)" },
-    { id: "contato", nome: "Em contato", cor: "var(--f2)" },
-    { id: "orcamento", nome: "Orçamento enviado", cor: "var(--f3)" },
-    { id: "agendado", nome: "Agendado", cor: "var(--f4)" },
-    { id: "concluido", nome: "Concluído", cor: "var(--f5)" },
-    { id: "perdido", nome: "Perdido", cor: "var(--f6)" },
+    { id: "contato", nome: "Conversando", cor: "var(--f2)" },
+    { id: "orcamento", nome: "Passei o preço", cor: "var(--f3)" },
+    { id: "agendado", nome: "Dia marcado", cor: "var(--f4)" },
+    { id: "concluido", nome: "Serviço feito", cor: "var(--f5)" },
+    { id: "perdido", nome: "Não fechou", cor: "var(--f6)" },
   ];
   const ST = Object.fromEntries(STATUS.map((s) => [s.id, s]));
   const ABERTOS = ["novo", "contato", "orcamento", "agendado"];
@@ -90,11 +90,11 @@
   const servicosDe = (l) => Array.from(new Set((l.servicos && l.servicos.length ? l.servicos : []).map(normServico)));
 
   const MODELOS_ZAP = [
-    { id: "primeiro", nome: "Primeiro contato", txt: (l) => `Olá, ${prim(l)}! Aqui é da Lang Motos. Recebi seu pedido${l.servicos && l.servicos.length ? " sobre " + l.servicos.join(", ").toLowerCase() : ""}${l.moto ? " da sua " + l.moto : ""}. Posso te ajudar?` },
-    { id: "orcamento", nome: "Enviar orçamento", txt: (l) => `Olá, ${prim(l)}! Segue o orçamento${l.moto ? " da sua " + l.moto : ""}: ${l.servicos && l.servicos.length ? l.servicos.join(", ") : "serviço"} — ${l.valor != null ? "R$ " + Number(l.valor).toLocaleString("pt-BR") : "R$ [valor]"}. Se estiver de acordo, me diga o melhor dia e horário.` },
-    { id: "agenda", nome: "Confirmar horário", txt: (l) => `Olá, ${prim(l)}! Confirmando seu horário na Lang Motos${l.proximo_contato ? " (" + fDMH.format(new Date(l.proximo_contato)) + ")" : ""}. Av. Cinco de Novembro, 825, Vila Nastri. Qualquer imprevisto, me avise.` },
-    { id: "pronta", nome: "Moto pronta", txt: (l) => `Olá, ${prim(l)}! Sua moto${l.moto ? " (" + l.moto + ")" : ""} está pronta pra retirada. Funcionamos de segunda a sexta, das 9h às 18h.` },
-    { id: "retorno", nome: "Retomar contato", txt: (l) => `Olá, ${prim(l)}! Tudo bem? Passando pra saber se ainda posso te ajudar com ${l.servicos && l.servicos.length ? l.servicos.join(", ").toLowerCase() : "sua moto"}.` },
+    { id: "primeiro", nome: "Dizer que recebi o pedido", txt: (l) => `Olá, ${prim(l)}! Aqui é da Lang Motos. Recebi seu pedido${l.servicos && l.servicos.length ? " sobre " + l.servicos.join(", ").toLowerCase() : ""}${l.moto ? " da sua " + l.moto : ""}. Posso te ajudar?` },
+    { id: "orcamento", nome: "Mandar o preço", txt: (l) => `Olá, ${prim(l)}! Segue o orçamento${l.moto ? " da sua " + l.moto : ""}: ${l.servicos && l.servicos.length ? l.servicos.join(", ") : "serviço"} — ${l.valor != null ? "R$ " + Number(l.valor).toLocaleString("pt-BR") : "R$ [valor]"}. Se estiver de acordo, me diga o melhor dia e horário.` },
+    { id: "agenda", nome: "Confirmar o dia marcado", txt: (l) => `Olá, ${prim(l)}! Confirmando seu horário na Lang Motos${l.proximo_contato ? " (" + fDMH.format(new Date(l.proximo_contato)) + ")" : ""}. Av. Cinco de Novembro, 825, Vila Nastri. Qualquer imprevisto, me avise.` },
+    { id: "pronta", nome: "Avisar que a moto está pronta", txt: (l) => `Olá, ${prim(l)}! Sua moto${l.moto ? " (" + l.moto + ")" : ""} está pronta pra retirada. Funcionamos de segunda a sexta, das 9h às 18h.` },
+    { id: "retorno", nome: "Perguntar se ainda quer o serviço", txt: (l) => `Olá, ${prim(l)}! Tudo bem? Passando pra saber se ainda posso te ajudar com ${l.servicos && l.servicos.length ? l.servicos.join(", ").toLowerCase() : "sua moto"}.` },
   ];
   function prim(l) { return (l.nome || "").trim().split(" ")[0] || "tudo bem"; }
 
@@ -548,7 +548,7 @@
     const l = S.leads.find((x) => x.id === id); if (!l) return;
     S.aberto = id; S.novo = false;
     $("#g-nome").value = l.nome || ""; $("#g-nome").dataset.campo = "nome"; $("#g-nome").disabled = false;
-    $("#g-meta").textContent = `${ORIGENS[l.origem] || l.origem} · ${fDMH.format(new Date(l.criado_em))}${l.pagina ? " · " + l.pagina : ""}`;
+    $("#g-meta").textContent = `${({ orcamento: "Pediu orçamento no site", agendamento: "Pediu agendamento no site", assistente: "Falou com o assistente do site", manual: "Cadastrado por você" })[l.origem] || "Pedido do site"} · ${fDMH.format(new Date(l.criado_em))}`;
     S.notas = [];
     desenharGaveta(l);
     abrirVeu(true);
@@ -556,30 +556,36 @@
     if (S.aberto === id) { desenharHistorico(); if (foco) { const el = $("#g-" + foco); if (el) el.focus(); } }
   }
 
+  function modeloPorStatus(l) {
+    const id = { novo: "primeiro", contato: "retorno", orcamento: "retorno", agendado: "agenda", concluido: "pronta", perdido: "retorno" }[l.status] || "primeiro";
+    return MODELOS_ZAP.find((m) => m.id === id) || MODELOS_ZAP[0];
+  }
+  function campoEtapa(status) {
+    const v = $("#w-valor"); if (v) v.hidden = !["orcamento", "agendado", "concluido"].includes(status);
+  }
   function desenharGaveta(l) {
-    const mod = MODELOS_ZAP[0];
+    const sug = modeloPorStatus(l).id;
     $("#g-corpo").innerHTML = `
-      <div><span class="mono muted">Etapa</span><div class="etapas" role="group" aria-label="Etapa" style="margin-top:6px">${STATUS.map((s) => `<button type="button" data-etapa="${s.id}" aria-pressed="${l.status === s.id}"><i style="background:${s.cor}"></i>${esc(s.nome)}</button>`).join("")}</div></div>
-      <div class="acoes-contato">
-        ${l.telefone ? `<select id="g-modelo" aria-label="Mensagem pronta" class="campo--caixa" style="padding:8px 10px;border:1px solid var(--linha-forte);background:var(--osso);max-width:100%">${MODELOS_ZAP.map((m) => `<option value="${m.id}">${esc(m.nome)}</option>`).join("")}</select>
-        <button class="b b--zap b--p" type="button" data-acao="zap">WhatsApp</button>
-        <a class="b b--linha b--p" href="tel:${esc(digitos(l.telefone))}">Ligar</a>
-        <button class="b b--linha b--p" type="button" data-acao="copiar">Copiar</button>` : `<span class="muted" style="font-size:1rem">Sem telefone: o pedido chegou pelo site. Responda pelo WhatsApp da loja ou peça o número ao cliente.</span>`}
-      </div>
-      <div class="linha2">${campoGaveta("WhatsApp / telefone", "telefone", l.telefone ? fmtTel(l.telefone) : "", "tel", 'inputmode="tel" autocomplete="off"')}${campoGaveta("Moto", "moto", l.moto)}</div>
-      <div class="campo"><label for="g-servicos">Serviços (separe por vírgula)</label><input id="g-servicos" data-campo="servicos" type="text" value="${esc((l.servicos || []).join(", "))}"></div>
-      <div class="campo"><label for="g-mensagem">Relato do cliente</label><textarea id="g-mensagem" data-campo="mensagem">${esc(l.mensagem || "")}</textarea></div>
-      <div class="linha2">${campoGaveta("Valor do serviço (R$)", "valor", l.valor, "number", 'inputmode="decimal" step="10" min="0"')}${campoGaveta("Próximo contato", "proximo_contato", paraInputLocal(l.proximo_contato), "datetime-local")}</div>
-      ${l.periodo ? `<div class="mono muted">Período preferido: ${esc(l.periodo)}</div>` : ""}
-      <div class="campo" id="w-perda" ${l.status === "perdido" ? "" : "hidden"}><label for="g-motivo_perda">Motivo da perda</label><input id="g-motivo_perda" data-campo="motivo_perda" type="text" value="${esc(l.motivo_perda || "")}" placeholder="Ex.: achou caro, sem resposta"></div>
+      <div class="g-contato">${l.telefone ? `<button class="gbtn gbtn--zap" type="button" data-acao="zap"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.2 14.1c-.2.6-1.300 1.200-1.800 1.200-.5.1-1 .2-3.300-.7-2.800-1.100-4.600-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.500-.3.700-.3h.5c.2 0 .4 0 .6.500l.8 1.900c.1.200.1.400 0 .5l-.3.500-.4.400c-.1.200-.3.300-.1.600.2.300.8 1.300 1.700 2.100 1.200 1 2.100 1.300 2.400 1.500.3.100.5.100.7-.1l.9-1.100c.2-.3.400-.2.700-.1l1.800.9c.3.100.5.200.5.300.1.200.1.800-.1 1.400z"/></svg>Chamar no WhatsApp</button><a class="gbtn" href="tel:${esc(digitos(l.telefone))}"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 4h4l2 5-2.500 1.500a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Ligar</a>` : `<p class="g-aviso">Este cliente não deixou telefone. Peça o número dele e escreva em “Mais detalhes”, aqui embaixo.</p>`}</div>
+      ${l.telefone ? `<div class="campo"><label for="g-modelo">Mensagem que já vai escrita</label><select id="g-modelo" class="g-sel">${MODELOS_ZAP.map((m) => `<option value="${m.id}"${m.id === sug ? " selected" : ""}>${esc(m.nome)}</option>`).join("")}</select></div>` : ""}
+      <div><h3 class="g-t">Como está este cliente?</h3><div class="etapas etapas--grandes" role="group" aria-label="Como está este cliente">${STATUS.map((s) => `<button type="button" data-etapa="${s.id}" aria-pressed="${l.status === s.id}"><i style="background:${s.cor}"></i>${esc(s.nome)}</button>`).join("")}</div></div>
+      <div class="campo" id="w-perda" ${l.status === "perdido" ? "" : "hidden"}><label for="g-motivo_perda">Por que não fechou?</label><input id="g-motivo_perda" data-campo="motivo_perda" type="text" value="${esc(l.motivo_perda || "")}" placeholder="Ex.: achou caro, não respondeu"></div>
+      <div id="w-valor" ${["orcamento", "agendado", "concluido"].includes(l.status) ? "" : "hidden"}>${campoGaveta("Quanto é o serviço? (R$)", "valor", l.valor, "number", 'inputmode="decimal" step="10" min="0" placeholder="Ex.: 250"')}</div>
+      ${campoGaveta("Lembrar de falar com ele em", "proximo_contato", paraInputLocal(l.proximo_contato), "datetime-local")}
+      <div class="campo"><label for="g-nota">Anotar alguma coisa</label><textarea id="g-nota" placeholder="Ex.: ele vem sábado de manhã"></textarea></div>
+      <button class="gbtn gbtn--tinta" type="button" data-acao="add-nota">Guardar anotação</button>
       <div class="salvo" id="g-salvo" aria-live="polite"></div>
-      <div><span class="mono muted">Histórico</span>
-        <div class="hist" id="g-hist" style="margin-top:6px"></div>
-        <div class="campo" style="margin-top:12px"><label for="g-nota">Nova anotação</label><textarea id="g-nota" placeholder="Ex.: cliente vem sábado de manhã"></textarea></div>
-        <button class="b b--tinta b--p" type="button" data-acao="add-nota" style="margin-top:8px">Salvar anotação</button>
-      </div>
-      <div id="g-perigo">${S.acesso && S.acesso.papel === "admin" ? `<button class="b b--perigo b--p" type="button" data-acao="apagar">Apagar lead</button>` : ""}</div>`;
-    void mod;
+      <details class="g-mais"><summary>Mais detalhes do cliente</summary>
+        <div class="g-mais__corpo">
+          ${l.mensagem ? `<div class="g-relato"><b>O que ele escreveu no site:</b><span>${esc(l.mensagem)}</span></div>` : ""}
+          <div class="linha2">${campoGaveta("Telefone", "telefone", l.telefone ? fmtTel(l.telefone) : "", "tel", 'inputmode="tel" autocomplete="off"')}${campoGaveta("Moto", "moto", l.moto)}</div>
+          <div class="campo"><label for="g-servicos">Serviços (separe por vírgula)</label><input id="g-servicos" data-campo="servicos" type="text" value="${esc((l.servicos || []).join(", "))}"></div>
+          <div class="campo"><label for="g-mensagem">Relato do cliente</label><textarea id="g-mensagem" data-campo="mensagem">${esc(l.mensagem || "")}</textarea></div>
+          ${l.periodo ? `<div class="mono muted">Prefere atendimento: ${esc(l.periodo)}</div>` : ""}
+          <button class="b b--linha b--p" type="button" data-acao="copiar">Copiar telefone</button>
+        </div></details>
+      <div><h3 class="g-t">O que já aconteceu</h3><div class="hist" id="g-hist"></div></div>
+      <div id="g-perigo">${S.acesso && S.acesso.papel === "admin" ? `<button class="b b--perigo b--p" type="button" data-acao="apagar">Apagar cliente</button>` : ""}</div>`;
   }
   function desenharHistorico() {
     const h = $("#g-hist"); if (!h) return;
@@ -605,7 +611,7 @@
   async function mudarEtapa(id, status, opcoes) {
     const l = S.leads.find((x) => x.id === id); if (!l || l.status === status) return;
     const antes = l.status; l.status = status; renderAtual(); atualizarContagem();
-    try { await api.atualizar(id, { status }); if (S.aberto === id) { S.notas = await api.notas(id); desenharHistorico(); $$("#g-corpo [data-etapa]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.etapa === status))); const w = $("#w-perda"); if (w) w.hidden = status !== "perdido"; } }
+    try { await api.atualizar(id, { status }); if (S.aberto === id) { S.notas = await api.notas(id); desenharHistorico(); campoEtapa(status); $$("#g-corpo [data-etapa]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.etapa === status))); const w = $("#w-perda"); if (w) w.hidden = status !== "perdido"; } }
     catch (e) { l.status = antes; renderAtual(); atualizarContagem(); toast("Não consegui mover o lead. Tente de novo.", { erro: true }); return; }
     if (!(opcoes && opcoes.silencioso)) {
       if (status === "concluido" && l.valor == null) { toast("Concluído! Informe o valor do serviço para a receita."); await abrirLead(id, "valor"); }
@@ -614,7 +620,7 @@
   }
   async function enviarZap() {
     const l = S.leads.find((x) => x.id === S.aberto); if (!l || !l.telefone) return;
-    const m = MODELOS_ZAP.find((x) => x.id === ($("#g-modelo") || {}).value) || MODELOS_ZAP[0];
+    const m = MODELOS_ZAP.find((x) => x.id === ($("#g-modelo") || {}).value) || modeloPorStatus(l);
     const url = zapLink(l.telefone, m.txt(l));
     let w = null; try { w = window.open(url, "_blank", "noopener"); } catch (e) {}
     if (!w) { const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove(); }
@@ -639,11 +645,11 @@
   function abrirNovo() {
     S.aberto = null; S.novo = true;
     $("#g-nome").value = ""; $("#g-nome").dataset.campo = "novo-nome"; $("#g-nome").placeholder = "Nome do cliente";
-    $("#g-meta").textContent = "Novo lead manual (balcão, telefone, indicação)";
+    $("#g-meta").textContent = "Cadastrar quem veio na loja ou ligou";
     $("#g-corpo").innerHTML = `<div class="linha2">${campoGaveta("WhatsApp / telefone", "n-telefone", "", "tel", 'inputmode="tel"')}${campoGaveta("Moto", "n-moto", "")}</div>
       <div class="campo"><label for="g-n-servicos">Serviços (separe por vírgula)</label><input id="g-n-servicos" type="text" placeholder="Ex.: Revisão e troca de óleo"></div>
       <div class="campo"><label for="g-n-mensagem">Relato</label><textarea id="g-n-mensagem"></textarea></div>
-      <button class="b" type="button" data-acao="criar-lead">Criar lead</button><div class="salvo" id="g-salvo"></div>`;
+      <button class="gbtn gbtn--tinta" type="button" data-acao="criar-lead">Guardar cliente</button><div class="salvo" id="g-salvo"></div>`;
     abrirVeu(true); setTimeout(() => $("#g-nome").focus(), 300);
   }
   async function criarLead() {
@@ -652,20 +658,120 @@
     if (!nome && !tel && !moto) { salvoMsg("Preencha pelo menos o nome, o telefone ou a moto.", true); return; }
     try {
       const l = await api.criar({ origem: "manual", nome: nome || null, telefone: tel || null, moto: moto || null, servicos: serv, mensagem: $("#g-n-mensagem").value.trim() || null, consentimento: true });
-      aplicarNoEstado(l); renderAtual(); atualizarContagem(); toast("Lead criado."); await abrirLead(l.id);
+      aplicarNoEstado(l); renderAtual(); atualizarContagem(); toast("Cliente guardado."); await abrirLead(l.id);
     } catch (e) { salvoMsg("Não consegui criar. Tente de novo.", true); }
   }
 
+  /* ============================== início (tela simples) ============================== */
+  const fExt = new Intl.DateTimeFormat("pt-BR", { timeZone: TZ, weekday: "long", day: "numeric", month: "long" });
+  function saudacao() { const h = horaDe(new Date()); return h < 12 ? "Bom dia!" : h < 18 ? "Boa tarde!" : "Boa noite!"; }
+  function pendencias() {
+    const agora = Date.now(), fim = new Date(); fim.setHours(23, 59, 59, 999);
+    const novos = S.leads.filter((l) => l.status === "novo");
+    const retorno = S.leads.filter((l) => ABERTOS.includes(l.status) && l.proximo_contato && new Date(l.proximo_contato).getTime() <= fim.getTime());
+    const conversa = S.leads.filter((l) => ["contato", "orcamento", "agendado"].includes(l.status));
+    return { novos, retorno, conversa, agora };
+  }
+  function renderInicio() {
+    const p = pendencias(), agora = Date.now();
+    const ini7 = dia(new Date(agora - 6 * MS));
+    let visitas = 0; S.eventos.forEach((e) => { if (e.tipo === "visita" && e.dia >= ini7) visitas += Number(e.sessoes); });
+    const pedidos = S.leads.filter((l) => new Date(l.criado_em).getTime() >= agora - 7 * MS).length;
+    const feitos = S.leads.filter((l) => l.status === "concluido" && new Date(l.criado_em).getTime() >= agora - 30 * MS);
+    const receita = feitos.reduce((s, l) => s + (Number(l.valor) || 0), 0);
+    const n1 = p.novos.length, n2 = p.retorno.length;
+    $("#v-inicio").innerHTML = `<div class="ini">
+      <h2 class="ini__oi">${saudacao()}</h2><p class="ini__data">${esc(fExt.format(new Date()))}</p>
+      <div class="ini__cards">
+        ${n1 ? `<button class="ini__card ini__card--alerta" type="button" data-acao="ver-clientes" data-f="novos"><span class="ini__num">${n1}</span><span class="ini__txt"><b>${n1 === 1 ? "cliente novo esperando resposta" : "clientes novos esperando resposta"}</b><small>Toque aqui para ver e chamar no WhatsApp</small></span><span class="ini__seta" aria-hidden="true">›</span></button>`
+          : `<div class="ini__card ini__card--ok"><span class="ini__num">✓</span><span class="ini__txt"><b>Nenhum cliente esperando resposta</b><small>Tudo em dia. Quando chegar um pedido novo ele aparece aqui.</small></span></div>`}
+        ${n2 ? `<button class="ini__card" type="button" data-acao="ver-clientes" data-f="retorno"><span class="ini__num">${n2}</span><span class="ini__txt"><b>${n2 === 1 ? "cliente para falar hoje" : "clientes para falar hoje"}</b><small>Você marcou de voltar a falar com ${n2 === 1 ? "ele" : "eles"}</small></span><span class="ini__seta" aria-hidden="true">›</span></button>` : ""}
+      </div>
+      <h3 class="ini__t">Como está o movimento</h3>
+      <div class="ini__nums">
+        <div><b>${num(visitas)}</b><span>pessoas visitaram o site nos últimos 7 dias</span></div>
+        <div><b>${num(pedidos)}</b><span>pessoas pediram serviço ou preço nos últimos 7 dias</span></div>
+        <div><b>${brl(receita)}</b><span>em ${feitos.length} ${feitos.length === 1 ? "serviço feito" : "serviços feitos"} nos últimos 30 dias</span></div>
+      </div>
+      <h3 class="ini__t">O que você quer fazer?</h3>
+      <div class="ini__botoes">
+        <button type="button" class="ini__bt" data-acao="ver-clientes" data-f="todos"><b>Ver todos os clientes</b><small>Procurar, chamar e anotar</small></button>
+        <button type="button" class="ini__bt" data-acao="novo-lead"><b>Cadastrar um cliente</b><small>Quem veio na loja ou ligou</small></button>
+        <button type="button" class="ini__bt" data-ir="geral"><b>Ver os números e gráficos</b><small>Visitas, orçamentos, o que mais procuram</small></button>
+        <button type="button" class="ini__bt" data-ir="ajuda"><b>Como usar este painel</b><small>Passo a passo bem simples</small></button>
+      </div></div>`;
+    atualizarContagem();
+  }
+
+  /* ============================== clientes (lista simples) ============================== */
+  S.fCli = "todos"; S.buscaCli = ""; S.mostrarCli = 30;
+  function listaClientes() {
+    const p = pendencias(), q = S.buscaCli.trim().toLowerCase(), qd = digitos(S.buscaCli);
+    let L = S.fCli === "novos" ? p.novos : S.fCli === "retorno" ? p.retorno : S.fCli === "conversa" ? p.conversa : S.leads.slice();
+    if (q) L = S.leads.filter((l) => [l.nome, l.moto, (l.servicos || []).join(" "), l.mensagem].join(" ").toLowerCase().includes(q) || (qd.length >= 3 && digitos(l.telefone).includes(qd)));
+    const peso = (l) => (l.status === "novo" ? 0 : ABERTOS.includes(l.status) ? 1 : 2);
+    return { L: L.sort((a, b) => peso(a) - peso(b) || new Date(b.criado_em) - new Date(a.criado_em)), p };
+  }
+  function cartaoCliente(l) {
+    const atraso = ABERTOS.includes(l.status) && l.proximo_contato && new Date(l.proximo_contato).getTime() < Date.now();
+    const s = ST[l.status], serv = servicosDe(l).slice(0, 2).join(", ");
+    return `<div class="cli${l.status === "novo" ? " cli--novo" : ""}" data-lead="${esc(l.id)}" tabindex="0" role="button" aria-label="${esc((l.nome || "Cliente sem nome") + ", " + s.nome)}">
+      <div class="cli__info"><b class="cli__nome">${esc(l.nome || (l.telefone ? fmtTel(l.telefone) : "Cliente sem nome"))}</b>
+        <span class="cli__moto">${esc([l.moto, serv].filter(Boolean).join(" · ") || "Sem detalhes")}</span>
+        <span class="cli__meta"><i class="pill" style="--c:${s.cor}">${esc(s.nome)}</i><span>${esc(quando(l.criado_em))}</span>${atraso ? '<span class="atrasado">Hora de falar com ele</span>' : ""}</span></div>
+      ${l.telefone ? `<button type="button" class="cli__zap" data-acao="zap-rapido" data-id="${esc(l.id)}" aria-label="Chamar ${esc(l.nome || "cliente")} no WhatsApp"><svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm5.2 14.1c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .2-3.3-.7-2.8-1.100-4.600-4-4.700-4.200-.1-.2-1.100-1.500-1.100-2.800s.7-2 1-2.300c.2-.3.5-.3.7-.3h.5c.2 0 .4 0 .6.5l.8 1.900c.1.200.1.4 0 .5l-.3.500-.4.400c-.1.200-.3.300-.1.600.2.300.8 1.300 1.700 2.100 1.200 1 2.100 1.300 2.400 1.500.3.100.5.100.7-.1l.9-1.100c.2-.3.4-.2.7-.1l1.800.9c.3.100.5.200.5.300.1.200.1.800-.1 1.400z"/></svg><span>WhatsApp</span></button>` : `<span class="cli__sem">Sem telefone</span>`}
+    </div>`;
+  }
+  function renderClientes() {
+    const raiz = $("#v-clientes");
+    if (!$("#c-busca")) {
+      raiz.innerHTML = `<div class="campo campo--caixa cli-busca"><label for="c-busca">Procurar cliente</label><input id="c-busca" type="search" placeholder="Nome, telefone ou moto" autocomplete="off"></div>
+        <div class="cli-filtros" id="c-filtros" role="group" aria-label="Mostrar"></div><div class="cli-lista" id="c-lista"></div><button class="gbtn gbtn--tinta" id="c-mais" type="button" hidden>Mostrar mais clientes</button>`;
+      $("#c-busca").addEventListener("input", (e) => { S.buscaCli = e.target.value; S.mostrarCli = 30; renderClientes(); });
+    }
+    const { L, p } = listaClientes();
+    const chips = [["novos", "Esperando resposta", p.novos.length], ["retorno", "Falar hoje", p.retorno.length], ["conversa", "Conversando", p.conversa.length], ["todos", "Todos", S.leads.length]];
+    $("#c-filtros").innerHTML = chips.map(([k, n, c]) => `<button type="button" data-fcli="${k}" aria-pressed="${S.fCli === k && !S.buscaCli}">${n}<b>${c}</b></button>`).join("");
+    const mostrar = L.slice(0, S.mostrarCli);
+    $("#c-lista").innerHTML = mostrar.length ? mostrar.map(cartaoCliente).join("")
+      : `<div class="vazio"><strong>${S.buscaCli ? "Não achei ninguém com esse nome" : S.fCli === "novos" ? "Nenhum cliente esperando resposta" : "Nenhum cliente aqui"}</strong>${S.buscaCli ? "Tente escrever só um pedaço do nome." : "Quando chegar um pedido pelo site, ele aparece aqui."}</div>`;
+    $("#c-mais").hidden = L.length <= S.mostrarCli;
+    atualizarContagem();
+  }
+  async function zapRapido(id) {
+    const l = S.leads.find((x) => x.id === id); if (!l || !l.telefone) return;
+    const m = modeloPorStatus(l), url = zapLink(l.telefone, m.txt(l));
+    let w = null; try { w = window.open(url, "_blank", "noopener"); } catch (e) {}
+    if (!w) { const a = document.createElement("a"); a.href = url; a.target = "_blank"; a.rel = "noopener"; document.body.appendChild(a); a.click(); a.remove(); }
+    try { await api.addNota(l.id, `WhatsApp aberto: ${m.nome}`, "contato"); } catch (e) {}
+    if (l.status === "novo") mudarEtapa(l.id, "contato", { silencioso: true });
+    toast("Abrindo o WhatsApp com a mensagem pronta.");
+  }
+
+  /* ============================== mais opções ============================== */
+  function renderMais() {
+    const admin = S.acesso && S.acesso.papel === "admin";
+    const bt = (ir_, t, s) => `<button type="button" class="mais__bt" data-ir="${ir_}"><span><b>${t}</b><small>${s}</small></span><i aria-hidden="true">›</i></button>`;
+    $("#v-mais").innerHTML = `<div class="mais">
+      ${bt("geral", "Números e gráficos", "Visitas, orçamentos, o que mais procuram, melhores clientes")}
+      ${bt("crm", "Quadro por etapas", "Veja os clientes em colunas, da chegada até o serviço feito")}
+      ${bt("leads", "Lista completa e planilha", "Todos os pedidos em lista, com filtros e exportar para Excel")}
+      ${admin ? bt("equipe", "Equipe", "Quem pode entrar no painel") : ""}
+      <a class="mais__bt" href="index.html" target="_blank" rel="noopener"><span><b>Ver o site da loja</b><small>Abre o site como o cliente vê</small></span><i aria-hidden="true">›</i></a>
+      <button type="button" class="mais__bt mais__bt--sair" data-acao="sair"><span><b>Sair do painel</b><small>${esc((S.acesso && S.acesso.email) || "")}</small></span><i aria-hidden="true">›</i></button></div>`;
+  }
+
   /* ============================== navegação ============================== */
-  const TITULOS = { geral: "Visão geral", crm: "CRM", leads: "Todos os leads", equipe: "Equipe", ajuda: "Ajuda" };
+  const TITULOS = { inicio: "Início", clientes: "Clientes", mais: "Mais opções", geral: "Números e gráficos", crm: "Quadro por etapas", leads: "Lista completa", equipe: "Equipe", ajuda: "Ajuda" };
   function renderAtual() {
-    if (S.view === "geral") renderGeral(); else if (S.view === "crm") renderCrm(); else if (S.view === "leads") renderLeads(); else if (S.view === "equipe") renderEquipe();
+    if (S.view === "inicio") renderInicio(); else if (S.view === "clientes") renderClientes(); else if (S.view === "mais") renderMais(); else if (S.view === "geral") renderGeral(); else if (S.view === "crm") renderCrm(); else if (S.view === "leads") renderLeads(); else if (S.view === "equipe") renderEquipe();
   }
   function ir(view) {
-    if (view === "equipe" && !(S.acesso && S.acesso.papel === "admin")) view = "geral";
+    if (view === "equipe" && !(S.acesso && S.acesso.papel === "admin")) view = "mais";
     S.view = view;
-    ["geral", "crm", "leads", "equipe", "ajuda"].forEach((v) => { $("#v-" + v).hidden = v !== view; });
-    $$("[data-ir]").forEach((b) => b.setAttribute("aria-current", b.dataset.ir === view ? "page" : "false"));
+    ["inicio", "clientes", "mais", "geral", "crm", "leads", "equipe", "ajuda"].forEach((v) => { $("#v-" + v).hidden = v !== view; });
+    const paiMenu = { geral: "mais", crm: "mais", leads: "mais", equipe: "mais" }[view] || view;
+    $$("[data-ir]").forEach((b) => b.setAttribute("aria-current", b.dataset.ir === paiMenu ? "page" : "false"));
     $("#titulo-view").textContent = TITULOS[view];
     try { sessionStorage.setItem("lang-painel-view", view); } catch (e) {}
     renderAtual(); window.scrollTo(0, 0);
@@ -730,6 +836,8 @@
         if (a === "novo-lead") return abrirNovo();
         if (a === "criar-lead") return criarLead();
         if (a === "zap") return enviarZap();
+        if (a === "zap-rapido") { e.stopPropagation(); return zapRapido(acao.dataset.id); }
+        if (a === "ver-clientes") { S.fCli = acao.dataset.f || "todos"; return ir("clientes"); }
         if (a === "copiar") { const l = S.leads.find((x) => x.id === S.aberto); if (l && navigator.clipboard) navigator.clipboard.writeText(fmtTel(l.telefone)).then(() => salvoMsg("Telefone copiado"), () => salvoMsg("Não consegui copiar", true)); return; }
         if (a === "add-nota") return addNota();
         if (a === "apagar") return confirmarApagar();
@@ -740,11 +848,13 @@
         if (a === "remover-acesso") { api.delAcesso(acao.dataset.email).then(renderEquipe).catch(() => toast("Não consegui remover.", { erro: true })); return; }
       }
       if (t.closest("#veu")) return fecharGaveta();
+      const fc = t.closest("[data-fcli]"); if (fc) { S.fCli = fc.dataset.fcli; S.mostrarCli = 30; renderClientes(); return; }
+      if (t.closest("#c-mais")) { S.mostrarCli = (S.mostrarCli || 30) + 30; renderClientes(); return; }
       const lead = t.closest("[data-lead]"); if (lead) { abrirLead(lead.dataset.lead); return; }
     });
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && $("#gaveta").classList.contains("on")) fecharGaveta();
-      if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".card, .tabela tbody tr") && e.target === document.activeElement) { e.preventDefault(); abrirLead(e.target.dataset.lead); }
+      if ((e.key === "Enter" || e.key === " ") && e.target.matches && e.target.matches(".card, .cli, .tabela tbody tr") && e.target === document.activeElement) { e.preventDefault(); abrirLead(e.target.dataset.lead); }
     });
     // campos da gaveta salvam ao sair do campo
     $("#gaveta").addEventListener("change", (e) => { const c = e.target.dataset && e.target.dataset.campo; if (c && S.aberto) salvarCampo(c, e.target.value); });
@@ -813,7 +923,7 @@
     $("#faixa-demo").hidden = !S.demo;
     $$("[data-so-admin]").forEach((el) => { el.hidden = S.acesso.papel !== "admin"; });
     tela("app");
-    let v = "geral"; try { v = sessionStorage.getItem("lang-painel-view") || "geral"; } catch (e) {}
+    let v = "inicio"; try { v = sessionStorage.getItem("lang-painel-view") || "inicio"; } catch (e) {}
     S.view = v; ir(v);
     await carregar();
     iniciarTempoReal();
