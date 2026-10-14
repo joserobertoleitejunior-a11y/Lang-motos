@@ -116,19 +116,42 @@
     }
   }
 
-  /* ================= Letreiro guiado pela rolagem (sem GSAP) ================= */
+  /* ================= Letreiro: botões que correm, reagem à rolagem e ao arrasto ================= */
   function iniciarLetreiros() {
     document.querySelectorAll(".letreiro__trilha").forEach(function (trilha) {
-      var grupo = trilha.querySelector(".letreiro__grupo");
+      var secao = trilha.parentElement, grupo = trilha.querySelector(".letreiro__grupo");
       if (!grupo) return;
-      trilha.appendChild(grupo.cloneNode(true)).setAttribute("aria-hidden", "true");
-      var largura = grupo.offsetWidth;
-      window.addEventListener("resize", function () { largura = grupo.offsetWidth; });
-      var x = 0, base = reduz ? 0 : -0.6, impulso = 0, direcao = 1, ultimoY = window.scrollY, visivel = false;
-      var secao = trilha.parentElement, arrasto = null, inercia = 0, vel = 0;
+      var originais = Array.prototype.slice.call(grupo.children);
+      var clones = originais.map(function (el) {
+        var c = el.cloneNode(true);
+        c.setAttribute("aria-hidden", "true"); c.setAttribute("tabindex", "-1");
+        return c;
+      });
+      clones.forEach(function (c) { grupo.appendChild(c); });
+      var itens = originais.concat(clones), pos = [], larg = [], total = 0, altura = 0;
+
+      // Cada item vira uma peça solta e leve (translate3d), em vez de uma faixa gigante de uma peça só.
+      function medir() {
+        trilha.classList.remove("pronto");
+        itens.forEach(function (el) { el.style.transform = ""; });
+        grupo.classList.remove("solto");
+        var soma = 0;
+        itens.forEach(function (el, i) { larg[i] = el.offsetWidth; pos[i] = soma; soma += larg[i]; altura = Math.max(altura, el.offsetHeight); });
+        total = soma;                      // largura das duas voltas juntas
+        trilha.style.height = altura + "px";
+        grupo.classList.add("solto");
+        trilha.classList.add("pronto");
+      }
+      medir();
+      var tm = null;
+      window.addEventListener("resize", function () { clearTimeout(tm); tm = setTimeout(medir, 150); });
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(medir);
+
+      var x = 0, base = reduz ? 0 : -0.7, impulso = 0, direcao = 1, inercia = 0, vel = 0;
+      var ultimoY = window.scrollY, visivel = true, arrasto = null, moveu = false, ultimoT = performance.now();
       if ("IntersectionObserver" in window) {
-        new IntersectionObserver(function (es) { visivel = es[0].isIntersecting; }).observe(trilha);
-      } else visivel = true;
+        new IntersectionObserver(function (es) { visivel = es[0].isIntersecting; }, { rootMargin: "120px 0px" }).observe(secao);
+      }
       window.addEventListener("scroll", function () {
         var dy = window.scrollY - ultimoY; ultimoY = window.scrollY;
         if (reduz) return;
@@ -136,58 +159,140 @@
         impulso = Math.max(-28, Math.min(28, impulso + dy * 0.12));
       }, { passive: true });
 
-      /* Arrastar com o dedo ou o mouse: a faixa acompanha o gesto e continua com inércia ao soltar */
       var dica = document.createElement("span");
-      dica.className = "letreiro__dica"; dica.setAttribute("aria-hidden", "true"); dica.textContent = "← arraste →";
+      dica.className = "letreiro__dica"; dica.setAttribute("aria-hidden", "true"); dica.textContent = "Toque num item ou arraste";
       secao.appendChild(dica);
+
       function soltar(e) {
         if (!arrasto || (e && e.pointerId !== arrasto.id)) return;
         if (arrasto.ativo) {
-          inercia = Math.max(-60, Math.min(60, vel));
+          inercia = Math.max(-70, Math.min(70, vel));
           if (Math.abs(inercia) > 0.5) direcao = inercia > 0 ? -1 : 1;
+          moveu = true; setTimeout(function () { moveu = false; }, 60);
         }
         try { secao.releasePointerCapture(arrasto.id); } catch (err) {}
         secao.classList.remove("arrastando"); arrasto = null;
       }
       secao.addEventListener("pointerdown", function (e) {
         if (e.pointerType === "mouse" && e.button !== 0) return;
-        arrasto = { id: e.pointerId, x0: e.clientX, ult: e.clientX, ativo: false };
+        arrasto = { id: e.pointerId, x0: e.clientX, ult: e.clientX, t: e.timeStamp, ativo: false };
         vel = 0; inercia = 0;
       });
       secao.addEventListener("pointermove", function (e) {
         if (!arrasto || e.pointerId !== arrasto.id) return;
         if (!arrasto.ativo) {
-          if (Math.abs(e.clientX - arrasto.x0) < 5) return;
+          if (Math.abs(e.clientX - arrasto.x0) < 4) return;
           arrasto.ativo = true; secao.classList.add("arrastando");
           try { secao.setPointerCapture(e.pointerId); } catch (err) {}
-          if (dica.parentNode) { dica.classList.add("some"); }
+          dica.classList.add("some");
         }
         var d = e.clientX - arrasto.ult; arrasto.ult = e.clientX;
-        x += d; vel = vel * 0.6 + d * 0.4;
-        e.preventDefault();
+        x += d; vel = vel * 0.5 + d * 0.5;
       });
       secao.addEventListener("pointerup", soltar);
       secao.addEventListener("pointercancel", soltar);
       secao.addEventListener("lostpointercapture", soltar);
       secao.addEventListener("dragstart", function (e) { e.preventDefault(); });
+      // arrastou? então não conta como toque no botão
+      secao.addEventListener("click", function (e) {
+        if (moveu || (arrasto && arrasto.ativo)) { e.preventDefault(); e.stopPropagation(); return; }
+        var botao = e.target.closest("[data-faixa]");
+        if (botao && !botao.hasAttribute("aria-hidden")) abrirFaixa(botao);
+        else if (botao) { var ori = originais[clones.indexOf(botao)]; if (ori) abrirFaixa(ori); }
+      }, true);
 
-      (function quadro() {
+      var ultimaX = null;
+      function desenhar() {
+        if (!total) return;
+        var meio = total;                    // duas voltas
+        var xm = ((x % meio) + meio) % meio; // 0..meio
+        if (xm === ultimaX) return; ultimaX = xm;
+        var vw = secao.clientWidth;
+        for (var i = 0; i < itens.length; i++) {
+          var px = pos[i] + xm;
+          if (px >= meio - larg[i]) px -= meio;      // volta pela esquerda
+          var fora = px > vw + 40 || px < -larg[i] - 40;
+          var el = itens[i];
+          if (fora) { if (!el._f) { el.style.visibility = "hidden"; el._f = 1; } }
+          else { if (el._f) { el.style.visibility = ""; el._f = 0; } el.style.transform = "translate3d(" + px.toFixed(1) + "px,0,0)"; }
+        }
+      }
+
+      requestAnimationFrame(function quadro(t) {
+        var dt = Math.min(3, Math.max(0.5, (t - ultimoT) / 16.667)); ultimoT = t;   // mantém a velocidade igual em celular lento
         var segurando = arrasto && arrasto.ativo;
-        if ((visivel || segurando) && largura) {
-          if (segurando) { vel *= 0.9; impulso *= 0.9; }
+        if (visivel || segurando) {
+          if (segurando) { vel *= Math.pow(0.85, dt); impulso *= Math.pow(0.9, dt); }
           else {
-            x += base * direcao - Math.abs(impulso) * direcao * 0.5 + inercia;
-            impulso *= 0.9; inercia *= 0.94;
+            x += (base * direcao - Math.abs(impulso) * direcao * 0.5 + inercia) * dt;
+            impulso *= Math.pow(0.9, dt); inercia *= Math.pow(0.94, dt);
             if (Math.abs(inercia) < 0.05) inercia = 0;
           }
-          while (x <= -largura) x += largura;
-          while (x > 0) x -= largura;
-          var inclina = Math.max(-10, Math.min(10, (segurando ? vel * 0.35 : impulso * -0.5 + inercia * 0.35)));
-          trilha.style.transform = "translate3d(" + x + "px,0,0) skewX(" + inclina + "deg)";
+          desenhar();
         }
         requestAnimationFrame(quadro);
-      })();
+      });
     });
+  }
+
+  /* ================= Janela do item do letreiro (curiosidade + foto) ================= */
+  var faixaCaixa = null;
+  function abrirFaixa(botao) {
+    var d = botao.dataset, cfg = window.LANG_CONFIG || {};
+    if (!faixaCaixa) {
+      faixaCaixa = document.createElement("div");
+      faixaCaixa.className = "faixa-modal"; faixaCaixa.setAttribute("role", "dialog"); faixaCaixa.setAttribute("aria-modal", "true"); faixaCaixa.setAttribute("aria-labelledby", "faixa-titulo");
+      faixaCaixa.innerHTML =
+        '<div class="faixa-modal__veu" data-fecha></div>' +
+        '<article class="faixa-modal__cartao">' +
+        '<button class="faixa-modal__x" type="button" data-fecha aria-label="Fechar">×</button>' +
+        '<figure class="faixa-modal__foto"><img alt="" decoding="async"><span class="faixa-modal__selo mono"></span></figure>' +
+        '<div class="faixa-modal__corpo"><span class="rotulo faixa-modal__rot"><b>Você sabia?</b></span><h3 id="faixa-titulo"></h3><p class="faixa-modal__cur"></p><p class="faixa-modal__txt"></p>' +
+        '<div class="faixa-modal__acoes"><button class="btn" type="button" data-orcar><span></span><span class="btn__seta" aria-hidden="true"></span></button><a class="btn btn--vidro faixa-modal__zap" target="_blank" rel="noopener"><span class="ponto-zap"></span> Falar no WhatsApp</a></div></div>' +
+        '</article>';
+      document.body.appendChild(faixaCaixa);
+      faixaCaixa.addEventListener("click", function (e) { if (e.target.closest("[data-fecha]")) fecharFaixa(); });
+      faixaCaixa.querySelector("[data-orcar]").addEventListener("click", function () {
+        var nome = faixaCaixa.dataset.servico; fecharFaixa();
+        var alvo = document.querySelector('[data-consultar-servico="' + nome + '"]');
+        if (alvo) alvo.click(); else { var o = document.getElementById("orcamento"); if (o) ir(o); }
+      });
+      document.addEventListener("keydown", function (e) {
+        if (!faixaCaixa.classList.contains("aberto")) return;
+        if (e.key === "Escape") fecharFaixa();
+        if (e.key === "Tab") {
+          var f = Array.prototype.slice.call(faixaCaixa.querySelectorAll("button, a[href]")).filter(function (n) { return n.offsetParent !== null; });
+          if (!f.length) return;
+          var p = f[0], u = f[f.length - 1];
+          if (e.shiftKey && document.activeElement === p) { e.preventDefault(); u.focus(); }
+          else if (!e.shiftKey && document.activeElement === u) { e.preventDefault(); p.focus(); }
+        }
+      });
+    }
+    var img = faixaCaixa.querySelector("img");
+    faixaCaixa._foco = document.activeElement;
+    faixaCaixa.dataset.servico = d.servico || "";
+    faixaCaixa.querySelector("h3").textContent = d.titulo || "";
+    faixaCaixa.querySelector(".faixa-modal__cur").textContent = d.cur || "";
+    faixaCaixa.querySelector(".faixa-modal__txt").textContent = d.txt || "";
+    faixaCaixa.querySelector(".faixa-modal__selo").textContent = "Lang Motos · Itapetininga";
+    faixaCaixa.querySelector("[data-orcar] span").textContent = "Pedir orçamento";
+    var zap = faixaCaixa.querySelector(".faixa-modal__zap");
+    zap.href = "https://wa.me/" + (cfg.whatsappNumero || "") + "?text=" + encodeURIComponent(d.msg || "");
+    img.classList.remove("carregada");
+    img.onload = function () { requestAnimationFrame(function () { img.classList.add("carregada"); }); };
+    img.style.objectPosition = d.pos || "50% 50%";
+    img.alt = "Foto da Lang Motos: " + (d.titulo || "");
+    img.src = d.img;
+    if (img.complete) img.classList.add("carregada");
+    faixaCaixa.classList.add("aberto");
+    travar(true); document.body.style.overflow = "hidden";
+    setTimeout(function () { var x = faixaCaixa.querySelector(".faixa-modal__x"); if (x) x.focus({ preventScroll: true }); }, 30);
+  }
+  function fecharFaixa() {
+    if (!faixaCaixa) return;
+    faixaCaixa.classList.remove("aberto"); travar(false); document.body.style.overflow = "";
+    var f = faixaCaixa._foco; if (f && f.focus) f.focus({ preventScroll: true });
   }
 
   /* ================= Coreografia GSAP ================= */
