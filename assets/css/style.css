@@ -69,7 +69,7 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .wrap { width: 100%; max-width: var(--largura); margin: 0 auto; padding: 0 var(--gutter); }
-@media (min-width: 900px) { :root { --gutter: 40px; } }
+@media (min-width: 900px) { :root { --gutter: 40px; } .wrap { padding-left: max(var(--gutter), 92px); padding-right: max(var(--gutter), 92px); } } /* folga para a barra lateral de atalhos não cobrir os botões */
 
 /* ---------- Tipografia utilitária ---------- */
 .mono { font-family: var(--f-mono); font-size: .72rem; font-weight: 500; letter-spacing: .08em; text-transform: uppercase; }
@@ -326,7 +326,7 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
 .letreiro__trilha.arrastando .letreiro__item { pointer-events: none; }
 .letreiro__dica { position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); white-space: nowrap; font-family: var(--f-mono); font-size: .7rem; letter-spacing: .18em; text-transform: uppercase; color: rgba(255,255,255,.5); pointer-events: none; transition: opacity .4s; }
 .letreiro__dica.some { opacity: 0; }
-.letreiro__trilha { display: flex; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; padding: 6px 0 10px; }
+.letreiro__trilha { display: flex; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; padding: 14px 0 20px; }
 .letreiro__trilha::-webkit-scrollbar { display: none; }
 .letreiro__grupo { display: flex; align-items: center; flex-shrink: 0; }
 .letreiro__item {
@@ -440,7 +440,7 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
 .servico__desc { grid-column: 2; margin: 6px 0 0; max-width: 50ch; transition: color .3s; }
 .servico__tags { grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; color: rgba(255,255,255,.5); transition: color .3s; }
 .servico__tags span::before { content: '/ '; color: var(--laranja); transition: color .3s; }
-.servico__acao { grid-column: 2; justify-self: start; margin-top: 14px; color: var(--laranja); }
+.servico__acao { grid-column: 2; justify-self: start; margin-top: 16px; min-height: 48px; }
 @media (min-width: 900px) {
   .servico { grid-template-columns: 80px 1.1fr 1fr auto; align-items: center; gap: 10px 36px; padding: 34px 0; cursor: pointer; }
   .servico__nome { grid-row: 1 / span 2; }
@@ -451,7 +451,8 @@ html { scrollbar-width: thin; scrollbar-color: var(--laranja) transparent; }
   .servico:hover { padding-left: 20px; padding-right: 20px; color: var(--tinta); }
   .servico:hover::before { clip-path: inset(0 0 0 0); }
   .servico:hover .servico__num, .servico:hover .servico__desc, .servico:hover .servico__tags,
-  .servico:hover .servico__tags span::before, .servico:hover .servico__acao { color: var(--tinta); }
+  .servico:hover .servico__tags span::before { color: var(--tinta); }
+  .servico:hover .servico__acao { --c-fundo: var(--tinta); --c-texto: var(--osso); --c-hover: var(--osso); --c-texto-hover: var(--tinta); }
 }
 
 /* ---------- Galeria "Por dentro" ---------- */
@@ -859,7 +860,7 @@ html.hero-entra .hero__base { opacity: 0; }
 /* ---------- Contato opcional (OS) e texto legal ---------- */
 .os__campos--duplo { grid-template-columns: 1fr 1fr; }
 .os__campos--duplo .campo:first-child { grid-column: auto; }
-.os__lgpd { margin: 6px 0 0; color: var(--texto-2); font-size: .66rem; letter-spacing: .04em; text-transform: none; line-height: 1.5; }
+.os__lgpd { margin: 6px 0 0; color: #5b5b64; font-size: .8rem; letter-spacing: .04em; text-transform: none; line-height: 1.5; }
 .os__lgpd a, .folha__aviso a, .rodape__base a { text-decoration: underline; text-underline-offset: 3px; }
 .folha__aviso { text-transform: none; }
 .topo--escuro { background: var(--vidro); backdrop-filter: blur(14px) saturate(140%); -webkit-backdrop-filter: blur(14px) saturate(140%); box-shadow: 0 1px 0 var(--linha-clara); }
