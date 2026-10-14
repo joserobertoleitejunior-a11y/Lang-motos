@@ -910,3 +910,15 @@ html.hero-entra .hero__base { opacity: 0; }
 .priv h3:first-child { margin-top: 0; }
 .priv p:first-of-type::first-letter { all: unset; }
 .priv strong { color: var(--texto); }
+
+/* Celular em pé: mostra a fachada inteira, com o nome da loja completo, sobre um fundo desfocado da própria foto */
+@media (max-width: 700px) {
+  .hero__midia--inteira { background: #0D0D0E; }
+  .hero__midia--inteira::before { content: ''; position: absolute; inset: -30px; background: url("../img/fachada-lang-motos-960.webp") center / cover no-repeat; filter: blur(24px) brightness(.5) saturate(1.15); transform: scale(1.2); }
+  .hero__midia--inteira picture { position: absolute; left: 0; right: 0; top: calc(var(--topo) + 6px); display: block; z-index: 1; }
+  .hero__midia--inteira img { width: 100%; height: auto; aspect-ratio: 2560 / 1925; object-fit: contain; }
+  .hero__midia--inteira picture { -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%); mask-image: linear-gradient(180deg, #000 60%, transparent 100%); }
+  .hero:has(.hero__midia--inteira) { min-height: max(100svh, calc(var(--topo) + 100vw * .752 + 600px)); }
+  .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(3rem, 12.4vw, 4.6rem); }
+  .hero__midia--inteira::after { z-index: 2; background: linear-gradient(180deg, rgba(13,13,14,.55) 0%, rgba(13,13,14,0) 14%, rgba(13,13,14,0) 36%, rgba(13,13,14,.78) 52%, rgba(13,13,14,.97) 100%); }
+}
