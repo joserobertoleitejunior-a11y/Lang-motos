@@ -475,6 +475,42 @@
     });
   }
 
+  /* ================= Atalhos flutuantes do hero: ímã suave no dedo/mouse e onda ao tocar ================= */
+  function iniciarAtalhos() {
+    var caixa = document.querySelector(".hero__atalhos"); if (!caixa) return;
+    var itens = Array.prototype.slice.call(caixa.querySelectorAll(".atalho"));
+    var raio = 110, forca = 14, raf = 0, ponto = null;
+    function mover() {
+      raf = 0; var ativo = false;
+      itens.forEach(function (el) {
+        var ico = el.querySelector(".atalho__ico"), r = el.getBoundingClientRect(), mx = 0, my = 0;
+        if (ponto) {
+          var dx = ponto.x - (r.left + r.width / 2), dy = ponto.y - (r.top + r.height / 2), d = Math.sqrt(dx * dx + dy * dy);
+          if (d < raio) { var f = (1 - d / raio) * forca; mx = dx / (d || 1) * f; my = dy / (d || 1) * f; ativo = true; }
+        }
+        ico.style.setProperty("--mx", mx.toFixed(1) + "px"); ico.style.setProperty("--my", my.toFixed(1) + "px");
+      });
+      if (ponto && ativo) raf = requestAnimationFrame(mover);
+    }
+    function atualiza(x, y) { ponto = { x: x, y: y }; if (!raf) raf = requestAnimationFrame(mover); }
+    function solta() { ponto = null; if (!raf) raf = requestAnimationFrame(mover); }
+    if (!reduz) {
+      caixa.addEventListener("pointermove", function (e) { atualiza(e.clientX, e.clientY); });
+      caixa.addEventListener("pointerleave", solta);
+      caixa.addEventListener("pointerup", function () { setTimeout(solta, 250); });
+      caixa.addEventListener("pointercancel", solta);
+    }
+    itens.forEach(function (el) {
+      el.addEventListener("pointerdown", function () {
+        el.classList.add("toque"); el.classList.remove("onda"); void el.offsetWidth; el.classList.add("onda");
+      });
+      var tira = function () { el.classList.remove("toque"); };
+      el.addEventListener("pointerup", function () { setTimeout(tira, 450); });
+      el.addEventListener("pointercancel", tira); el.addEventListener("pointerleave", tira);
+      el.addEventListener("animationend", function (e) { if (e.animationName === "atalhoOnda") el.classList.remove("onda"); });
+    });
+  }
+
   /* ================= Lightbox ================= */
   function iniciarLightbox() {
     var itens = Array.prototype.slice.call(document.querySelectorAll("[data-lightbox]"));
@@ -541,6 +577,7 @@
         iniciarIndicador();
         iniciarLightbox();
         iniciarMenuPrevia();
+        iniciarAtalhos();
       });
     });
   });

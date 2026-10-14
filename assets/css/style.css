@@ -922,3 +922,34 @@ html.hero-entra .hero__base { opacity: 0; }
   .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(3rem, 12.4vw, 4.6rem); }
   .hero__midia--inteira::after { z-index: 2; background: linear-gradient(180deg, rgba(13,13,14,.55) 0%, rgba(13,13,14,0) 14%, rgba(13,13,14,0) 36%, rgba(13,13,14,.78) 52%, rgba(13,13,14,.97) 100%); }
 }
+
+/* ---------- Atalhos flutuantes sobre o céu da fachada (transparentes, andam sozinhos e reagem ao toque) ---------- */
+.hero__atalhos { position: absolute; z-index: 4; left: 50%; transform: translateX(-50%); top: calc(var(--topo) + 12px); width: min(100%, 560px); padding: 0 10px; display: flex; align-items: center; justify-content: space-around; transition: opacity .9s var(--curva) .1s; }
+html.hero-entra .hero__atalhos { opacity: 0; }
+.atalho { --s: clamp(30px, 9.4vw, 44px); position: relative; display: grid; place-items: center; width: calc(var(--s) + 14px); height: calc(var(--s) + 14px); padding: 0; border: 0; background: none; color: #fff; cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent; animation: atalhoAnda 5.6s ease-in-out infinite; }
+.atalho:nth-child(1) { animation-duration: 5.2s; animation-delay: -.6s; }
+.atalho:nth-child(2) { --s: clamp(24px, 7.2vw, 33px); animation-duration: 4.4s; animation-delay: -2.1s; }
+.atalho:nth-child(3) { --s: clamp(42px, 13vw, 58px); animation-duration: 6.2s; animation-delay: -1.2s; }
+.atalho:nth-child(4) { animation-duration: 4.9s; animation-delay: -3s; }
+.atalho:nth-child(5) { animation-duration: 5.8s; animation-delay: -.2s; }
+@keyframes atalhoAnda {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(0deg); }
+  25% { transform: translate3d(7px, -6px, 0) rotate(3deg); }
+  50% { transform: translate3d(0, -11px, 0) rotate(0deg); }
+  75% { transform: translate3d(-7px, -5px, 0) rotate(-3deg); }
+}
+.atalho__ico { position: relative; display: grid; place-items: center; width: var(--s); height: var(--s); transform: translate3d(var(--mx, 0px), var(--my, 0px), 0) scale(var(--e, 1)); transition: transform .35s var(--curva); filter: drop-shadow(0 2px 8px rgba(8,10,30,.55)) drop-shadow(0 0 14px rgba(255,255,255,.22)); }
+.atalho__ico::before { content: ''; position: absolute; inset: -34%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,.2), rgba(255,255,255,0) 68%); opacity: .75; transition: opacity .3s, transform .4s var(--curva); }
+.atalho__ico svg { position: relative; width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.atalho--zap .atalho__ico svg { stroke-width: .9; }
+.atalho__rot { position: absolute; top: calc(100% - 2px); left: 50%; transform: translate(-50%, -4px); white-space: nowrap; font-family: var(--f-mono); font-size: .66rem; letter-spacing: .14em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 6px rgba(0,0,0,.7); opacity: 0; transition: opacity .25s, transform .3s var(--curva); pointer-events: none; }
+.atalho:hover .atalho__rot, .atalho:focus-visible .atalho__rot, .atalho:active .atalho__rot, .atalho.toque .atalho__rot { opacity: 1; transform: translate(-50%, 0); }
+.atalho:hover .atalho__ico::before, .atalho.toque .atalho__ico::before { opacity: 1; transform: scale(1.25); }
+.atalho:hover { --e: 1.14; }
+.atalho:active, .atalho.toque { --e: .86; }
+.atalho:focus-visible { outline: 2px solid var(--laranja); outline-offset: 4px; border-radius: 50%; }
+.atalho::after { content: ''; position: absolute; left: 50%; top: 50%; width: calc(var(--s) * 1.1); height: calc(var(--s) * 1.1); margin: calc(var(--s) * -.55) 0 0 calc(var(--s) * -.55); border: 1.5px solid rgba(255,255,255,.85); border-radius: 50%; opacity: 0; pointer-events: none; }
+.atalho.onda::after { animation: atalhoOnda .7s ease-out; }
+@keyframes atalhoOnda { from { opacity: .9; transform: scale(.7); } to { opacity: 0; transform: scale(2.3); } }
+@media (min-width: 900px) { .hero__atalhos { top: calc(var(--topo) + 26px); width: 600px; } .atalho { --s: 46px; } .atalho:nth-child(2) { --s: 34px; } .atalho:nth-child(3) { --s: 62px; } }
+@media (prefers-reduced-motion: reduce) { .atalho { animation: none; } .atalho.onda::after { animation: none; } }
