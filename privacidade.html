@@ -43,14 +43,18 @@ html.com-abertura .abertura,.abertura.abertura--sobe{position:fixed;inset:0;z-in
 @keyframes aberturaRola{from{transform:translate3d(0,0,0)}to{transform:translate3d(0,calc(var(--n,0) * -1em),0)}}
 .abertura__legenda{margin-top:18px;color:rgba(255,255,255,.5);font-family:"Lang Splash Mono","IBM Plex Mono",ui-monospace,Menlo,monospace;font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase}
 html .abertura.abertura--sobe{animation:none;transition:transform .9s cubic-bezier(.76,0,.24,1);transform:translate3d(0,-100%,0)}
-@media (prefers-reduced-motion:reduce){.abertura__odo i{animation-duration:.01ms}}</style>
+@media (min-width:700px){.abertura__odo{font-size:clamp(5rem,min(27vmin,20vw),22rem);gap:.05em}.abertura__legenda{font-size:clamp(.8rem,1.7vmin,1.7rem);margin-top:2.2vmin}.abertura::after{height:clamp(6px,.9vmin,12px)}}
+@keyframes aberturaSomeAuto{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){.abertura__odo i{animation-duration:.01ms}
+html.com-abertura .abertura,.abertura.abertura--sobe{animation:aberturaSomeAuto .6s ease 3s forwards}
+html .abertura.abertura--sobe{animation:none;transform:none;opacity:0;transition:opacity .6s}}</style>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link data-fontes href="https://fonts.googleapis.com/css2?family=Saira:ital,wdth,wght@0,50..125,300..900;1,50..125,300..900&family=Saira+Stencil+One&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Saira:ital,wdth,wght@0,50..125,300..900;1,50..125,300..900&family=Saira+Stencil+One&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet"></noscript>
 <link rel="stylesheet" href="assets/css/style.css?v=20261012e">
 
-<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('lang-abertura')!=='1'&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.classList.add('com-abertura','hero-entra');sessionStorage.setItem('lang-abertura','1')}}catch(e){}})(document.documentElement)</script>
+<script>(function(d){d.classList.add('js');try{if(sessionStorage.getItem('lang-abertura')!=='1'){d.classList.add('com-abertura','hero-entra');sessionStorage.setItem('lang-abertura','1')}}catch(e){}})(document.documentElement)</script>
 <script>(function(d,w){
   /* Controlador da splash: independente de bibliotecas. Sai em no mínimo 1,7s (se a página carregou)
      e no máximo 3s, mesmo com internet ruim. Sempre destrava a rolagem. */
@@ -153,11 +157,21 @@ html .abertura.abertura--sobe{animation:none;transition:transform .9s cubic-bezi
   </div>
 </header>
 <div class="menu" id="menu" aria-hidden="true">
-  <ul class="menu__lista"><li><a href="index.html"><span>00</span>Início</a></li><li><a href="index.html#servicos"><span>01</span>Serviços</a></li><li><a href="index.html#orcamento"><span>02</span>Orçamento</a></li><li><a href="institucional.html"><span>03</span>História</a></li><li><a href="localizacao.html"><span>04</span>Onde estamos</a></li><li><a href="painel.html"><span>05</span>Painel admin</a></li></ul>
-  <div class="menu__rodape mono">
-    <a href="tel:+551532719398">(15) 3271-9398</a>
-    <a data-whatsapp-link href="#" target="_blank" rel="noopener">WhatsApp (15) 99810-6057</a>
-    <a href="https://www.instagram.com/lang_motos/" target="_blank" rel="noopener">@lang_motos</a>
+  <div class="menu__in">
+    <div class="menu__col">
+      <span class="menu__rot mono"><b>Menu</b> Lang Motos · Itapetininga</span>
+      <ul class="menu__lista"><li><a href="index.html" data-prev="inicio"><span>00</span><em>Início</em><i class="menu__seta" aria-hidden="true">→</i></a></li><li><a href="index.html#servicos" data-prev="servicos"><span>01</span><em>Serviços</em><i class="menu__seta" aria-hidden="true">→</i></a></li><li><a href="index.html#orcamento" data-prev="orcamento"><span>02</span><em>Orçamento</em><i class="menu__seta" aria-hidden="true">→</i></a></li><li><a href="institucional.html" data-prev="historia"><span>03</span><em>História</em><i class="menu__seta" aria-hidden="true">→</i></a></li><li><a href="localizacao.html" data-prev="onde"><span>04</span><em>Onde estamos</em><i class="menu__seta" aria-hidden="true">→</i></a></li><li><a href="painel.html" data-prev="painel"><span>05</span><em>Painel admin</em><i class="menu__seta" aria-hidden="true">→</i></a></li></ul>
+      <div class="menu__acoes">
+        <a class="btn" data-whatsapp-mensagem="Olá! Vim pelo site da Lang Motos e quero falar sobre a minha moto." href="#" target="_blank" rel="noopener"><span class="ponto-zap"></span> Chamar no WhatsApp <span class="btn__seta" aria-hidden="true"></span></a>
+        <a class="btn btn--vidro" href="index.html#orcamento">Montar orçamento</a>
+      </div>
+      <div class="menu__rodape mono">
+        <a href="tel:+551532719398">(15) 3271-9398</a>
+        <a data-whatsapp-link href="#" target="_blank" rel="noopener">WhatsApp (15) 99810-6057</a>
+        <a href="https://www.instagram.com/lang_motos/" target="_blank" rel="noopener">@lang_motos</a>
+      </div>
+    </div>
+    <aside class="menu__previa" aria-hidden="true"><figure class="menu__fig" data-fig="inicio"><picture><source type="image/webp" srcset="assets/img/fachada2-lang-motos-1280.webp 1280w, assets/img/fachada2-lang-motos-2400.webp 2400w" sizes="40vw"><img src="assets/img/fachada2-lang-motos-1280.webp" alt="" loading="lazy" decoding="async" style="object-position:50% 50%"></picture><figcaption><b>Av. Cinco de Novembro, 825</b><span>Vila Nastri, Itapetininga. Procure o letreiro laranja e azul.</span></figcaption></figure><figure class="menu__fig" data-fig="servicos"><picture><source type="image/webp" srcset="assets/img/loja-interna-lang-motos-1200.webp 1200w, assets/img/loja-interna-lang-motos-2240.webp 2240w" sizes="40vw"><img src="assets/img/loja-interna-lang-motos-1200.webp" alt="" loading="lazy" decoding="async" style="object-position:50% 55%"></picture><figcaption><b>Oficina, peças e acessórios</b><span>Retífica e alinhamento de chassis no mesmo lugar.</span></figcaption></figure><figure class="menu__fig" data-fig="orcamento"><picture><source type="image/webp" srcset="assets/img/lateral-lang-motos-800.webp 800w, assets/img/lateral-lang-motos-1400.webp 1400w" sizes="40vw"><img src="assets/img/lateral-lang-motos-800.webp" alt="" loading="lazy" decoding="async" style="object-position:50% 30%"></picture><figcaption><b>Monte sua ordem de serviço</b><span>A mensagem sai pronta para o nosso WhatsApp.</span></figcaption></figure><figure class="menu__fig" data-fig="historia"><picture><source type="image/webp" srcset="assets/img/fachada-lang-motos-960.webp 960w, assets/img/fachada-lang-motos-1600.webp 1600w" sizes="40vw"><img src="assets/img/fachada-lang-motos-960.webp" alt="" loading="lazy" decoding="async" style="object-position:50% 45%"></picture><figcaption><b>Desde 1997 na mesma avenida</b><span>A história de quem mexe com moto em Itapetininga.</span></figcaption></figure><figure class="menu__fig" data-fig="onde"><picture><source type="image/webp" srcset="assets/img/fachada2-lang-motos-1280.webp 1280w, assets/img/fachada2-lang-motos-2400.webp 2400w" sizes="40vw"><img src="assets/img/fachada2-lang-motos-1280.webp" alt="" loading="lazy" decoding="async" style="object-position:30% 60%"></picture><figcaption><b>Seg a sex, das 9h às 18h</b><span>Sábado: consulte pelo WhatsApp.</span></figcaption></figure><figure class="menu__fig menu__fig--painel" data-fig="painel"><div class="menu__xadrez" aria-hidden="true"></div><figcaption><b>Acesso da equipe</b><span>Entre com seu e-mail e senha para ver os clientes que chegaram pelo site.</span></figcaption></figure></aside>
   </div>
 </div>
 

@@ -456,6 +456,25 @@
     atualizar();
   }
 
+  /* ================= Menu: foto que acompanha o item (computador) ================= */
+  function iniciarMenuPrevia() {
+    var menu = document.querySelector(".menu"); if (!menu) return;
+    var figs = {}; menu.querySelectorAll(".menu__fig").forEach(function (f) { figs[f.getAttribute("data-fig")] = f; });
+    var atual = null;
+    function mostrar(k) {
+      if (!figs[k] || atual === k) return;
+      if (atual && figs[atual]) figs[atual].classList.remove("on");
+      figs[k].classList.add("on"); atual = k;
+    }
+    var pagina = menu.querySelector('.menu__lista a[aria-current="page"]');
+    mostrar(pagina ? pagina.getAttribute("data-prev") : "inicio");
+    menu.querySelectorAll(".menu__lista a").forEach(function (a) {
+      var k = a.getAttribute("data-prev");
+      a.addEventListener("mouseenter", function () { mostrar(k); });
+      a.addEventListener("focus", function () { mostrar(k); });
+    });
+  }
+
   /* ================= Lightbox ================= */
   function iniciarLightbox() {
     var itens = Array.prototype.slice.call(document.querySelectorAll("[data-lightbox]"));
@@ -521,6 +540,7 @@
         iniciarLetreiros();
         iniciarIndicador();
         iniciarLightbox();
+        iniciarMenuPrevia();
       });
     });
   });
