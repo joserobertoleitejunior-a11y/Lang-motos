@@ -475,42 +475,96 @@
     });
   }
 
-  /* ================= Faixa de atalhos do hero: passa sozinha (CSS), pausa e dá onda ao toque ================= */
+  /* ================= Faixa de atalhos do hero: anda sozinha, arrasta com o dedo (rolagem nativa) e dá onda ao toque ================= */
   function iniciarAtalhos() {
     var faixa = document.querySelector(".hero__faixa"); if (!faixa) return;
     var trilha = faixa.querySelector(".hero__faixa__trilha"), grupo = faixa.querySelector(".hero__faixa__grupo");
     if (!trilha || !grupo) return;
-    var copias = [];
+    var originais = Array.prototype.slice.call(grupo.children), clones = [], W = 0;
     function montar() {
-      copias.forEach(function (c) { if (c.parentNode) c.parentNode.removeChild(c); }); copias = [];
-      var gw = grupo.getBoundingClientRect().width; if (!gw) return;
-      var n = Math.ceil((faixa.clientWidth * 2) / gw);   // sobra de grupos para o laço nunca mostrar emenda
-      for (var i = 0; i < Math.max(1, n); i++) {
+      clones.forEach(function (g) { if (g.parentNode) g.parentNode.removeChild(g); }); clones = [];
+      W = grupo.getBoundingClientRect().width; if (!W) return;
+      var n = Math.max(3, Math.ceil((faixa.clientWidth * 3) / W));   // voltas de sobra para os dois lados
+      for (var i = 0; i < n; i++) {
         var c = grupo.cloneNode(true); c.setAttribute("aria-hidden", "true");
         Array.prototype.forEach.call(c.querySelectorAll("a, button"), function (el) { el.setAttribute("tabindex", "-1"); });
-        trilha.appendChild(c); copias.push(c);
+        trilha.appendChild(c); clones.push(c);
       }
-      trilha.style.setProperty("--gw", gw + "px");
-      trilha.style.setProperty("--dur", (gw / 40).toFixed(1) + "s");   // ~40 px por segundo
+      if (faixa.scrollLeft < W * 0.25) faixa.scrollLeft = W;
+      ignoraAte = performance.now() + 250; esperado = faixa.scrollLeft; ultimoSL = esperado;
     }
+    var ignoraAte = 0;
     montar();
     var tm = null; window.addEventListener("resize", function () { clearTimeout(tm); tm = setTimeout(montar, 200); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(montar);
-    var solta = null;
-    function pausar() { faixa.classList.add("pausa"); clearTimeout(solta); }
-    function retomar() { clearTimeout(solta); solta = setTimeout(function () { faixa.classList.remove("pausa"); }, 1400); }
+
+    var base = reduz ? 0 : 0.7, direcao = 1, acumulo = 0, tocando = false, ultimoUsuario = 0, esperado = -1, ultimoSL = faixa.scrollLeft, visivel = true, ultimoT = performance.now();
+    if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { visivel = es[0].isIntersecting; }).observe(faixa);
+    faixa.addEventListener("scroll", function () {
+      var sl = faixa.scrollLeft;
+      if (performance.now() < ignoraAte || (esperado >= 0 && Math.abs(sl - esperado) < 1.5)) { ultimoSL = sl; return; }
+      var d = sl - ultimoSL; ultimoSL = sl;
+      if (d !== 0) { direcao = d > 0 ? 1 : -1; ultimoUsuario = performance.now(); }
+    }, { passive: true });
+    faixa.addEventListener("touchstart", function () { tocando = true; }, { passive: true });
+    ["touchend", "touchcancel"].forEach(function (ev) { faixa.addEventListener(ev, function () { tocando = false; ultimoUsuario = performance.now(); }, { passive: true }); });
+    faixa.addEventListener("wheel", function () { ultimoUsuario = performance.now(); }, { passive: true });
+
+    // Mouse: arrastar com o botão pressionado, com inércia
+    var m = null, moveu = false, velM = 0, inerciaM = 0;
     faixa.addEventListener("pointerdown", function (e) {
-      pausar();
-      var el = e.target.closest(".atalho"); if (!el) return;
-      el.classList.add("toque"); el.classList.remove("onda"); void el.offsetWidth; el.classList.add("onda");
+      var el = e.target.closest(".atalho");
+      if (el) { el.classList.add("toque"); el.classList.remove("onda"); void el.offsetWidth; el.classList.add("onda"); }
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      m = { x0: e.clientX, sl0: faixa.scrollLeft, ult: e.clientX, ativo: false }; velM = 0; inerciaM = 0;
     });
-    ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { faixa.addEventListener(ev, function () { retomar(); Array.prototype.forEach.call(faixa.querySelectorAll(".toque"), function (x) { x.classList.remove("toque"); }); }); });
-    // as cópias do laço não têm os ouvintes do assistente: o clique é repassado ao botão original
-    faixa.addEventListener("click", function (e) {
-      var ch = e.target.closest("[data-chat-abrir]");
-      if (ch && copias.some(function (c) { return c.contains(ch); })) { e.preventDefault(); var ori = grupo.querySelector("[data-chat-abrir]"); if (ori) ori.click(); }
+    faixa.addEventListener("pointermove", function (e) {
+      if (!m) return;
+      var dx = e.clientX - m.x0;
+      if (!m.ativo) { if (Math.abs(dx) < 4) return; m.ativo = true; faixa.classList.add("arrastando"); try { faixa.setPointerCapture(e.pointerId); } catch (er) {} }
+      velM = velM * 0.5 + (m.ult - e.clientX) * 0.5; m.ult = e.clientX;
+      faixa.scrollLeft = m.sl0 - dx; ultimoUsuario = performance.now();
     });
+    function soltaM() {
+      Array.prototype.forEach.call(faixa.querySelectorAll(".toque"), function (x) { x.classList.remove("toque"); });
+      if (!m) return;
+      if (m.ativo) { inerciaM = Math.max(-60, Math.min(60, velM)); moveu = true; setTimeout(function () { moveu = false; }, 60); }
+      faixa.classList.remove("arrastando"); m = null;
+    }
+    ["pointerup", "pointercancel"].forEach(function (ev) { faixa.addEventListener(ev, soltaM); });
+    faixa.addEventListener("dragstart", function (e) { e.preventDefault(); });
     faixa.addEventListener("animationend", function (e) { if (e.animationName === "atalhoOnda") e.target.classList.remove("onda"); });
+    // clique: as cópias do laço não têm os ouvintes do site; repassa ao botão original da mesma posição
+    faixa.addEventListener("click", function (e) {
+      if (moveu) { e.preventDefault(); e.stopPropagation(); return; }
+      var alvo = e.target.closest(".atalho"); if (!alvo) return;
+      for (var i = 0; i < clones.length; i++) {
+        if (clones[i].contains(alvo)) {
+          var idx = Array.prototype.indexOf.call(clones[i].children, alvo);
+          e.preventDefault(); if (originais[idx]) originais[idx].click(); return;
+        }
+      }
+    }, true);
+
+    requestAnimationFrame(function quadro(t) {
+      var dt = Math.min(3, Math.max(0.5, (t - ultimoT) / 16.667)); ultimoT = t;
+      if (visivel && W) {
+        var passo = 0;
+        if (inerciaM) { passo += inerciaM * dt; inerciaM *= Math.pow(0.94, dt); if (Math.abs(inerciaM) < 0.3) inerciaM = 0; }
+        if (!tocando && !m && t - ultimoUsuario > 900) passo += base * direcao * dt;
+        if (passo) {
+          acumulo += passo;
+          var inteiro = acumulo < 0 ? Math.ceil(acumulo) : Math.floor(acumulo);
+          if (inteiro) {
+            acumulo -= inteiro;
+            var sl = faixa.scrollLeft + inteiro, max = faixa.scrollWidth - faixa.clientWidth;
+            if (sl < W * 0.25) sl += W; else if (sl > max - W * 0.25) sl -= W;
+            faixa.scrollLeft = sl; esperado = faixa.scrollLeft;
+          }
+        }
+      }
+      requestAnimationFrame(quadro);
+    });
   }
 
   /* ================= Lightbox ================= */

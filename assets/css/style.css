@@ -911,51 +911,54 @@ html.hero-entra .hero__base { opacity: 0; }
 .priv p:first-of-type::first-letter { all: unset; }
 .priv strong { color: var(--texto); }
 
-/* Celular em pé: mostra a fachada inteira, com o nome da loja completo, sobre um fundo desfocado da própria foto */
-@media (max-width: 700px) {
+/* Tela mais alta que larga (celular em pé, janela estreita): mostra a fachada inteira, com o nome completo, sobre um fundo desfocado da própria foto */
+@media (max-aspect-ratio: 4/3) {
   .hero__midia--inteira { background: #0D0D0E; }
   .hero__midia--inteira::before { content: ''; position: absolute; inset: 0; background: url("data:image/webp;base64,UklGRjwBAABXRUJQVlA4IDABAABwBwCdASooAB4APrVOoEunJCMhsBVYAOAWiUAVJOZfEc/5eT0VfuD0GfhhDtKCCey1RLzoV3vXy9s+HUErVEesJ84DAAD+2KKvKKbPQneaTQMWxiJ+lKxEYeY4JA8m+QHH7jsvoMFqLk5jrzNwKcjoo98iyLYgxLrOGCWUCV8+8TITMJkfH3VD2Qvml0yq/CHtgmpHYMIFVYfoxJUsPy9R50v8+P1LKST8eEC0AoBHJIobebBBYDqph3UegspEROCzxsVAqOVJo7Lp+mBdUXOCAy1TwXTtUNU5zamaFXZoapC8D+ZGdH8kduO/8Lg7oZ1xXI3Ee/WYYxvn9eyawR3P2jdWAKkkM+2OrrF004jdn/JII0uWrp/3IE/kuDS46+6K2shqv2kiqZNYOkgaAAAA") center / cover no-repeat; }
   .hero__midia--inteira picture { position: absolute; left: 0; right: 0; top: calc(var(--topo) + 6px); display: block; z-index: 1; }
   .hero__midia--inteira img { width: 100%; height: auto; aspect-ratio: 2560 / 1925; object-fit: contain; }
   .hero__midia--inteira picture { -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent 100%); mask-image: linear-gradient(180deg, #000 60%, transparent 100%); }
-  .hero:has(.hero__midia--inteira) { min-height: max(100svh, calc(var(--topo) + 100vw * .752 + 600px)); }
+  .hero:has(.hero__midia--inteira) { min-height: calc(var(--topo) + 100vw * .752 + 600px); }
   .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(3rem, 12.4vw, 4.6rem); }
   .hero__midia--inteira::after { z-index: 2; background: linear-gradient(180deg, rgba(13,13,14,.55) 0%, rgba(13,13,14,0) 14%, rgba(13,13,14,0) 36%, rgba(13,13,14,.78) 52%, rgba(13,13,14,.97) 100%); }
 }
 
-/* Computador: a placa "LANG MOTOS" aparece inteira (sem gradiente lateral nem título por cima); o texto fica abaixo dela */
-@media (min-width: 900px) {
+/* Tela larga: a placa "LANG MOTOS" aparece inteira (sem gradiente lateral nem título por cima); o texto fica abaixo dela */
+@media (min-width: 900px) and (min-aspect-ratio: 4/3) {
   .hero__midia--inteira img { object-position: center top; }
   .hero__midia--inteira::after { background: linear-gradient(180deg, rgba(13,13,14,.55) 0, rgba(13,13,14,0) 16%, rgba(13,13,14,0) calc(max(75.2vw, 100svh) * .42), rgba(13,13,14,.82) calc(max(75.2vw, 100svh) * .42 + 170px), rgba(13,13,14,.97) 100%); }
   .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(3rem, min(6.2vw, 10.5vh), 7rem); }
   .hero:has(.hero__midia--inteira) .hero__in { gap: 18px; }
 }
-@media (min-width: 900px) and (max-height: 860px) {
+@media (min-width: 900px) and (min-aspect-ratio: 4/3) and (max-height: 860px) {
   .hero:has(.hero__midia--inteira) .hero__titulo { font-size: clamp(2.6rem, min(5vw, 8vh), 5.2rem); }
   .hero:has(.hero__midia--inteira) .hero__texto { display: none; }
   .hero:has(.hero__midia--inteira) .hero__acoes { margin-top: 14px !important; }
 }
 
-/* ---------- Faixa transparente de atalhos que passa sozinha sobre o céu (movimento só de transform: leve) ---------- */
-.hero__faixa { --s: clamp(26px, 8vw, 38px); --gap: clamp(34px, 10vw, 80px); position: absolute; z-index: 4; left: 0; right: 0; top: calc(var(--topo) + 8px); height: clamp(52px, 16.5vw, 64px); display: flex; align-items: center; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.05)); border-block: 1px solid rgba(255,255,255,.26); -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); transition: opacity .9s var(--curva) .1s; contain: layout paint; }
+/* ---------- Faixa transparente de atalhos: anda sozinha e acompanha o dedo (rolagem nativa) ---------- */
+.hero__faixa { --s: clamp(26px, 8vw, 36px); --gap: clamp(30px, 8.5vw, 64px); position: absolute; z-index: 4; left: 0; right: 0; top: calc(var(--topo) + 8px); height: clamp(58px, 17.5vw, 70px); display: flex; align-items: stretch; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain; scrollbar-width: none; -ms-overflow-style: none; touch-action: pan-x pan-y; -webkit-overflow-scrolling: touch; background: linear-gradient(180deg, rgba(255,255,255,.13), rgba(255,255,255,.05)); border-block: 1px solid rgba(255,255,255,.26); -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent); transition: opacity .9s var(--curva) .1s; cursor: grab; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.hero__faixa::-webkit-scrollbar { display: none; }
+.hero__faixa.arrastando { cursor: grabbing; }
+.hero__faixa.arrastando .atalho { pointer-events: none; }
 html.hero-entra .hero__faixa { opacity: 0; }
-.hero__faixa__trilha { display: flex; width: max-content; will-change: transform; animation: faixaAnda var(--dur, 30s) linear infinite; }
-.hero__faixa__grupo { display: flex; align-items: center; flex-shrink: 0; }
-@keyframes faixaAnda { to { transform: translate3d(calc(var(--gw, 600px) * -1), 0, 0); } }
-.hero__faixa:hover .hero__faixa__trilha, .hero__faixa.pausa .hero__faixa__trilha, .hero__faixa:focus-within .hero__faixa__trilha { animation-play-state: paused; }
-.atalho { position: relative; display: grid; place-items: center; flex-shrink: 0; width: calc(var(--s) + 18px); height: calc(var(--s) + 18px); margin-right: var(--gap); padding: 0; border: 0; background: none; color: #fff; cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent; }
-.atalho--p { --s: clamp(22px, 6.4vw, 28px); }
-.atalho--zap { --s: clamp(36px, 11vw, 50px); }
+.hero__faixa__trilha { display: flex; width: max-content; }
+.hero__faixa__grupo { display: flex; align-items: stretch; flex-shrink: 0; }
+.atalho { position: relative; display: grid; place-items: center; align-content: center; flex-shrink: 0; width: calc(var(--s) + 22px); margin-right: var(--gap); padding: 0 0 8px; border: 0; background: none; color: #fff; cursor: pointer; text-decoration: none; -webkit-tap-highlight-color: transparent; }
+.atalho--p { --s: clamp(22px, 6.2vw, 27px); }
+.atalho--zap { --s: clamp(34px, 10.4vw, 46px); }
 .atalho__ico { display: grid; place-items: center; width: var(--s); height: var(--s); transition: transform .3s var(--curva); filter: drop-shadow(0 1px 5px rgba(10,16,40,.55)); }
 .atalho__ico svg { width: 100%; height: 100%; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
-.atalho:hover .atalho__ico { transform: scale(1.18); }
-.atalho:active .atalho__ico, .atalho.toque .atalho__ico { transform: scale(.84); }
-.atalho:focus-visible { outline: 2px solid var(--laranja); outline-offset: 2px; border-radius: 50%; }
-.atalho::after { content: ''; position: absolute; left: 50%; top: 50%; width: calc(var(--s) * 1.1); height: calc(var(--s) * 1.1); margin: calc(var(--s) * -.55) 0 0 calc(var(--s) * -.55); border: 1.5px solid rgba(255,255,255,.9); border-radius: 50%; opacity: 0; pointer-events: none; }
+.atalho__rot { position: absolute; left: 50%; bottom: 3px; transform: translate(-50%, 4px); white-space: nowrap; font-family: var(--f-mono); font-size: .6rem; letter-spacing: .1em; text-transform: uppercase; color: #fff; text-shadow: 0 1px 5px rgba(0,0,0,.75); opacity: 0; transition: opacity .25s, transform .3s var(--curva); pointer-events: none; }
+.atalho:hover .atalho__rot, .atalho:focus-visible .atalho__rot, .atalho.toque .atalho__rot { opacity: 1; transform: translate(-50%, 0); }
+.atalho:hover .atalho__ico { transform: translateY(-3px) scale(1.14); }
+.atalho:active .atalho__ico, .atalho.toque .atalho__ico { transform: scale(.86); }
+.atalho:focus-visible { outline: 2px solid var(--laranja); outline-offset: -2px; border-radius: 10px; }
+.atalho::after { content: ''; position: absolute; left: 50%; top: calc(50% - 4px); width: calc(var(--s) * 1.1); height: calc(var(--s) * 1.1); margin: calc(var(--s) * -.55) 0 0 calc(var(--s) * -.55); border: 1.5px solid rgba(255,255,255,.9); border-radius: 50%; opacity: 0; pointer-events: none; }
 .atalho.onda::after { animation: atalhoOnda .7s ease-out; }
 @keyframes atalhoOnda { from { opacity: .9; transform: scale(.7); } to { opacity: 0; transform: scale(2.2); } }
-@media (min-width: 900px) { .hero__faixa { --s: 42px; --gap: 90px; top: calc(var(--topo) + 22px); height: 92px; } .atalho--p { --s: 30px; } .atalho--zap { --s: 58px; } }
-@media (prefers-reduced-motion: reduce) { .hero__faixa__trilha { animation: none; } .atalho.onda::after { animation: none; } }
+@media (min-width: 900px) { .hero__faixa { --s: 40px; --gap: 80px; top: calc(var(--topo) + 22px); height: 96px; } .atalho--p { --s: 30px; } .atalho--zap { --s: 56px; } .atalho__rot { font-size: .68rem; } }
+@media (prefers-reduced-motion: reduce) { .atalho.onda::after { animation: none; } }
 /* celular: vidro trocado por fundo quase opaco (o desfoque em camadas fixas pesa na rolagem) */
 @media (max-width: 899px) and (hover: none) {
   .topo--vidro, .dock { -webkit-backdrop-filter: none; backdrop-filter: none; }
