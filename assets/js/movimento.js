@@ -475,40 +475,42 @@
     });
   }
 
-  /* ================= Atalhos flutuantes do hero: ímã suave no dedo/mouse e onda ao tocar ================= */
+  /* ================= Faixa de atalhos do hero: passa sozinha (CSS), pausa e dá onda ao toque ================= */
   function iniciarAtalhos() {
-    var caixa = document.querySelector(".hero__atalhos"); if (!caixa) return;
-    var itens = Array.prototype.slice.call(caixa.querySelectorAll(".atalho"));
-    var raio = 110, forca = 14, raf = 0, ponto = null;
-    function mover() {
-      raf = 0; var ativo = false;
-      itens.forEach(function (el) {
-        var ico = el.querySelector(".atalho__ico"), r = el.getBoundingClientRect(), mx = 0, my = 0;
-        if (ponto) {
-          var dx = ponto.x - (r.left + r.width / 2), dy = ponto.y - (r.top + r.height / 2), d = Math.sqrt(dx * dx + dy * dy);
-          if (d < raio) { var f = (1 - d / raio) * forca; mx = dx / (d || 1) * f; my = dy / (d || 1) * f; ativo = true; }
-        }
-        ico.style.setProperty("--mx", mx.toFixed(1) + "px"); ico.style.setProperty("--my", my.toFixed(1) + "px");
-      });
-      if (ponto && ativo) raf = requestAnimationFrame(mover);
+    var faixa = document.querySelector(".hero__faixa"); if (!faixa) return;
+    var trilha = faixa.querySelector(".hero__faixa__trilha"), grupo = faixa.querySelector(".hero__faixa__grupo");
+    if (!trilha || !grupo) return;
+    var copias = [];
+    function montar() {
+      copias.forEach(function (c) { if (c.parentNode) c.parentNode.removeChild(c); }); copias = [];
+      var gw = grupo.getBoundingClientRect().width; if (!gw) return;
+      var n = Math.ceil((faixa.clientWidth * 2) / gw);   // sobra de grupos para o laço nunca mostrar emenda
+      for (var i = 0; i < Math.max(1, n); i++) {
+        var c = grupo.cloneNode(true); c.setAttribute("aria-hidden", "true");
+        Array.prototype.forEach.call(c.querySelectorAll("a, button"), function (el) { el.setAttribute("tabindex", "-1"); });
+        trilha.appendChild(c); copias.push(c);
+      }
+      trilha.style.setProperty("--gw", gw + "px");
+      trilha.style.setProperty("--dur", (gw / 40).toFixed(1) + "s");   // ~40 px por segundo
     }
-    function atualiza(x, y) { ponto = { x: x, y: y }; if (!raf) raf = requestAnimationFrame(mover); }
-    function solta() { ponto = null; if (!raf) raf = requestAnimationFrame(mover); }
-    if (!reduz) {
-      caixa.addEventListener("pointermove", function (e) { atualiza(e.clientX, e.clientY); });
-      caixa.addEventListener("pointerleave", solta);
-      caixa.addEventListener("pointerup", function () { setTimeout(solta, 250); });
-      caixa.addEventListener("pointercancel", solta);
-    }
-    itens.forEach(function (el) {
-      el.addEventListener("pointerdown", function () {
-        el.classList.add("toque"); el.classList.remove("onda"); void el.offsetWidth; el.classList.add("onda");
-      });
-      var tira = function () { el.classList.remove("toque"); };
-      el.addEventListener("pointerup", function () { setTimeout(tira, 450); });
-      el.addEventListener("pointercancel", tira); el.addEventListener("pointerleave", tira);
-      el.addEventListener("animationend", function (e) { if (e.animationName === "atalhoOnda") el.classList.remove("onda"); });
+    montar();
+    var tm = null; window.addEventListener("resize", function () { clearTimeout(tm); tm = setTimeout(montar, 200); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(montar);
+    var solta = null;
+    function pausar() { faixa.classList.add("pausa"); clearTimeout(solta); }
+    function retomar() { clearTimeout(solta); solta = setTimeout(function () { faixa.classList.remove("pausa"); }, 1400); }
+    faixa.addEventListener("pointerdown", function (e) {
+      pausar();
+      var el = e.target.closest(".atalho"); if (!el) return;
+      el.classList.add("toque"); el.classList.remove("onda"); void el.offsetWidth; el.classList.add("onda");
     });
+    ["pointerup", "pointercancel", "pointerleave"].forEach(function (ev) { faixa.addEventListener(ev, function () { retomar(); Array.prototype.forEach.call(faixa.querySelectorAll(".toque"), function (x) { x.classList.remove("toque"); }); }); });
+    // as cópias do laço não têm os ouvintes do assistente: o clique é repassado ao botão original
+    faixa.addEventListener("click", function (e) {
+      var ch = e.target.closest("[data-chat-abrir]");
+      if (ch && copias.some(function (c) { return c.contains(ch); })) { e.preventDefault(); var ori = grupo.querySelector("[data-chat-abrir]"); if (ori) ori.click(); }
+    });
+    faixa.addEventListener("animationend", function (e) { if (e.animationName === "atalhoOnda") e.target.classList.remove("onda"); });
   }
 
   /* ================= Lightbox ================= */
