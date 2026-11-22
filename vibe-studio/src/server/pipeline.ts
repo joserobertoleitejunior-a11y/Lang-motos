@@ -143,7 +143,7 @@ export function sanear(r: RoteiroIA, p: Projeto, marca: Marca | null, ajustes: A
     if (im.fonte === 'gerar' || im.fonte === 'editar') {
       if (!temImagem || gerar >= orc.imagens) {
         if (im.fonte === 'editar') im.fonte = 'referencia';
-        else { im.fonte = ['abertura', 'personagem', 'texto-imagem'].includes(c.layout) ? 'mascote' : 'nenhuma'; im.expressao = im.expressao ?? 'feliz'; }
+        else im.fonte = 'nenhuma';
       } else gerar++;
     }
     if (im.animar) {

@@ -67,9 +67,7 @@ const SiteExemplo: React.FC<{ largura: number; altura: number; t: number; nome: 
     <div style={{ width: L, height: A, background: '#F4F6FA', display: 'flex', flexDirection: 'column' }}>
       <div style={{ height: A * 0.34, background: `linear-gradient(160deg, ${misturar(primaria, '#FFFFFF', 0.12)}, ${misturar(primaria, '#000000', 0.18)})`, padding: `${A * 0.075}px ${L * 0.07}px ${L * 0.06}px`, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', gap: L * 0.03 }}>
         <div style={{ color: '#FFFFFF', fontFamily: pilhaFonte(fonte), fontWeight: 800, fontSize: L * 0.095, lineHeight: 1.02, opacity: e0, transform: `translateY(${(1 - e0) * 20}px)` }}>{nome}</div>
-        <div style={{ display: 'flex', gap: L * 0.02 }}>
-          {[0, 1, 2, 3, 4].map((i) => <Icone key={i} nome="estrela" tamanho={L * 0.06} cor="#FFD84D" />)}
-        </div>
+        <div style={{ height: L * 0.03, width: L * 0.4, borderRadius: 99, background: 'rgba(255,255,255,0.35)' }} />
       </div>
       <div style={{ flex: 1, padding: L * 0.06, display: 'flex', flexDirection: 'column', gap: L * 0.04, marginTop: -L * 0.05 }}>
         {card(0, destaque)}

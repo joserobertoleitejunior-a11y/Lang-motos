@@ -67,8 +67,9 @@ export const Mascote: React.FC<{ expressao: Expressao; tamanho: number; cor: str
       extra = <path d="M318 132 C 328 150, 338 160, 338 172 C 338 184, 328 190, 318 190 C 308 190, 298 184, 298 172 C 298 160, 308 150, 318 132 Z" fill="#7CC8FF" opacity={0.9} transform={`translate(0 ${Math.sin(seg * 4) * 4})`} />;
       break;
     case 'apaixonado':
-      olhos = <>{coracao(150, 232)}{coracao(250, 232)}</>;
-      boca = bocaAberta;
+      olhos = <>{olhoAberto(150, 232)}{olhoAberto(250, 232)}</>;
+      boca = <path d="M160 306 Q204 332 246 296" stroke="#2A1D2B" strokeWidth={10} fill="none" strokeLinecap="round" />;
+      sobrancelhas = <><path d="M118 186 L176 192" stroke="#2A1D2B" strokeWidth={11} strokeLinecap="round" /><path d="M224 192 L282 182" stroke="#2A1D2B" strokeWidth={11} strokeLinecap="round" /></>;
       break;
     case 'bravo':
       olhos = <>{olhoAberto(150, 238)}{olhoAberto(250, 238)}</>;
@@ -77,7 +78,8 @@ export const Mascote: React.FC<{ expressao: Expressao; tamanho: number; cor: str
       break;
     default:
       olhos = <>{olhoAberto(150, 232)}{olhoAberto(250, 232)}</>;
-      boca = bocaAberta;
+      boca = <path d="M160 306 Q204 332 246 296" stroke="#2A1D2B" strokeWidth={10} fill="none" strokeLinecap="round" />;
+      sobrancelhas = <><path d="M118 186 L176 192" stroke="#2A1D2B" strokeWidth={11} strokeLinecap="round" /><path d="M224 192 L282 182" stroke="#2A1D2B" strokeWidth={11} strokeLinecap="round" /></>;
   }
 
   return (
@@ -105,18 +107,9 @@ export const Mascote: React.FC<{ expressao: Expressao; tamanho: number; cor: str
         {/* braços */}
         <ellipse cx={46} cy={292} rx={24} ry={44} fill={`url(#${g('corpo')})`} transform={`rotate(${bracoE + 40} 70 270)`} />
         <ellipse cx={354} cy={292} rx={24} ry={44} fill={`url(#${g('corpo')})`} transform={`rotate(${bracoD - 40} 330 270)`} />
-        {/* broto */}
-        <g transform={`rotate(${folha} 200 66)`}>
-          <path d="M200 66 C 198 44, 203 30, 213 18" stroke={misturar(corFolha, '#000000', 0.25)} strokeWidth={9} fill="none" strokeLinecap="round" />
-          <path d="M211 20 C 230 -2, 266 2, 276 20 C 254 36, 226 36, 211 20 Z" fill={corFolha} />
-          <path d="M213 20 C 236 14, 254 16, 270 21" stroke={misturar(corFolha, '#FFFFFF', 0.35)} strokeWidth={4} fill="none" strokeLinecap="round" />
-        </g>
         {/* corpo */}
         <path d="M200 60 C 300 60 362 150 366 262 C 370 362 300 420 200 420 C 100 420 30 362 34 262 C 38 150 100 60 200 60 Z" fill={`url(#${g('corpo')})`} />
         <ellipse cx={140} cy={128} rx={46} ry={26} fill="#FFFFFF" opacity={0.35} transform="rotate(-28 140 128)" filter={`url(#${g('desfoque2')})`} />
-        {/* bochechas */}
-        <ellipse cx={112} cy={290} rx={25} ry={15} fill="#FF8FA3" opacity={0.55} filter={`url(#${g('desfoque2')})`} />
-        <ellipse cx={288} cy={290} rx={25} ry={15} fill="#FF8FA3" opacity={0.55} filter={`url(#${g('desfoque2')})`} />
         {sobrancelhas}
         {olhos}
         {boca}

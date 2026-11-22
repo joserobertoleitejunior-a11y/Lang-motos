@@ -16,7 +16,7 @@ export type Tema = {
 
 export const TEMAS: Record<Estilo, Tema> = {
   'fofo-3d': { fonteTitulo: 'Fredoka', pesoTitulo: 700, fonteTexto: 'Nunito', pesoTexto: 800, caixaAlta: false, espacamento: '-0.01em', alturaLinha: 1.05, raio: 0.045, bolhas: true },
-  moderno: { fonteTitulo: 'Bricolage Grotesque', pesoTitulo: 800, fonteTexto: 'Inter', pesoTexto: 600, caixaAlta: false, espacamento: '-0.035em', alturaLinha: 1.0, raio: 0.035, bolhas: true },
+  moderno: { fonteTitulo: 'Bricolage Grotesque', pesoTitulo: 800, fonteTexto: 'Inter', pesoTexto: 600, caixaAlta: false, espacamento: '-0.035em', alturaLinha: 1.0, raio: 0.03, bolhas: false },
   impacto: { fonteTitulo: 'Anton', pesoTitulo: 400, fonteTexto: 'Inter', pesoTexto: 700, caixaAlta: true, espacamento: '0.005em', alturaLinha: 1.02, raio: 0.02, bolhas: false },
   elegante: { fonteTitulo: 'Playfair Display', pesoTitulo: 700, fonteTexto: 'Inter', pesoTexto: 500, caixaAlta: false, espacamento: '-0.015em', alturaLinha: 1.08, raio: 0.03, bolhas: false },
   minimalista: { fonteTitulo: 'Inter', pesoTitulo: 800, fonteTexto: 'Inter', pesoTexto: 500, caixaAlta: false, espacamento: '-0.045em', alturaLinha: 1.0, raio: 0.03, bolhas: false },

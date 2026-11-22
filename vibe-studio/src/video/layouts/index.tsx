@@ -168,8 +168,8 @@ const Personagem: React.FC<P> = ({ cena }) => {
   const { cw, ch, horizontal, u } = useCaixa();
   const t0 = inicioTexto(cena);
   const tBalao = Math.max(cena.marca, t0 + 8);
-  const img = cena.imagem ?? { tipo: 'mascote' as const, expressao: 'feliz' as const };
-  const c2 = { ...cena, imagem: img };
+  if (!cena.imagem) return <Texto cena={cena} />;
+  const c2 = cena;
   if (horizontal) {
     return (
       <Caixa direcao="row" gap={60 * u}>

@@ -3,8 +3,8 @@ import { DESCRICAO_LAYOUT, FORMATOS, LAYOUTS, ORCAMENTO, type Pedido } from '../
 import type { Marca, Personagem } from './armazenamento';
 
 export const ESTILOS_DESCRICAO = {
-  'fofo-3d': 'personagens e objetos fofos em 3D (estilo animação de cinema), cores vivas, letras arredondadas. Ótimo para comida, doces, pets, infantil e varejo descontraído.',
-  moderno: 'limpo e atual, tipografia forte, muito contraste. Bom para serviços, tecnologia, lojas e academias.',
+  'fofo-3d': 'arredondado e descontraído. Só use se o cliente pedir um visual infantil ou fofo.',
+  moderno: 'limpo e atual, tipografia forte, muito contraste, visual de anúncio profissional. É o estilo padrão para a maioria dos negócios.',
   impacto: 'letras gigantes em caixa alta, ritmo rápido, cara de oferta. Para promoções, liquidações e lançamentos.',
   elegante: 'tipografia serifada, sofisticado e calmo. Moda, estética, joias, restaurantes e eventos.',
   minimalista: 'pouquíssimos elementos e muito espaço. Clínicas, escritórios, arquitetura.',
@@ -21,6 +21,7 @@ COMO UM BOM VÍDEO CURTO FUNCIONA
 - A última cena é SEMPRE o layout "cta", com uma chamada clara para ação (chamar no WhatsApp, visitar, seguir).
 - Não invente fatos: preços, números, prazos, endereços e promessas só se estiverem no pedido ou nos dados da marca. Sem preço informado, não use o layout "numero" para preço.
 - Sem emojis e sem hashtags no texto da tela.
+- TOM: comercial, direto e vendedor, para atrair clientes. Nada de visual fofo, infantil ou "meigo": sem corações, estrelinhas, brilhinhos ou carinhas. Frases firmes, com benefício claro e prova (número, resultado, oferta).
 - Legendas: true quando houver narração, a menos que o pedido diga o contrário.
 - sincronizarCom: copie uma palavra exata da narração da cena em que o elemento principal deve aparecer (ex.: a palavra do preço). Use null se não importar.
 
@@ -34,7 +35,7 @@ IMAGENS
 - "referencia": usa uma foto enviada como está (informe o id, ex.: ref1). Prefira as fotos reais do cliente para produtos e para a loja.
 - "editar": usa uma foto enviada e pede para a IA alterá-la (trocar o fundo, melhorar a luz, colocar o produto num cenário). Descreva a alteração em "descricao".
 - "gerar": cria uma imagem nova. Descreva em detalhe o que aparece, enquadramento e luz, no estilo visual escolhido. Nunca peça texto, letras ou logotipos dentro da imagem.
-- "mascote": usa o mascote fofo do app (com "expressao"). Bom quando não há fotos.
+- "mascote": um personagem discreto do app (com "expressao"). Use no máximo em UMA cena, e só se ajudar a mensagem. Na dúvida, não use.
 - recorte = true para objeto ou personagem isolado (sem fundo), que fica "flutuando" na cena; false para foto com cenário.
 - Personagens que aparecem em mais de uma cena: cadastre em "personagens" com aparência fixa e detalhada e use o id em "imagem.personagem", para a IA desenhar sempre igual.
 - animar = true transforma a imagem da cena num clipe de vídeo de 5 segundos (custa caro). Só use se o orçamento permitir e na cena mais importante; descreva o movimento em "movimento".
@@ -60,7 +61,7 @@ export function mensagemDiretor(p: {
   const linhas: string[] = [];
   linhas.push(`PEDIDO DO CLIENTE:\n"""${pedido.briefing.trim()}"""`);
   linhas.push(`FORMATO: ${pedido.formato} (${f.nome}). DURAÇÃO ALVO: cerca de ${pedido.duracao} segundos (${Math.max(4, Math.round(pedido.duracao / 3))} cenas, aproximadamente).`);
-  linhas.push(`ESTILO: ${pedido.estilo === 'auto' ? 'escolha o melhor para o negócio' : pedido.estilo}. MÚSICA: ${pedido.musica === 'auto' ? 'escolha o clima' : pedido.musica}. LEGENDAS: ${pedido.legendas === 'auto' ? 'decida' : pedido.legendas === 'sim' ? 'sim' : 'não'}.`);
+  linhas.push(`ESTILO: ${pedido.estilo === 'auto' ? 'escolha o melhor para o negócio (prefira moderno ou impacto)' : pedido.estilo}. MÚSICA: ${pedido.musica === 'auto' ? 'escolha o clima' : pedido.musica}. LEGENDAS: ${pedido.legendas === 'auto' ? 'decida' : pedido.legendas === 'sim' ? 'sim' : 'não'}.`);
   if (pedido.narracao === 'nao') linhas.push('NARRAÇÃO: este vídeo NÃO tem voz. Deixe "narracao" vazia em todas as cenas, use legendas = false e defina duracaoMinima (2 a 4 s) em cada cena. O texto na tela conta a história sozinho.');
   else {
     linhas.push(`NARRAÇÃO: voz principal = ${p.vozes.principal ?? 'locutor padrão'}.${p.vozes.secundaria ? ` Há uma segunda voz (${p.vozes.secundaria}): use voz "secundaria" para criar um diálogo curto quando fizer sentido.` : ' Use sempre voz "principal".'}`);

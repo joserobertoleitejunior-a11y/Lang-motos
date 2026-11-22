@@ -190,7 +190,7 @@ export function montarVideo(e: EntradaLinhaDoTempo): VideoSpec {
     const img = e.imagens[i];
     let imagem: CenaRender['imagem'] = null;
     if (img) imagem = img;
-    else if (c.imagem.fonte === 'mascote' || (c.imagem.fonte !== 'nenhuma' && !img && ['personagem', 'texto-imagem', 'abertura'].includes(c.layout))) {
+    else if (c.imagem.fonte === 'mascote') {
       imagem = { tipo: 'mascote', expressao: c.imagem.expressao ?? 'feliz' };
     }
 

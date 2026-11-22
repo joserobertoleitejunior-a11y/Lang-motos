@@ -34,7 +34,7 @@ export function roteiroLocal(pedido: Pedido, marca: Marca | null, refs: Referenc
   const r1 = proximaRef();
   cenas.push(cena({
     layout: 'abertura', titulo: titulo(frases[0]), destaques: destaque(titulo(frases[0])), narracao: comVoz ? frases[0] : '',
-    imagem: r1 ? { ...SEM_IMAGEM, fonte: 'referencia', referencia: r1.id } : { ...SEM_IMAGEM, fonte: 'mascote', expressao: 'feliz' },
+    imagem: r1 ? { ...SEM_IMAGEM, fonte: 'referencia', referencia: r1.id } : SEM_IMAGEM,
     duracaoMinima: comVoz ? null : 2.6,
   }));
 
@@ -46,8 +46,7 @@ export function roteiroLocal(pedido: Pedido, marca: Marca | null, refs: Referenc
     if (layout === 'texto-imagem' || layout === 'foto') {
       const r = proximaRef();
       if (r) imagem = { ...SEM_IMAGEM, fonte: 'referencia', referencia: r.id };
-      else layout = layout === 'foto' ? 'texto' : 'personagem';
-      if (layout === 'personagem') imagem = { ...SEM_IMAGEM, fonte: 'mascote', expressao: 'piscando' };
+      else layout = 'texto';
     }
     if (layout === 'impacto' && t.split(/\s+/).length > 4) layout = 'texto';
     cenas.push(cena({
@@ -65,7 +64,7 @@ export function roteiroLocal(pedido: Pedido, marca: Marca | null, refs: Referenc
     cenas.push(cena({
       layout: 'produto', titulo: 'Por apenas', narracao: comVoz ? `Por apenas ${preco[0]}.` : '',
       numero: { de: valor, ate: valor, prefixo: 'R$ ', sufixo: '', casas: preco[1].includes(',') || preco[1].includes('.') ? 2 : 0 },
-      imagem: r ? { ...SEM_IMAGEM, fonte: 'referencia', referencia: r.id } : { ...SEM_IMAGEM, fonte: 'mascote', expressao: 'apaixonado' },
+      imagem: r ? { ...SEM_IMAGEM, fonte: 'referencia', referencia: r.id } : SEM_IMAGEM,
       transicao: 'deslizar', duracaoMinima: comVoz ? null : 3,
     }));
   }

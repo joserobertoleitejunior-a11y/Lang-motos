@@ -16,25 +16,24 @@ export function cena(c: Partial<CenaIA> & Pick<CenaIA, 'layout'>): CenaIA {
   };
 }
 
-const mascote = (expressao: NonNullable<CenaIA['imagem']['expressao']>): CenaIA['imagem'] => ({ ...SEM_IMAGEM, fonte: 'mascote', expressao });
 
 export const roteiroDemo: RoteiroIA = {
   titulo: 'VIBE CODING PROCESS — site para o comércio local',
   ideia: 'Mostrar ao dono de comércio que um site profissional traz clientes todos os dias.',
-  estilo: 'fofo-3d',
-  paleta: { fundo: '#F7F5FF', texto: '#17132E', primaria: '#5B3DF5', destaque: '#FF7A2F' },
-  musica: { clima: 'alegre', descricao: 'pop alegre, palmas e piano, 112 bpm' },
+  estilo: 'moderno',
+  paleta: { fundo: '#EEF1F6', texto: '#0B1020', primaria: '#1747FF', destaque: '#FF6A00' },
+  musica: { clima: 'energetico', descricao: 'batida forte e moderna, 124 bpm' },
   legendas: false,
   personagens: [],
   cenas: [
-    cena({ layout: 'abertura', titulo: 'Seu comércio ainda não tem site?', destaques: ['site?'], imagem: mascote('surpreso'), duracaoMinima: 2.6 }),
-    cena({ layout: 'numero', titulo: 'por dia, seu site vende por você', destaques: ['vende'], numero: { de: 0, ate: 24, prefixo: '', sufixo: 'h', casas: 0 }, fundo: 'escuro', transicao: 'zoom', animacaoTexto: 'subir', duracaoMinima: 3 }),
+    cena({ layout: 'impacto', titulo: 'Seu concorrente já tem site.', destaques: ['site.'], fundo: 'escuro', animacaoTexto: 'subir', duracaoMinima: 2.2 }),
+    cena({ layout: 'texto', titulo: 'E você, ainda depende de indicação?', destaques: ['indicação?'], transicao: 'empurrar', animacaoTexto: 'destaque', duracaoMinima: 2.6 }),
+    cena({ layout: 'numero', titulo: 'seu site trabalha, vende e atende', destaques: ['vende'], numero: { de: 0, ate: 24, prefixo: '', sufixo: 'h', casas: 0 }, fundo: 'marca', transicao: 'zoom', animacaoTexto: 'subir', duracaoMinima: 3 }),
     cena({ layout: 'celular', titulo: 'Cardápio, catálogo e WhatsApp num toque', destaques: ['WhatsApp'], transicao: 'deslizar', animacaoTexto: 'palavras', duracaoMinima: 3.6 }),
-    cena({ layout: 'lista', titulo: 'O que vem no seu site', destaques: ['site'], itens: ['Visual profissional', 'Botão do WhatsApp', 'Pronto para o Google', 'Painel fácil de usar'], transicao: 'empurrar', animacaoTexto: 'subir', duracaoMinima: 3.8 }),
+    cena({ layout: 'lista', titulo: 'O que vem no seu site', destaques: ['site'], itens: ['Visual profissional', 'Botão direto do WhatsApp', 'Aparece no Google', 'Painel fácil de usar'], fundo: 'escuro', transicao: 'empurrar', animacaoTexto: 'subir', duracaoMinima: 3.8 }),
     cena({ layout: 'comparacao', titulo: 'Faz toda a diferença', destaques: ['diferença'], itens: ['O cliente procura e não te encontra', 'O cliente te acha e chama no WhatsApp'], transicao: 'limpar', animacaoTexto: 'subir', duracaoMinima: 3.6 }),
     cena({ layout: 'impacto', titulo: 'Mais clientes. Menos esforço.', destaques: ['clientes.'], fundo: 'marca', transicao: 'zoom', duracaoMinima: 1.9 }),
-    cena({ layout: 'personagem', titulo: 'Feito sob medida pro seu negócio', destaques: ['medida'], imagem: mascote('apaixonado'), transicao: 'fade', duracaoMinima: 2.8 }),
-    cena({ layout: 'cta', titulo: 'Peça já o seu site', destaques: ['site'], subtitulo: 'Sites para comércio local', imagem: mascote('feliz'), transicao: 'deslizar', duracaoMinima: 3.8 }),
+    cena({ layout: 'cta', titulo: 'Peça já o seu site', destaques: ['site'], subtitulo: 'Sites para comércio local', fundo: 'escuro', transicao: 'deslizar', duracaoMinima: 3.8 }),
   ],
   legendaPost: 'Seu comércio merece um site que trabalha por você 24 horas por dia. Fale com a VIBE CODING PROCESS!',
   hashtags: ['#comerciolocal', '#site', '#empreendedorismo', '#vibecoding'],
