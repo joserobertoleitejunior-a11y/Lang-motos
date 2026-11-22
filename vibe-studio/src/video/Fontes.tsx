@@ -7,7 +7,7 @@ let promessa: Promise<unknown> | null = null;
 function carregarTodas() {
   if (!promessa) {
     promessa = Promise.all(
-      ARQUIVOS_FONTES.map((f) => loadFont({ family: f.family, url: staticFile(`fontes/${f.arquivo}`), weight: f.weight, style: f.style ?? 'normal' })),
+      ARQUIVOS_FONTES.map((f) => loadFont({ format: 'woff2', family: f.family, url: window.__VCP_ASSETS?.[`fontes/${f.arquivo}`] ?? staticFile(`fontes/${f.arquivo}`), weight: f.weight, style: f.style ?? 'normal' })),
     );
   }
   return promessa;

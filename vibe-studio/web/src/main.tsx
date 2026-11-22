@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './estilo.css';
 import { api } from './api';
-import { Carregando, Navegacao, ProvedorToast, useRota } from './ui';
+import { Carregando, Navegacao, ProvedorToast, STANDALONE, ir, useRota } from './ui';
 import { Login } from './telas/Login';
 import { Inicio } from './telas/Inicio';
 import { Novo } from './telas/Novo';
@@ -11,6 +11,8 @@ import { Marcas } from './telas/Marcas';
 import { Vozes } from './telas/Vozes';
 import { AjustesTela } from './telas/Ajustes';
 import { Guia } from './telas/Guia';
+import { Logos } from './telas/Logos';
+import { Sites } from './telas/Sites';
 
 const App: React.FC = () => {
   const rota = useRota();
@@ -36,16 +38,24 @@ const App: React.FC = () => {
     case 'vozes': conteudo = <Vozes sub={a} />; break;
     case 'ajustes': conteudo = <AjustesTela aoSair={() => setLogado(false)} />; break;
     case 'guia': conteudo = <Guia secao={a} />; break;
+    case 'logos': conteudo = <Logos />; break;
+    case 'sites': conteudo = <Sites />; break;
     default: conteudo = <Inicio demo={a === 'demo'} />;
   }
   void b;
   return (
     <>
+      {STANDALONE && <div className="faixa-teste">Versão de testes no navegador: roteiro simples, prévia ao vivo, música e efeitos. Voz, imagens por IA, chat com o Diretor e MP4 entram no app publicado.</div>}
       <div className="app">{conteudo}</div>
-      <Navegacao atual={tela === 'projeto' ? 'inicio' : tela === 'guia' ? 'ajustes' : tela} />
+      <Navegacao atual={tela === 'projeto' ? 'inicio' : tela === 'guia' || tela === 'marcas' || tela === 'vozes' ? 'ajustes' : tela} />
     </>
   );
 };
+
+document.addEventListener('click', (e) => {
+  const a = (e.target as HTMLElement | null)?.closest?.('a[href^="#/"]');
+  if (a) { e.preventDefault(); ir(a.getAttribute('href')!.slice(2)); }
+});
 
 createRoot(document.getElementById('raiz')!).render(
   <React.StrictMode>
@@ -55,6 +65,6 @@ createRoot(document.getElementById('raiz')!).render(
   </React.StrictMode>,
 );
 
-if ('serviceWorker' in navigator && import.meta.env.PROD) {
+if ('serviceWorker' in navigator && import.meta.env.PROD && !STANDALONE) {
   window.addEventListener('load', () => navigator.serviceWorker.register('/sw.js').catch(() => {}));
 }

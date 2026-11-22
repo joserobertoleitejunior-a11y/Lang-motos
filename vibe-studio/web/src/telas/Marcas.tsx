@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { api, type Marca } from '../api';
+import { api, midiaMarca, type Marca } from '../api';
 import { prepararFoto } from '../imagens';
 import { Carregando, Girando, Icone, ir, Topo, useCarregar, useToast } from '../ui';
 
@@ -20,7 +20,7 @@ const ListaMarcas: React.FC = () => {
       {marcas.dados?.map((m) => (
         <a key={m.id} className="cartao linha" href={`#/marcas/${m.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
           <div style={{ width: 56, height: 56, borderRadius: 16, background: m.cores[0] ?? 'var(--primaria-clara)', display: 'grid', placeItems: 'center', overflow: 'hidden', flexShrink: 0 }}>
-            {m.logo ? <img src={`/midia/m/${m.id}/${m.logo}`} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fff' }} /> : <span style={{ color: '#fff', fontWeight: 800, fontSize: 22 }}>{m.nome.slice(0, 1)}</span>}
+            {m.logo ? <img src={midiaMarca(m.id, m.logo)} alt="" style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fff' }} /> : <span style={{ color: '#fff', fontWeight: 800, fontSize: 22 }}>{m.nome.slice(0, 1)}</span>}
           </div>
           <div className="cresce">
             <div className="forte">{m.nome}</div>
@@ -114,7 +114,7 @@ const EditarMarca: React.FC<{ id: string | null }> = ({ id }) => {
         <>
           <section className="cartao pilha">
             <div className="secao-titulo">Logotipo</div>
-            {m.logo && <img src={`/midia/m/${id}/${m.logo}`} alt="Logo" style={{ maxHeight: 120, objectFit: 'contain', background: '#fff', borderRadius: 14, padding: 8 }} />}
+            {m.logo && <img src={midiaMarca(id, m.logo)} alt="Logo" style={{ maxHeight: 120, objectFit: 'contain', background: '#fff', borderRadius: 14, padding: 8 }} />}
             <button className="botao contorno" onClick={() => logoRef.current?.click()}><Icone nome="foto" /> {m.logo ? 'Trocar logo' : 'Enviar logo'}</button>
             <input ref={logoRef} type="file" accept="image/*" hidden onChange={(e) => enviarLogo(e.target.files?.[0])} />
             <p className="dica">PNG com fundo transparente fica perfeito.</p>
@@ -125,7 +125,7 @@ const EditarMarca: React.FC<{ id: string | null }> = ({ id }) => {
             <p className="dica">Um mascote ou uma pessoa que aparece sempre igual nos vídeos. Com foto de referência, a IA mantém o mesmo rosto/visual.</p>
             {m.personagens.map((pp) => (
               <div key={pp.id} className="cartao-plano linha">
-                {pp.imagem && <img src={`/midia/m/${id}/${pp.imagem}`} alt="" style={{ width: 52, height: 52, borderRadius: 12, objectFit: 'cover' }} />}
+                {pp.imagem && <img src={midiaMarca(id, pp.imagem)} alt="" style={{ width: 52, height: 52, borderRadius: 12, objectFit: 'cover' }} />}
                 <div className="cresce"><div className="forte">{pp.nome}</div><div className="mini suave">{pp.descricao}</div></div>
                 <button className="icone-botao" aria-label="Remover" onClick={async () => setM(await api.apagar<Marca>(`/api/marcas/${id}/personagens/${pp.id}`))}><Icone nome="lixo" tam={18} /></button>
               </div>

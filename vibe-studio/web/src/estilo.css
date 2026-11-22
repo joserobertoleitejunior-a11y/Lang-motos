@@ -30,7 +30,7 @@
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --fundo: #0f0d16;
     --cartao: #1a1724;
     --cartao-2: #24202f;
@@ -48,6 +48,23 @@
     color-scheme: dark;
   }
 }
+:root[data-theme="dark"] {
+    --fundo: #0f0d16;
+    --cartao: #1a1724;
+    --cartao-2: #24202f;
+    --texto: #f2f0f8;
+    --suave: #a29cb8;
+    --linha: #2e2a3b;
+    --primaria: #8a70ff;
+    --primaria-2: #a08cff;
+    --primaria-clara: #2a2346;
+    --sucesso-claro: #12301f;
+    --erro-claro: #3a1717;
+    --aviso: #f0b429;
+    --aviso-claro: #33280c;
+    --sombra: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.25);
+    color-scheme: dark;
+  }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; background: var(--fundo); color: var(--texto); }
@@ -206,3 +223,20 @@ details[open] summary .seta { transform: rotate(180deg); }
 .faixa > * { flex-shrink: 0; white-space: nowrap; }
 .aviso > svg { flex-shrink: 0; margin-top: 1px; }
 .preco { display: inline-block; padding: 6px 10px; border-radius: 10px; background: var(--cartao-2); font-size: 13.5px; font-weight: 600; color: var(--suave); }
+.faixa-teste { background: #1747ff; color: #fff; font-size: 13px; font-weight: 600; padding: 8px 16px; text-align: center; line-height: 1.35; }
+.grade-logos { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.logo-card { background: #fff; border: 2px solid var(--linha); border-radius: 16px; padding: 8px; cursor: pointer; display: grid; place-items: center; aspect-ratio: 1 / 0.82; overflow: hidden; }
+.logo-card img { width: 100%; height: 100%; object-fit: contain; }
+.logo-card.ativo { border-color: var(--primaria); box-shadow: 0 0 0 4px var(--primaria-clara); }
+.logo-card.mini { width: 110px; flex-shrink: 0; aspect-ratio: 1; }
+.logo-previa { display: grid; place-items: center; border: 1.5px solid var(--linha); border-radius: 16px; padding: 12px; min-height: 180px; background: #fff; }
+.logo-previa img { max-height: 220px; width: auto; }
+.grade-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.moldura-site { margin: 0 auto; border: 6px solid #0b1020; border-radius: 22px; overflow: hidden; background: #fff; }
+.moldura-site.cel { width: min(100%, 390px); }
+.moldura-site.desk { width: 100%; border-radius: 12px; }
+.moldura-site iframe { display: block; width: 100%; height: 560px; border: 0; background: #fff; }
+.moldura-site.desk iframe { height: 460px; }
+code { font-family: ui-monospace, Menlo, monospace; font-size: .9em; background: var(--cartao-2); padding: 1px 6px; border-radius: 6px; }
+.ferramenta { display: flex; flex-direction: column; gap: 6px; text-decoration: none; color: inherit; }
+.ferramenta svg { color: var(--primaria); }

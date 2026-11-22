@@ -37,7 +37,11 @@ export const ARQUIVOS_FONTES: { family: string; weight: string; style?: string; 
 export const pilhaFonte = (f: string) => `'${f}', 'Inter', system-ui, sans-serif`;
 
 /** URL de mídia: absoluta (http/data) passa direto; relativa vem de public/. */
+declare global { interface Window { __VCP_ASSETS?: Record<string, string> } }
+
 export function src(s: string): string {
+  const embutido = typeof window !== 'undefined' ? window.__VCP_ASSETS?.[s] : undefined;
+  if (embutido) return embutido;
   return /^(https?:|data:|blob:|\/midia\/)/.test(s) ? s : staticFile(s.replace(/^\//, ''));
 }
 

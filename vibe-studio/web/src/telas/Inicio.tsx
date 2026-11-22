@@ -53,6 +53,11 @@ export const Inicio: React.FC<{ demo: boolean }> = ({ demo }) => {
         <span className="botao"><Icone nome="raio" /> Começar</span>
       </a>
 
+      <div className="grade-2">
+        <a className="cartao ferramenta" href="#/logos"><Icone nome="estrela" tam={26} /><b>Logotipos</b><span className="mini suave">8 opções na hora</span></a>
+        <a className="cartao ferramenta" href="#/sites"><Icone nome="casa" tam={26} /><b>Sites e orçamento</b><span className="mini suave">Gera, prevê e precifica</span></a>
+      </div>
+
       {demoSpec ? (
         <div className="cartao pilha">
           <div className="linha-entre"><h3>Demonstração</h3><button className="icone-botao" onClick={() => setDemoSpec(null)} aria-label="Fechar"><Icone nome="x" /></button></div>

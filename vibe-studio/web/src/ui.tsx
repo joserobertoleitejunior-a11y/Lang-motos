@@ -46,17 +46,23 @@ export const Girando: React.FC<{ tam?: number }> = ({ tam = 18 }) => (
 );
 
 /* ------------------------------------------------------------------ navegação por hash */
+export const STANDALONE = import.meta.env.VITE_STANDALONE === '1';
+const lerHash = () => (location.hash.replace(/^#\/?/, '') || 'inicio');
+let rotaInterna = STANDALONE ? 'inicio' : lerHash();
+const ouvintes = new Set<() => void>();
 export function useRota(): string[] {
-  const ler = () => (location.hash.replace(/^#\/?/, '') || 'inicio').split('/');
-  const [r, setR] = useState(ler);
+  const [r, setR] = useState(() => (STANDALONE ? rotaInterna : lerHash()));
   useEffect(() => {
-    const f = () => { setR(ler()); window.scrollTo(0, 0); };
+    const f = () => { setR(STANDALONE ? rotaInterna : lerHash()); window.scrollTo(0, 0); };
+    if (STANDALONE) { ouvintes.add(f); return () => { ouvintes.delete(f); }; }
     window.addEventListener('hashchange', f);
     return () => window.removeEventListener('hashchange', f);
   }, []);
-  return r;
+  return r.split('/');
 }
-export const ir = (rota: string) => { location.hash = `#/${rota}`; };
+export const ir = (rota: string) => {
+  if (STANDALONE) { rotaInterna = rota; ouvintes.forEach((f) => f()); } else location.hash = `#/${rota}`;
+};
 
 /* ------------------------------------------------------------------ avisos rápidos */
 const CtxToast = createContext<(msg: string) => void>(() => {});
@@ -121,9 +127,9 @@ export const Navegacao: React.FC<{ atual: string }> = ({ atual }) => {
     <nav className="nav" aria-label="Menu">
       <div className="nav-dentro">
         {item('inicio', 'Vídeos', 'video')}
-        {item('marcas', 'Marcas', 'marca')}
+        {item('logos', 'Logos', 'estrela')}
         {item('novo', 'Criar', 'mais', 'criar')}
-        {item('vozes', 'Vozes', 'micro')}
+        {item('sites', 'Sites', 'casa')}
         {item('ajustes', 'Ajustes', 'ajustes')}
       </div>
     </nav>

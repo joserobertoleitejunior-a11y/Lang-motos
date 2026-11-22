@@ -38,6 +38,7 @@
     "@remotion/renderer": "4.0.541",
     "@remotion/transitions": "4.0.541",
     "fastify": "5.6.1",
+    "fflate": "0.8.3",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "remotion": "4.0.541",

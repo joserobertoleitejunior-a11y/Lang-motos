@@ -20,6 +20,12 @@ export const AjustesTela: React.FC<{ aoSair: () => void }> = ({ aoSair }) => {
       <Topo titulo="Ajustes" />
 
       <section className="cartao pilha-p">
+        <div className="secao-titulo">Atalhos</div>
+        <a className="botao largo" href="#/marcas"><Icone nome="marca" /> Marcas (clientes)</a>
+        <a className="botao largo" href="#/vozes"><Icone nome="micro" /> Vozes e clonagem</a>
+      </section>
+
+      <section className="cartao pilha-p">
         <div className="linha-entre"><div className="secao-titulo" style={{ margin: 0 }}><Icone nome="chave" tam={18} /> Chaves das IAs</div><a href="#/guia" className="pequeno forte">Como conseguir</a></div>
         <p className="dica">Cada IA é um serviço contratado por uso. A chave fica guardada só no servidor e nunca aparece de novo inteira.</p>
         {e.provedores.map((p) => <LinhaChave key={p.provedor} p={p} cofre={e.cofre} aoMudar={estado.recarregar} />)}

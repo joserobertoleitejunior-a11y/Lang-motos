@@ -1,0 +1,532 @@
+{
+  "geradoEm": "2026-11-22",
+  "catalogoRecursos": {
+    "whatsapp-flutuante": "Botão flutuante do WhatsApp",
+    "lista-orcamento": "Lista de orçamento (gaveta)",
+    "assistente": "Assistente de pré-atendimento",
+    "painel-admin": "Painel administrativo",
+    "supabase": "Banco de dados Supabase (leads e analytics)",
+    "analytics": "Métricas de visitas",
+    "tour": "Tour guiado",
+    "chat-widget": "Chat flutuante",
+    "galeria": "Galeria de fotos",
+    "revelar-rolagem": "Animações ao rolar",
+    "aberto-agora": "Selo \"Aberto agora\"",
+    "contadores": "Números que contam",
+    "filtro-catalogo": "Catálogo com filtros e busca",
+    "faixa-rolante": "Faixa de palavras que corre",
+    "splash": "Tela de abertura (splash)",
+    "login-whatsapp": "Identificação por WhatsApp",
+    "sem-zoom": "Trava de zoom no celular",
+    "faq": "Perguntas frequentes",
+    "json-ld": "SEO: dados estruturados (JSON-LD)",
+    "open-graph": "SEO: Open Graph (prévia em redes)",
+    "sitemap": "SEO: sitemap e robots",
+    "lgpd": "Página de privacidade (LGPD)",
+    "netlify": "Deploy no Netlify"
+  },
+  "projetos": [
+    {
+      "projeto": "lang-motos",
+      "paginas": [
+        "index.html",
+        "institucional.html",
+        "localizacao.html",
+        "painel.html",
+        "privacidade.html"
+      ],
+      "secoes": {
+        "index.html": [
+          "DOCK + WIDGETS FLUTUANTES",
+          "ASSISTENTE",
+          "AGENDAMENTO"
+        ],
+        "institucional.html": [
+          "DOCK + WIDGETS FLUTUANTES",
+          "ASSISTENTE",
+          "AGENDAMENTO"
+        ],
+        "localizacao.html": [
+          "DOCK + WIDGETS FLUTUANTES",
+          "ASSISTENTE",
+          "AGENDAMENTO"
+        ],
+        "painel.html": [
+          "ENTRAR",
+          "NOVA SENHA (link de recuperação)",
+          "SEM ACESSO AINDA",
+          "PAINEL",
+          "INÍCIO",
+          "CLIENTES",
+          "MAIS OPÇÕES",
+          "VISÃO GERAL",
+          "CRM",
+          "LEADS",
+          "EQUIPE",
+          "AJUDA",
+          "GAVETA DO LEAD"
+        ],
+        "privacidade.html": [
+          "DOCK + WIDGETS FLUTUANTES",
+          "ASSISTENTE",
+          "AGENDAMENTO"
+        ]
+      },
+      "modulosJs": [
+        "ajuda.js",
+        "assistente.js",
+        "config.js",
+        "leads.js",
+        "main.js",
+        "movimento.js",
+        "painel.js",
+        "zoom.js"
+      ],
+      "css": [
+        "painel.css",
+        "style.css"
+      ],
+      "camposConfig": [
+        "whatsappNumero",
+        "whatsappExibicao",
+        "telefoneFixo",
+        "telefoneLink",
+        "whatsappMensagemPadrao",
+        "enderecoCompleto",
+        "mapsLink",
+        "wazeLink",
+        "instagram",
+        "horario",
+        "horarioObservacao",
+        "supabase",
+        "fusoHorario"
+      ],
+      "identidade": {
+        "cores": [
+          {
+            "nome": "--tinta",
+            "valor": "#0D0D0E"
+          },
+          {
+            "nome": "--tinta-2",
+            "valor": "#151517"
+          },
+          {
+            "nome": "--tinta-3",
+            "valor": "#1E1E21"
+          },
+          {
+            "nome": "--papel",
+            "valor": "#F3F1EC"
+          },
+          {
+            "nome": "--papel-2",
+            "valor": "#E9E6DF"
+          },
+          {
+            "nome": "--osso",
+            "valor": "#FBFAF7"
+          },
+          {
+            "nome": "--laranja",
+            "valor": "#F05A28"
+          },
+          {
+            "nome": "--laranja-2",
+            "valor": "#D94A1B"
+          },
+          {
+            "nome": "--azul",
+            "valor": "#1E3A9A"
+          },
+          {
+            "nome": "--vermelho",
+            "valor": "#B3262E"
+          },
+          {
+            "nome": "--zap",
+            "valor": "#25D366"
+          },
+          {
+            "nome": "--texto",
+            "valor": "#121214"
+          },
+          {
+            "nome": "--texto-2",
+            "valor": "#5E5E66"
+          }
+        ],
+        "fontes": [
+          "Saira",
+          "Saira Stencil One",
+          "IBM Plex Mono"
+        ],
+        "variaveis": 25
+      },
+      "recursos": [
+        "assistente",
+        "painel-admin",
+        "supabase",
+        "revelar-rolagem",
+        "aberto-agora",
+        "faixa-rolante",
+        "splash",
+        "sem-zoom",
+        "json-ld",
+        "open-graph",
+        "sitemap",
+        "lgpd",
+        "netlify"
+      ],
+      "tamanho": {
+        "paginasHtml": 5,
+        "linhasHtml": 1930,
+        "linhasCss": 1505,
+        "linhasJs": 2775,
+        "imagens": 17
+      },
+      "documentos": [
+        "BRIEFING-LANG-MOTOS.md",
+        "PADROES-AGENCIA.md",
+        "README.md"
+      ],
+      "temMapa": false
+    },
+    {
+      "projeto": "San-comercio",
+      "paginas": [
+        "admin.html",
+        "index.html",
+        "institucional.html",
+        "localizacao.html"
+      ],
+      "secoes": {
+        "admin.html": [
+          "LOGIN",
+          "PAINEL",
+          "VISÃO GERAL",
+          "CLIENTES",
+          "ORÇAMENTOS",
+          "PESQUISAS",
+          "TRÁFEGO"
+        ],
+        "index.html": [
+          "HEADER",
+          "HERO",
+          "FAIXA DE CATEGORIAS (arrastável)",
+          "NÚMEROS",
+          "PRODUTOS",
+          "PRENSAGEM",
+          "PRA QUEM",
+          "A LOJA (prévia)",
+          "CTA FINAL",
+          "GAVETA: LISTA DE ORÇAMENTO",
+          "MODAL: ENTRAR COM WHATSAPP",
+          "FOOTER"
+        ],
+        "institucional.html": [
+          "HEADER",
+          "HISTÓRIA",
+          "DIFERENCIAIS",
+          "GALERIA",
+          "FAQ",
+          "CTA FINAL",
+          "GAVETA: LISTA DE ORÇAMENTO",
+          "MODAL: ENTRAR COM WHATSAPP",
+          "FOOTER"
+        ],
+        "localizacao.html": [
+          "HEADER",
+          "CTA FINAL",
+          "GAVETA: LISTA DE ORÇAMENTO",
+          "MODAL: ENTRAR COM WHATSAPP",
+          "FOOTER"
+        ]
+      },
+      "modulosJs": [
+        "admin-demo.js",
+        "admin.js",
+        "analytics.js",
+        "animacoes.js",
+        "config.js",
+        "identificacao.js",
+        "lista-orcamento.js",
+        "main.js",
+        "sem-zoom.js",
+        "supabase-init.js"
+      ],
+      "css": [
+        "admin.css",
+        "style.css"
+      ],
+      "camposConfig": [
+        "nome",
+        "whatsappNumero",
+        "whatsappExibicao",
+        "telefoneFixo",
+        "telefoneFixoLink",
+        "email",
+        "whatsappMensagemPadrao",
+        "instagramUrl",
+        "instagramUsuario",
+        "facebookUrl",
+        "enderecoCompleto",
+        "mapsUrl",
+        "wazeUrl",
+        "horarios",
+        "sabadoTexto",
+        "supabase"
+      ],
+      "identidade": {
+        "cores": [
+          {
+            "nome": "--cor-marinho",
+            "valor": "#061443"
+          },
+          {
+            "nome": "--cor-primaria",
+            "valor": "#0E32B8"
+          },
+          {
+            "nome": "--cor-loja",
+            "valor": "#1F5BFF"
+          },
+          {
+            "nome": "--cor-latao",
+            "valor": "#FF7A1A"
+          },
+          {
+            "nome": "--cor-latao-claro",
+            "valor": "#FFB36B"
+          },
+          {
+            "nome": "--cor-latao-escuro",
+            "valor": "#D45A00"
+          },
+          {
+            "nome": "--cor-texto",
+            "valor": "#0A1235"
+          },
+          {
+            "nome": "--cor-texto-claro",
+            "valor": "#586282"
+          },
+          {
+            "nome": "--cor-fundo",
+            "valor": "#FFFFFF"
+          },
+          {
+            "nome": "--cor-fundo-alt",
+            "valor": "#F2F4FA"
+          },
+          {
+            "nome": "--cor-borda",
+            "valor": "#DFE4F0"
+          },
+          {
+            "nome": "--cor-sucesso",
+            "valor": "#1C8A4E"
+          },
+          {
+            "nome": "--cor-whatsapp",
+            "valor": "#25D366"
+          }
+        ],
+        "fontes": [
+          "Archivo",
+          "Hanken Grotesk",
+          "JetBrains Mono"
+        ],
+        "variaveis": 24
+      },
+      "recursos": [
+        "whatsapp-flutuante",
+        "lista-orcamento",
+        "painel-admin",
+        "supabase",
+        "analytics",
+        "galeria",
+        "revelar-rolagem",
+        "aberto-agora",
+        "contadores",
+        "filtro-catalogo",
+        "faixa-rolante",
+        "splash",
+        "login-whatsapp",
+        "sem-zoom",
+        "faq",
+        "json-ld",
+        "open-graph",
+        "sitemap",
+        "netlify"
+      ],
+      "tamanho": {
+        "paginasHtml": 4,
+        "linhasHtml": 1684,
+        "linhasCss": 1534,
+        "linhasJs": 2849,
+        "imagens": 6
+      },
+      "documentos": [
+        "BRIEFING-SAN.md",
+        "MAPA-DO-SITE.md",
+        "PADROES-AGENCIA.md",
+        "README.md"
+      ],
+      "temMapa": true
+    },
+    {
+      "projeto": "remop-retifica",
+      "paginas": [
+        "admin.html",
+        "index.html",
+        "institucional.html",
+        "localizacao.html"
+      ],
+      "secoes": {
+        "admin.html": [
+          "LOGIN",
+          "PAINEL",
+          "DASHBOARD",
+          "CLIENTES",
+          "GALERIA",
+          "ASSISTENTE IA"
+        ],
+        "index.html": [
+          "1. HEADER",
+          "2. HERO",
+          "PROVA RÁPIDA (destaques do institucional)",
+          "GARAGEM (vitrine)",
+          "3. SERVIÇOS",
+          "9. BOT / CONTATO FLUTUANTE",
+          "MODAL DE AGENDAMENTO",
+          "10. FOOTER"
+        ],
+        "institucional.html": [
+          "HEADER",
+          "HERO INSTITUCIONAL",
+          "DIFERENCIAIS",
+          "PROVA SOCIAL",
+          "FACILIDADES",
+          "BOT / CONTATO FLUTUANTE",
+          "MODAL DE AGENDAMENTO",
+          "FOOTER"
+        ],
+        "localizacao.html": [
+          "HEADER",
+          "LOCALIZAÇÃO",
+          "FORMAS DE PAGAMENTO",
+          "BOT / CONTATO FLUTUANTE",
+          "MODAL DE AGENDAMENTO",
+          "FOOTER"
+        ]
+      },
+      "modulosJs": [
+        "admin.js",
+        "analytics.js",
+        "assistente.js",
+        "chat-widget.js",
+        "config.js",
+        "galeria.js",
+        "lead-form.js",
+        "main.js",
+        "scroll-reveal.js",
+        "supabase-init.js",
+        "tour.js"
+      ],
+      "css": [
+        "admin.css",
+        "chat-widget.css",
+        "style.css"
+      ],
+      "camposConfig": [
+        "whatsappNumero",
+        "telefoneFixo",
+        "whatsappMensagemPadrao",
+        "enderecoCompleto",
+        "chatBotEndpoint",
+        "supabase"
+      ],
+      "identidade": {
+        "cores": [
+          {
+            "nome": "--cor-primaria",
+            "valor": "#1E2E63"
+          },
+          {
+            "nome": "--cor-primaria-clara",
+            "valor": "#2C4090"
+          },
+          {
+            "nome": "--cor-acento",
+            "valor": "#F6C945"
+          },
+          {
+            "nome": "--cor-acento-escuro",
+            "valor": "#D9A916"
+          },
+          {
+            "nome": "--cor-texto",
+            "valor": "#1A1A1A"
+          },
+          {
+            "nome": "--cor-texto-claro",
+            "valor": "#5C6270"
+          },
+          {
+            "nome": "--cor-fundo",
+            "valor": "#ffffff"
+          },
+          {
+            "nome": "--cor-fundo-alt",
+            "valor": "#F5F4EF"
+          },
+          {
+            "nome": "--cor-borda",
+            "valor": "#E3E1D8"
+          },
+          {
+            "nome": "--cor-sucesso",
+            "valor": "#1f8a4c"
+          }
+        ],
+        "fontes": [
+          "Barlow Condensed",
+          "Inter",
+          "Rajdhani",
+          "Kalam"
+        ],
+        "variaveis": 17
+      },
+      "recursos": [
+        "whatsapp-flutuante",
+        "assistente",
+        "painel-admin",
+        "supabase",
+        "analytics",
+        "tour",
+        "chat-widget",
+        "galeria",
+        "revelar-rolagem",
+        "filtro-catalogo",
+        "json-ld",
+        "open-graph",
+        "sitemap",
+        "netlify"
+      ],
+      "tamanho": {
+        "paginasHtml": 4,
+        "linhasHtml": 1375,
+        "linhasCss": 2128,
+        "linhasJs": 2970,
+        "imagens": 25
+      },
+      "documentos": [
+        "BRIEFING-REMOP.md",
+        "PADROES-AGENCIA.md",
+        "README.md"
+      ],
+      "temMapa": false
+    }
+  ]
+}
