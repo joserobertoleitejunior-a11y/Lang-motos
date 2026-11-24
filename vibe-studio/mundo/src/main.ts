@@ -64,10 +64,10 @@ async function iniciar() {
 
   /* ---------- modo de imagem: ASCII (padrão) ou realista ---------- */
   let ascii = PARAMS.get('modo') !== 'real';
-  const celulaInicial = MOBILE ? 6 : 8;
+  const celulaInicial = 8;
   const asc = criarAscii(renderer, celulaInicial);
   let pixel = aj.pixel;
-  const pixelAtual = () => (ascii ? Math.min(pixel, 1.5) : pixel);
+  const pixelAtual = () => (ascii ? Math.min(devicePixelRatio || 1, 2) : pixel);
 
   // copia a profundidade do mundo (já renderizado em ASCII) para que os quadros fiquem atrás de árvores e montanhas
   const blit = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
@@ -87,6 +87,7 @@ async function iniciar() {
     canvas.style.width = '100%'; canvas.style.height = '100%';
     camera.aspect = w / h; camera.updateProjectionMatrix();
     asc.ajustar();
+    if (ascii) agua.definirBase(asc.rt.width, asc.rt.height); else agua.definirBase(0, 0);
     fauna.definirPixel(pixelAtual());
   }
   addEventListener('resize', tamanho); tamanho();
@@ -322,7 +323,8 @@ async function iniciar() {
     if (acumFps > 1) {
       fps = nFps / acumFps; acumFps = 0; nFps = 0;
       if (fps < 24) { lento++; rapido = 0; } else if (fps > 52) { rapido++; lento = 0; } else { lento = rapido = 0; }
-      if (lento >= 2 && pixel > 0.6) { pixel = Math.max(0.6, pixel - 0.15); lento = 0; tamanho(); }
+      if (ascii) { /* no modo ASCII a nitidez das letras não pode cair */ }
+      else if (lento >= 2 && pixel > 0.6) { pixel = Math.max(0.6, pixel - 0.15); lento = 0; tamanho(); }
       else if (rapido >= 8 && pixel < aj.pixel) { pixel = Math.min(aj.pixel, pixel + 0.1); rapido = 0; tamanho(); }
     }
     ultimoHud += dt;

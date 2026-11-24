@@ -16,7 +16,7 @@ export const MOBILE = /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ||
 export function nivelInicial(): Nivel {
   const q = PARAMS.get('q');
   if (q === 'alta' || q === 'media' || q === 'baixa') return q;
-  return MOBILE ? 'media' : 'alta';
+  return MOBILE ? 'baixa' : 'alta';
 }
 
 export type Ajustes = {

@@ -227,6 +227,8 @@ export function criarAgua(scene: THREE.Scene, renderer: THREE.WebGLRenderer, cam
     uniforms.fogColor.value.copy(fog.color); uniforms.fogDensity.value = fog.density;
   }
 
+  let base: { w: number; h: number } | null = null;
+  function definirBase(w: number, h: number) { base = w > 0 ? { w, h } : null; }
   function renderReflexo(camera: THREE.PerspectiveCamera, cena: THREE.Scene) {
     camPos.setFromMatrixPosition(camera.matrixWorld);
     rot.extractRotation(camera.matrixWorld);
@@ -256,7 +258,7 @@ export function criarAgua(scene: THREE.Scene, renderer: THREE.WebGLRenderer, cam
     clip.multiplyScalar(2.0 / clip.dot(q));
     P.elements[2] = clip.x; P.elements[6] = clip.y; P.elements[10] = clip.z + 1.0 - 0.003; P.elements[14] = clip.w;
 
-    const w = Math.max(64, Math.floor(renderer.domElement.width * escalaReflexo)), h = Math.max(64, Math.floor(renderer.domElement.height * escalaReflexo));
+    const w = base ? Math.max(64, base.w) : Math.max(64, Math.floor(renderer.domElement.width * escalaReflexo)), h = base ? Math.max(64, base.h) : Math.max(64, Math.floor(renderer.domElement.height * escalaReflexo));
     if (rt.width !== w || rt.height !== h) rt.setSize(w, h);
     malha.visible = false;
     ocultos.forEach((o) => (o.visible = false));
@@ -272,5 +274,5 @@ export function criarAgua(scene: THREE.Scene, renderer: THREE.WebGLRenderer, cam
     malha.visible = true;
   }
 
-  return { malha, atualizar, renderReflexo, ondular, ocultarNoReflexo, uniforms };
+  return { malha, atualizar, renderReflexo, definirBase, ondular, ocultarNoReflexo, uniforms };
 }
