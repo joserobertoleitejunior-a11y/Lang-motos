@@ -68,23 +68,27 @@ void main(){
   vec3 col = pow(aces(c * uExp * (1.0 + 4.5 * uNoite)), vec3(1.0/2.2));
   float lum = dot(col, vec3(0.299, 0.587, 0.114));
   // curva de contraste: escuros ficam esparsos (como nos vídeos de referência)
-  float ceuF = step(0.99995, texture2D(tProf, cuv).x);
+  float dp = texture2D(tProf, cuv).x;
+  float ceuF = step(0.99995, dp);
+  float zl = 2.0 * 0.3 * 9000.0 / (9000.0 + 0.3 - (dp * 2.0 - 1.0) * (9000.0 - 0.3));
+  float prox = mix(1.0, 0.5, smoothstep(250.0, 2200.0, zl));
   vec2 o2 = uCel / uRes * 2.2;
   vec3 b4 = texture2D(tCena, cuv + vec2(o2.x, 0.0)).rgb + texture2D(tCena, cuv - vec2(o2.x, 0.0)).rgb + texture2D(tCena, cuv + vec2(0.0, o2.y)).rgb + texture2D(tCena, cuv - vec2(0.0, o2.y)).rgb;
   float lumB = dot(pow(aces(b4 * 0.25 * uExp), vec3(1.0/2.2)), vec3(0.299, 0.587, 0.114));
-  float l = pow(smoothstep(0.04, 0.85, lum), 1.5) + (lum - lumB) * 2.2;
+  float borda = clamp((lum - lumB) * 3.0, 0.0, 0.55);
+  float l = (pow(smoothstep(0.42, 0.98, lum), 1.3) * 0.95 + borda * 0.8 + 0.07 * smoothstep(0.05, 0.4, lum)) * prox;
+  l *= mix(1.0, mix(0.2, 0.8, uNoite), ceuF);
   l = clamp(l, 0.0, 0.999);
-  l *= mix(1.0, mix(0.55, 0.95, uNoite), ceuF);
   l += (hash(cel) - 0.5) * 0.03;   // grão leve para variar as letras vizinhas
-  float g = floor(clamp(l, 0.0, 0.999) * uN);
+  float g = l < 0.05 ? 0.0 : floor(clamp(l, 0.0, 0.999) * uN);
   float vr = floor(hash(cel * 1.37 + 7.1) * uVar);
   float cov = texture2D(tAtlas, vec2((g + dentro.x) / uN, (vr + dentro.y) / uVar)).r;
   vec3 cq = floor(col * 9.0 + 0.5) / 9.0;                       // cores "posterizadas": cara de pixel art
   float m = (cq.r + cq.g + cq.b) / 3.0;
   vec3 hue = clamp(m + (cq - m) * 1.9, 0.0, 1.0);
-  vec3 gc = hue * (0.5 + 1.0 * lum);
+  vec3 gc = hue * (0.78 + 0.6 * lum);
   gc = min(gc, vec3(1.15));
-  vec3 bg = cq * 0.05;
+  vec3 bg = cq * 0.02;
   vec3 saida = bg + gc * cov;
   saida += cq * 0.04 * l;                                       // brilho suave
   vec2 q = vUv - 0.5; saida *= 1.0 - 0.16 * pow(length(q) * 1.45, 2.2);
@@ -99,7 +103,7 @@ export function criarAscii(renderer: THREE.WebGLRenderer, nCelulaCss: number) {
   rt.depthTexture = new THREE.DepthTexture(64, 64);
   rt.texture.minFilter = THREE.LinearFilter; rt.texture.magFilter = THREE.LinearFilter; rt.texture.generateMipmaps = false;
   const mat = new THREE.ShaderMaterial({
-    uniforms: { tCena: { value: rt.texture }, tProf: { value: rt.depthTexture }, tAtlas: { value: atlas.tex }, uRes: { value: new THREE.Vector2(1, 1) }, uCel: { value: new THREE.Vector2(9, 16) }, uN: { value: atlas.n }, uVar: { value: VAR }, uExp: { value: 1.0 }, uTime: U.uTime, uNoite: { value: 0 } },
+    uniforms: { tCena: { value: rt.texture }, tProf: { value: rt.depthTexture }, tAtlas: { value: atlas.tex }, uRes: { value: new THREE.Vector2(1, 1) }, uCel: { value: new THREE.Vector2(9, 16) }, uN: { value: atlas.n }, uVar: { value: VAR }, uExp: { value: 0.58 }, uTime: U.uTime, uNoite: { value: 0 } },
     vertexShader: VERT, fragmentShader: FRAG, depthTest: false, depthWrite: false, toneMapped: false,
   });
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);
