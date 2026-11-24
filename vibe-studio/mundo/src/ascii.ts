@@ -76,8 +76,9 @@ void main(){
   vec3 b4 = texture2D(tCena, cuv + vec2(o2.x, 0.0)).rgb + texture2D(tCena, cuv - vec2(o2.x, 0.0)).rgb + texture2D(tCena, cuv + vec2(0.0, o2.y)).rgb + texture2D(tCena, cuv - vec2(0.0, o2.y)).rgb;
   float lumB = dot(pow(aces(b4 * 0.25 * uExp), vec3(1.0/2.2)), vec3(0.299, 0.587, 0.114));
   float borda = clamp((lum - lumB) * 3.0, 0.0, 0.55);
-  float l = (pow(smoothstep(0.42, 0.98, lum), 1.3) * 0.95 + borda * 0.8 + 0.07 * smoothstep(0.05, 0.4, lum)) * prox;
+  float l = (pow(smoothstep(0.4, 1.0, lum), 1.3) * 0.95 + borda * 0.8 + 0.07 * smoothstep(0.05, 0.4, lum)) * prox;
   l *= mix(1.0, mix(0.2, 0.8, uNoite), ceuF);
+  l *= 1.0 - 0.45 * smoothstep(0.22, 0.9, length((vUv - 0.5) * vec2(1.25, 1.6)));
   l = clamp(l, 0.0, 0.999);
   l += (hash(cel) - 0.5) * 0.03;   // grão leve para variar as letras vizinhas
   float g = l < 0.05 ? 0.0 : floor(clamp(l, 0.0, 0.999) * uN);
@@ -91,7 +92,7 @@ void main(){
   vec3 bg = cq * 0.02;
   vec3 saida = bg + gc * cov;
   saida += cq * 0.04 * l;                                       // brilho suave
-  vec2 q = vUv - 0.5; saida *= 1.0 - 0.16 * pow(length(q) * 1.45, 2.2);
+  vec2 q = vUv - 0.5; saida *= 1.0 - 0.4 * pow(length(q) * 1.45, 2.2);
   gl_FragColor = vec4(saida, 1.0);
 }`;
 
