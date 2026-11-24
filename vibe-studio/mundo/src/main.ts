@@ -64,7 +64,7 @@ async function iniciar() {
 
   /* ---------- modo de imagem: ASCII (padrão) ou realista ---------- */
   let ascii = PARAMS.get('modo') !== 'real';
-  const celulaInicial = 8;
+  const celulaInicial = MOBILE ? 4 : 5;
   const asc = criarAscii(renderer, celulaInicial);
   let pixel = aj.pixel;
   const pixelAtual = () => (ascii ? Math.min(devicePixelRatio || 1, 2) : pixel);
