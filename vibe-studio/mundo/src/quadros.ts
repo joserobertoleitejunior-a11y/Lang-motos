@@ -15,14 +15,13 @@ const GLSL_TELA = {
   vert: /* glsl */ `varying vec2 vUv; varying float vProf; void main(){ vUv = uv; vec4 mv = modelViewMatrix*vec4(position,1.0); vProf = -mv.z; gl_Position = projectionMatrix*mv; }`,
   frag: /* glsl */ `
     uniform sampler2D uMapa; uniform float uBrilho; uniform float uTime; uniform float uNoite;
-    uniform float uAscii; uniform sampler2D uProf; uniform vec2 uRes; uniform float uNear; uniform float uFar;
+    uniform float uAscii; uniform float uBoost; uniform sampler2D uProf; uniform vec2 uRes; uniform float uNear; uniform float uFar;
     varying vec2 vUv; varying float vProf;
     float linear(float d){ float z = d*2.0-1.0; return 2.0*uNear*uFar/(uFar+uNear - z*(uFar-uNear)); }
     void main(){
-      if (uAscii > 0.5) { float zs = linear(texture2D(uProf, gl_FragCoord.xy/uRes).x); if (vProf > zs + 0.8 + vProf*0.012) discard; }
       vec3 c = texture2D(uMapa, vUv).rgb;
       float varre = smoothstep(0.0, 0.04, abs(fract(vUv.y*1.0 - uTime*0.35) - 0.5) - 0.46) * uBrilho * 0.0;
-      c *= 1.0 + uBrilho*0.22;
+      c *= 1.0 + uBrilho*0.22 + uBoost*0.9;
       vec2 b = abs(vUv-0.5)*2.0; float vig = 1.0 - 0.18*pow(max(b.x,b.y), 3.0);
       c *= vig;
       c += vec3(0.01,0.02,0.04)*uNoite;
@@ -77,7 +76,7 @@ export function criarQuadros(campo: Campo, projetos: Projeto[], imagens: Record<
     // imagem do projeto
     const tex = new THREE.Texture(); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 8;
     const im = new Image(); im.onload = () => { tex.image = im; tex.needsUpdate = true; }; im.src = imagens[p.imagem] ?? '';
-    const matTela = new THREE.ShaderMaterial({ uniforms: { ...unif, uMapa: { value: tex }, uBrilho: { value: 0 } }, vertexShader: GLSL_TELA.vert, fragmentShader: GLSL_TELA.frag, toneMapped: false, side: THREE.FrontSide });
+    const matTela = new THREE.ShaderMaterial({ uniforms: { ...unif, uMapa: { value: tex }, uBrilho: { value: 0 }, uBoost: { value: 0 } }, vertexShader: GLSL_TELA.vert, fragmentShader: GLSL_TELA.frag, toneMapped: false, side: THREE.FrontSide });
     const tela = new THREE.Mesh(new THREE.PlaneGeometry(LARG, ALT), matTela);
     tela.position.z = 0.36;
     tela.userData.quadroIdx = i;
@@ -95,7 +94,8 @@ export function criarQuadros(campo: Campo, projetos: Projeto[], imagens: Record<
     const luz = new THREE.Sprite(new THREE.SpriteMaterial({ map: texturaBrilho(cor), blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, toneMapped: false, fog: false }));
     luz.scale.set(LARG * 2.2, ALT * 2.3, 1); luz.position.z = -1.2; g.add(luz);
 
-    g.traverse((o) => o.layers.set(1));
+    g.traverse((o) => o.layers.set(2));
+    luz.layers.set(1);
     grupo.add(g);
     quadros.push({
       projeto: p, grupo: g, tela, base, yaw, fase: i * 1.7, brilho: 0, alvoBrilho: 0, indice: i, luz,

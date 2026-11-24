@@ -64,7 +64,7 @@ async function iniciar() {
 
   /* ---------- modo de imagem: ASCII (padrão) ou realista ---------- */
   let ascii = PARAMS.get('modo') !== 'real';
-  const celulaInicial = MOBILE ? 7 : 9;
+  const celulaInicial = MOBILE ? 4 : 5;
   const asc = criarAscii(renderer, celulaInicial);
   let pixel = aj.pixel;
   const pixelAtual = () => (ascii ? Math.min(pixel, 1.5) : pixel);
@@ -116,7 +116,7 @@ async function iniciar() {
   }
   function visitar(i: number, abrir = true) {
     const q = quadros.quadros[i]; if (!q) return;
-    selecionado = i;
+    selecionado = i; marcarNitido();
     if (!voando) alternarVoo(true);
     const hf = Math.tan((camera.fov / 2) * Math.PI / 180) * camera.aspect;
     const v = q.posicaoVisita(Math.max(26, (18 * 0.62) / hf));
@@ -135,8 +135,9 @@ async function iniciar() {
     ui.bModo.textContent = ascii ? '▦ ASCII' : '◉ Realista';
     tamanho();
   }
+  function marcarNitido() { quadros.quadros.forEach((q, k) => q.tela.layers.set(2)); }
   function fecharTudo() {
-    ui.fecharPainel(); ui.fecharMenus(); selecionado = -1;
+    ui.fecharPainel(); ui.fecharMenus(); selecionado = -1; marcarNitido();
     if (ui.visorAberto()) ui.fecharVisor();
   }
   function iniciarTour() {
@@ -158,7 +159,7 @@ async function iniciar() {
   if (MOBILE) ui.dica.textContent = 'Arraste para olhar · joystick à esquerda para andar · toque nos quadros';
 
   /* ---------- entrada ---------- */
-  const raio = new THREE.Raycaster(); raio.layers.set(1);
+  const raio = new THREE.Raycaster(); raio.layers.enable(1); raio.layers.enable(2);
   const ndc = new THREE.Vector2();
   function quadroEm(cx: number, cy: number): number {
     ndc.set((cx / innerWidth) * 2 - 1, -(cy / innerHeight) * 2 + 1);
@@ -290,6 +291,7 @@ async function iniciar() {
     agua.atualizar(camera, ceu.sol, ceu.hemi.color, luz, scene.fog as THREE.FogExp2, mundo.tempo);
     fauna.atualizar(dt, mundo.tempo, noite, luz);
     quadros.atualizar(mundo.tempo, noite);
+    quadros.quadros.forEach((q, k) => ((q.tela.material as THREE.ShaderMaterial).uniforms.uBoost.value = 0));
     if (tour >= 0 && !voo) {
       tourEspera += dt;
       if (tourEspera > 5.5) { tourEspera = 0; tour = (tour + 1) % quadros.quadros.length; visitar(tour, true); }
@@ -297,20 +299,20 @@ async function iniciar() {
     atualizarCodigo(dt);
     asc.mat.uniforms.uNoite.value = noite;
 
-    camera.layers.enable(1);
+    camera.layers.enableAll();
     agua.renderReflexo(camera, scene);
     if (ascii) {
-      camera.layers.set(0);
+      camera.layers.set(0); camera.layers.enable(1);
       renderer.setRenderTarget(asc.rt); renderer.clear(); renderer.render(scene, camera); renderer.setRenderTarget(null);
       renderer.autoClear = false; renderer.clear();
       asc.desenhar();
       renderer.render(cenaBlit, camBlit);
-      camera.layers.set(1);
+      camera.layers.set(2);
       renderer.render(scene, camera);
-      camera.layers.enable(0);
+      camera.layers.enableAll();
       renderer.autoClear = true;
     } else {
-      camera.layers.enable(0);
+      camera.layers.enableAll();
       renderer.render(scene, camera);
     }
     void limpa;

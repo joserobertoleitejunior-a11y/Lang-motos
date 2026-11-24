@@ -61,15 +61,15 @@ void main(){
   float lum = dot(col, vec3(0.299, 0.587, 0.114));
   // curva de contraste: escuros ficam esparsos (como nos vídeos de referência)
   float ceuF = step(0.99995, texture2D(tProf, cuv).x);
-  float l = clamp(pow(lum, 2.0) * 1.3 - 0.01, 0.0, 0.999);
-  l *= mix(1.0, mix(0.3, 0.85, uNoite), ceuF);
+  float l = pow(smoothstep(0.1, 0.95, lum), 2.3);
+  l *= mix(1.0, mix(0.2, 0.85, uNoite), ceuF);
   l += (hash(cel + floor(uTime*0.0)) - 0.5) * 0.035;   // grão leve para variar as letras vizinhas
   float g = floor(clamp(l, 0.0, 0.999) * uN);
   float cov = texture2D(tAtlas, vec2((g + dentro.x) / uN, dentro.y)).r;
   vec3 cq = floor(col * 9.0 + 0.5) / 9.0;                       // cores "posterizadas": cara de pixel art
   float m = (cq.r + cq.g + cq.b) / 3.0;
-  vec3 gc = clamp(m + (cq - m) * 1.55, 0.0, 1.0) * (0.7 + 0.9 * lum);
-  vec3 bg = cq * 0.05;
+  vec3 gc = clamp(m + (cq - m) * 1.9, 0.0, 1.0) * (0.7 + 0.9 * lum);
+  vec3 bg = cq * 0.03;
   vec3 saida = bg + gc * cov;
   saida += cq * 0.05 * l;                                       // brilho suave
   vec2 q = vUv - 0.5; saida *= 1.0 - 0.34 * pow(length(q) * 1.45, 2.2);

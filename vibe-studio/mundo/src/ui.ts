@@ -31,7 +31,7 @@ export function criarUI(app: HTMLElement, projetos: Projeto[], a: Acoes) {
   const ajustes = el('div', 'ajustes', 'vidro', `
     <label>HORA DO DIA · <span id="vh">08:12</span></label><input id="ih" type="range" min="0" max="24" step="0.05" value="8.2">
     <label>VENTO · <span id="vv">5 m/s</span></label><input id="iv" type="range" min="0" max="1" step="0.01" value="0.4">
-    <label>TAMANHO DAS LETRAS (modo ASCII)</label><input id="il" type="range" min="6" max="16" step="1" value="9">
+    <label>TAMANHO DAS LETRAS (modo ASCII)</label><input id="il" type="range" min="3" max="12" step="1" value="5">
     <div class="lin"><button class="bt vidro" id="ba">⟳ Dia automático</button><button class="bt vidro" id="bn">☾ Noite</button><button class="bt vidro" id="bp">☀ Pôr do sol</button></div>`);
 
   const painel = el('div', 'painel', 'vidro', '');
