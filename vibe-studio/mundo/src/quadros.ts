@@ -60,16 +60,13 @@ export function criarQuadros(campo: Campo, projetos: Projeto[], imagens: Record<
     uTime: U.uTime, uNoite: { value: 0 }, uAscii: { value: 0 }, uProf: { value: null as THREE.Texture | null }, uRes: { value: new THREE.Vector2(1, 1) }, uNear: { value: 0.3 }, uFar: { value: 9000 },
   };
   const n = projetos.length;
-  const P = new THREE.Vector2(INICIO.x, INICIO.z);
-  const R = 96;
-  const alturas = [12, 23, 13, 25, 15, 24, 13, 22, 12, 21];
-  const metade = Math.min(66, 20 + n * 6);
+  // corredor sem paredes: os quadros ficam dos dois lados de uma "passarela" imaginária, virados para o centro
+  const X0 = INICIO.x, Z0 = INICIO.z - 58, ESPACO = 30, LARGURA = 17;
   projetos.forEach((p, i) => {
-    const t = n === 1 ? 0 : i / (n - 1) * 2 - 1;
-    const ang = t * (metade * Math.PI / 180);
-    const x = P.x + Math.sin(ang) * R, z = P.y - Math.cos(ang) * R * (0.92 + 0.12 * Math.abs(t));
-    const base = new THREE.Vector3(x, Math.max(campo.h(x, z), 0) + alturas[i % alturas.length], z);
-    const yaw = Math.atan2(P.x - x, P.y - z);
+    const k = Math.floor(i / 2), lado = i % 2 === 0 ? -1 : 1;
+    const x = X0 + lado * LARGURA, z = Z0 - k * ESPACO;
+    const base = new THREE.Vector3(x, Math.max(campo.h(x, z), 0) + 10.5 + (k % 2) * 3 + (lado > 0 ? 1.2 : 0), z);
+    const yaw = lado < 0 ? Math.PI / 2 - 0.5 : -Math.PI / 2 + 0.5;
     const g = new THREE.Group(); g.position.copy(base); g.rotation.y = yaw;
     const cor = new THREE.Color(p.cor);
 

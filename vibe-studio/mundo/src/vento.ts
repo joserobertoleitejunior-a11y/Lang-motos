@@ -14,7 +14,7 @@ export const mundo = {
   vento: 0.4, // alvo (controle do usuário)
   ventoSuave: 0.4,
   angulo: 0.6, // direção para onde o vento sopra (rad)
-  hora: 8.2,
+  hora: 10.6,
   autoHora: false,
   tempo: 0,
 };

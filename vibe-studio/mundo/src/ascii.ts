@@ -13,35 +13,43 @@ export async function carregarFonte(): Promise<void> {
   } catch { /* usa a fonte monoespaçada do sistema */ }
 }
 
-const CANDIDATOS = ' .\'`^",:;Il!i><~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
-const CW = 16, CH = 28;
+const CANDIDATOS = ' .,\'`^":;-_~=+*!?|/\\()[]{}<>1ilIjtfrxnuvczsaeoXYUJCLQ0OZmwqpdbkhgyTVAEFGHKNPRSDBMW&#%@$8';
+const CW = 24, CH = 42, VAR = 4;
 
-/** Monta a escala de letras ordenada pela quantidade de "tinta" de cada uma (medida de verdade). */
-function criarAtlas(n = 30): { tex: THREE.CanvasTexture; n: number; letras: string } {
+/** Escala de letras ordenada pela "tinta" de cada uma (medida de verdade), com várias letras por nível para variar. */
+function criarAtlas(n = 40): { tex: THREE.CanvasTexture; n: number; letras: string } {
   const c = document.createElement('canvas'); c.width = CW; c.height = CH;
   const g = c.getContext('2d', { willReadFrequently: true })!;
-  g.font = `700 ${CH - 6}px "JetBrains Mono", ui-monospace, Menlo, monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = `700 ${CH - 8}px "JetBrains Mono", ui-monospace, Menlo, monospace`; g.textAlign = 'center'; g.textBaseline = 'middle';
   const medidas = [...CANDIDATOS].map((ch) => {
     g.clearRect(0, 0, CW, CH); g.fillStyle = '#fff'; g.fillText(ch, CW / 2, CH / 2 + 1);
     const d = g.getImageData(0, 0, CW, CH).data; let s = 0; for (let i = 3; i < d.length; i += 4) s += d[i];
     return { ch, s };
   }).sort((a, b) => a.s - b.s);
-  const escolhidas: string[] = [];
-  for (let i = 0; i < n; i++) escolhidas.push(medidas[Math.round((i / (n - 1)) * (medidas.length - 1))].ch);
-  const atlas = document.createElement('canvas'); atlas.width = CW * n; atlas.height = CH;
+  const M = medidas.length;
+  const atlas = document.createElement('canvas'); atlas.width = CW * n; atlas.height = CH * VAR;
   const a = atlas.getContext('2d')!;
   a.fillStyle = '#000'; a.fillRect(0, 0, atlas.width, atlas.height);
   a.font = g.font; a.textAlign = 'center'; a.textBaseline = 'middle'; a.fillStyle = '#fff';
-  escolhidas.forEach((ch, i) => a.fillText(ch, i * CW + CW / 2, CH / 2 + 1));
+  const largura = Math.max(1, (M / n) * 1.6);
+  const usadas: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const centro = (i / (n - 1)) * (M - 1);
+    for (let v = 0; v < VAR; v++) {
+      const idx = Math.max(0, Math.min(M - 1, Math.round(centro + (v / (VAR - 1) - 0.5) * largura)));
+      const ch = medidas[idx].ch; if (v === 1) usadas.push(ch);
+      a.fillText(ch, i * CW + CW / 2, v * CH + CH / 2 + 1);
+    }
+  }
   const tex = new THREE.CanvasTexture(atlas);
-  tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.colorSpace = THREE.NoColorSpace;
-  return { tex, n, letras: escolhidas.join('') };
+  tex.minFilter = THREE.LinearFilter; tex.magFilter = THREE.LinearFilter; tex.generateMipmaps = false; tex.colorSpace = THREE.NoColorSpace; tex.anisotropy = 4;
+  return { tex, n, letras: usadas.join('') };
 }
 
 const VERT = /* glsl */ `varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }`;
 const FRAG = /* glsl */ `
 precision highp float;
-uniform sampler2D tCena; uniform sampler2D tProf; uniform sampler2D tAtlas; uniform vec2 uRes; uniform vec2 uCel; uniform float uN; uniform float uExp; uniform float uTime; uniform float uNoite;
+uniform sampler2D tCena; uniform sampler2D tProf; uniform sampler2D tAtlas; uniform vec2 uRes; uniform vec2 uCel; uniform float uN; uniform float uVar; uniform float uExp; uniform float uTime; uniform float uNoite;
 varying vec2 vUv;
 vec3 aces(vec3 x){ const float a=2.51, b=0.03, c=2.43, d=0.59, e=0.14; return clamp((x*(a*x+b))/(x*(c*x+d)+e), 0.0, 1.0); }
 float hash(vec2 p){ p = fract(p*vec2(123.34,456.21)); p += dot(p,p+45.32); return fract(p.x*p.y); }
@@ -61,18 +69,25 @@ void main(){
   float lum = dot(col, vec3(0.299, 0.587, 0.114));
   // curva de contraste: escuros ficam esparsos (como nos vídeos de referência)
   float ceuF = step(0.99995, texture2D(tProf, cuv).x);
-  float l = pow(smoothstep(0.1, 0.95, lum), 2.3);
-  l *= mix(1.0, mix(0.2, 0.85, uNoite), ceuF);
-  l += (hash(cel + floor(uTime*0.0)) - 0.5) * 0.035;   // grão leve para variar as letras vizinhas
+  vec2 o2 = uCel / uRes * 2.2;
+  vec3 b4 = texture2D(tCena, cuv + vec2(o2.x, 0.0)).rgb + texture2D(tCena, cuv - vec2(o2.x, 0.0)).rgb + texture2D(tCena, cuv + vec2(0.0, o2.y)).rgb + texture2D(tCena, cuv - vec2(0.0, o2.y)).rgb;
+  float lumB = dot(pow(aces(b4 * 0.25 * uExp), vec3(1.0/2.2)), vec3(0.299, 0.587, 0.114));
+  float l = pow(smoothstep(0.04, 0.85, lum), 1.5) + (lum - lumB) * 2.2;
+  l = clamp(l, 0.0, 0.999);
+  l *= mix(1.0, mix(0.55, 0.95, uNoite), ceuF);
+  l += (hash(cel) - 0.5) * 0.03;   // grão leve para variar as letras vizinhas
   float g = floor(clamp(l, 0.0, 0.999) * uN);
-  float cov = texture2D(tAtlas, vec2((g + dentro.x) / uN, dentro.y)).r;
+  float vr = floor(hash(cel * 1.37 + 7.1) * uVar);
+  float cov = texture2D(tAtlas, vec2((g + dentro.x) / uN, (vr + dentro.y) / uVar)).r;
   vec3 cq = floor(col * 9.0 + 0.5) / 9.0;                       // cores "posterizadas": cara de pixel art
   float m = (cq.r + cq.g + cq.b) / 3.0;
-  vec3 gc = clamp(m + (cq - m) * 1.9, 0.0, 1.0) * (0.7 + 0.9 * lum);
-  vec3 bg = cq * 0.03;
+  vec3 hue = clamp(m + (cq - m) * 1.9, 0.0, 1.0);
+  vec3 gc = hue * (0.5 + 1.0 * lum);
+  gc = min(gc, vec3(1.15));
+  vec3 bg = cq * 0.05;
   vec3 saida = bg + gc * cov;
-  saida += cq * 0.05 * l;                                       // brilho suave
-  vec2 q = vUv - 0.5; saida *= 1.0 - 0.34 * pow(length(q) * 1.45, 2.2);
+  saida += cq * 0.04 * l;                                       // brilho suave
+  vec2 q = vUv - 0.5; saida *= 1.0 - 0.16 * pow(length(q) * 1.45, 2.2);
   gl_FragColor = vec4(saida, 1.0);
 }`;
 
@@ -84,7 +99,7 @@ export function criarAscii(renderer: THREE.WebGLRenderer, nCelulaCss: number) {
   rt.depthTexture = new THREE.DepthTexture(64, 64);
   rt.texture.minFilter = THREE.LinearFilter; rt.texture.magFilter = THREE.LinearFilter; rt.texture.generateMipmaps = false;
   const mat = new THREE.ShaderMaterial({
-    uniforms: { tCena: { value: rt.texture }, tProf: { value: rt.depthTexture }, tAtlas: { value: atlas.tex }, uRes: { value: new THREE.Vector2(1, 1) }, uCel: { value: new THREE.Vector2(9, 16) }, uN: { value: atlas.n }, uExp: { value: 0.85 }, uTime: U.uTime, uNoite: { value: 0 } },
+    uniforms: { tCena: { value: rt.texture }, tProf: { value: rt.depthTexture }, tAtlas: { value: atlas.tex }, uRes: { value: new THREE.Vector2(1, 1) }, uCel: { value: new THREE.Vector2(9, 16) }, uN: { value: atlas.n }, uVar: { value: VAR }, uExp: { value: 1.0 }, uTime: U.uTime, uNoite: { value: 0 } },
     vertexShader: VERT, fragmentShader: FRAG, depthTest: false, depthWrite: false, toneMapped: false,
   });
   const quad = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), mat);

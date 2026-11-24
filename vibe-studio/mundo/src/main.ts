@@ -64,7 +64,7 @@ async function iniciar() {
 
   /* ---------- modo de imagem: ASCII (padrão) ou realista ---------- */
   let ascii = PARAMS.get('modo') !== 'real';
-  const celulaInicial = MOBILE ? 4 : 5;
+  const celulaInicial = MOBILE ? 6 : 8;
   const asc = criarAscii(renderer, celulaInicial);
   let pixel = aj.pixel;
   const pixelAtual = () => (ascii ? Math.min(pixel, 1.5) : pixel);
@@ -92,7 +92,7 @@ async function iniciar() {
   addEventListener('resize', tamanho); tamanho();
 
   /* ---------- estado do jogador ---------- */
-  let yaw = 0, pitch = 0.17;
+  let yaw = 0, pitch = 0.12;
   let voando = false;
   const pos = new THREE.Vector3(INICIO.x, campo.h(INICIO.x, INICIO.z) + 1.7, INICIO.z);
   const teclas = new Set<string>();
@@ -279,7 +279,7 @@ async function iniciar() {
     atualizarVento(dt);
     if (autoHora) { mundo.hora += dt / 18; ui.sincHora(mundo.hora); }
     mover(dt);
-    if (intro && !voo) { yaw = Math.sin(mundo.tempo * 0.09) * 0.32; pitch = 0.17 + Math.sin(mundo.tempo * 0.13) * 0.03; }
+    if (intro && !voo) { yaw = Math.sin(mundo.tempo * 0.08) * 0.22; pitch = 0.12 + Math.sin(mundo.tempo * 0.13) * 0.03; }
     camera.position.copy(pos);
     camera.rotation.set(pitch, yaw, 0);
     camera.updateMatrixWorld();
