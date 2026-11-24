@@ -9,6 +9,7 @@ import { Contador } from '../componentes/Contador';
 import { Celular } from '../componentes/Celular';
 import { Selo } from '../componentes/Selo';
 import { Icone, type NomeIcone } from '../componentes/Icones';
+import { ArteAscii, PainelCodigo } from '../componentes/Ascii';
 import { alfa, misturar, pilhaFonte, src } from '../tema';
 
 type P = { cena: CenaRender };
@@ -446,7 +447,35 @@ const Cta: React.FC<P> = ({ cena }) => {
   );
 };
 
+const Ascii: React.FC<P> = ({ cena }) => {
+  const frame = useCurrentFrame();
+  const { x0, y0, cw, ch, u, spec } = useCaixa();
+  const [medida, setMedida] = React.useState<{ chars: number; linhas: number } | null>(null);
+  const imagem = cena.imagem && 'src' in cena.imagem ? cena.imagem.src : null;
+  if (!imagem) return <Texto cena={cena} />;
+  const t0 = inicioTexto(cena);
+  const alturaArte = ch * 0.62;
+  const alturaCodigo = ch * 0.3;
+  const hud = Math.max(15, 17 * u);
+  const caracteres = medida ? medida.chars.toLocaleString('pt-BR') : '…';
+  const nome = spec.marca.nome ?? '';
+  return (
+    <AbsoluteFill style={{ background: '#05070B' }}>
+      <div style={{ position: 'absolute', left: x0, top: y0, width: cw, display: 'flex', flexDirection: 'column', gap: 10 * u }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontFamily: "'JetBrains Mono', monospace", fontSize: hud * 2.1, color: '#7CFFB2', opacity: interpolate(frame - t0, [0, 10], [0, 1], { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }), whiteSpace: 'nowrap' }}>
+          <span>{cena.titulo ?? 'ascii.lab'}</span>
+          <span style={{ opacity: 0.8 }}>chars {caracteres}</span>
+        </div>
+        <ArteAscii src={src(imagem)} largura={cw} altura={alturaArte} inicio={t0 + 2} aoMedir={(c, l) => setMedida({ chars: c, linhas: l })} />
+        <PainelCodigo linhas={cena.itens} inicio={cena.marca} largura={cw} altura={alturaCodigo} tamanho={Math.max(15, 25 * u)} />
+        {nome && <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: hud * 1.9, color: '#6C7A89', textAlign: 'right' }}>{nome}</div>}
+      </div>
+    </AbsoluteFill>
+  );
+};
+
 export const LAYOUT_COMPONENTES: Record<Layout, React.FC<P>> = {
+  ascii: Ascii,
   abertura: Abertura,
   texto: Texto,
   'texto-imagem': TextoImagem,

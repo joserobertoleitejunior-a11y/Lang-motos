@@ -32,7 +32,7 @@ export type EntradaLinhaDoTempo = {
 
 const DURACAO_PADRAO: Record<Layout, number> = {
   abertura: 2.4, texto: 2.6, 'texto-imagem': 3, personagem: 3, numero: 3.2, celular: 3.4,
-  lista: 3.8, produto: 3.4, comparacao: 3.6, impacto: 1.8, foto: 3, cta: 3.8,
+  lista: 3.8, produto: 3.4, comparacao: 3.6, impacto: 1.8, foto: 3, cta: 3.8, ascii: 4.4,
 };
 
 const FRAMES_TRANSICAO: Record<Transicao, number> = {
@@ -149,6 +149,7 @@ function sonsDaCena(c: CenaIA, marca: number, fps: number, entrada: number, sfxB
     case 'impacto': sons.push(s('impacto', marca, 0.7)); break;
     case 'foto': sons.push(s('whoosh', entrada, 0.35)); break;
     case 'cta': sons.push(s('sucesso', marca, 0.55)); break;
+    case 'ascii': sons.push(s('digitar', entrada, 0.3), s('brilho', marca + Math.round(fps * 1.4), 0.35)); break;
   }
   return sons;
 }

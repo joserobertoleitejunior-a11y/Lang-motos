@@ -7,6 +7,7 @@ export const ESTILOS_DESCRICAO = {
   moderno: 'limpo e atual, tipografia forte, muito contraste, visual de anúncio profissional. É o estilo padrão para a maioria dos negócios.',
   impacto: 'letras gigantes em caixa alta, ritmo rápido, cara de oferta. Para promoções, liquidações e lançamentos.',
   elegante: 'tipografia serifada, sofisticado e calmo. Moda, estética, joias, restaurantes e eventos.',
+  codigo: 'visual de terminal e código (fonte monoespaçada, fundo preto). Use com o layout "ascii". Para tecnologia, agências e quem quer um vídeo diferente.',
   minimalista: 'pouquíssimos elementos e muito espaço. Clínicas, escritórios, arquitetura.',
 } as const;
 

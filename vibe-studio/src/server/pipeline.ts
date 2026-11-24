@@ -236,6 +236,7 @@ const ESTILO_IMAGEM: Record<RoteiroIA['estilo'], string> = {
   moderno: 'Fotografia publicitária moderna, luz natural bonita, cores ricas, foco nítido, composição limpa.',
   impacto: 'Fotografia publicitária vibrante e contrastada, energia de oferta, cores saturadas, foco nítido.',
   elegante: 'Fotografia sofisticada e editorial, luz suave e quente, tons elegantes, profundidade de campo rasa.',
+  codigo: 'Fotografia escura e contrastada, estética de terminal e ficção científica, luz de neon discreta, foco nítido.',
   minimalista: 'Composição minimalista, muito espaço vazio, fundo neutro, luz suave, elegância simples.',
 };
 

@@ -15,7 +15,7 @@ const FORMATOS: { v: Pedido['formato']; t: string }[] = [
   { v: '9:16', t: 'Reels / TikTok' }, { v: '4:5', t: 'Feed' }, { v: '1:1', t: 'Quadrado' }, { v: '16:9', t: 'YouTube' },
 ];
 const ESTILOS: { v: Pedido['estilo']; t: string }[] = [
-  { v: 'auto', t: 'Automático' }, { v: 'fofo-3d', t: 'Fofo 3D' }, { v: 'moderno', t: 'Moderno' }, { v: 'impacto', t: 'Impacto' }, { v: 'elegante', t: 'Elegante' }, { v: 'minimalista', t: 'Minimalista' },
+  { v: 'auto', t: 'Automático' }, { v: 'fofo-3d', t: 'Fofo 3D' }, { v: 'moderno', t: 'Moderno' }, { v: 'impacto', t: 'Impacto' }, { v: 'elegante', t: 'Elegante' }, { v: 'minimalista', t: 'Minimalista' }, { v: 'codigo', t: 'Código (ASCII)' },
 ];
 const MUSICAS: { v: Pedido['musica']; t: string }[] = [
   { v: 'auto', t: 'Automática' }, { v: 'alegre', t: 'Alegre' }, { v: 'tranquilo', t: 'Tranquila' }, { v: 'energetico', t: 'Energética' }, { v: 'elegante', t: 'Elegante' }, { v: 'nenhuma', t: 'Sem música' },

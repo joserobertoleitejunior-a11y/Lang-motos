@@ -39,6 +39,25 @@ export const roteiroDemo: RoteiroIA = {
   hashtags: ['#comerciolocal', '#site', '#empreendedorismo', '#vibecoding'],
 };
 
+export const roteiroAscii: RoteiroIA = {
+  titulo: 'VIBE CODING PROCESS — código vira imagem',
+  ideia: 'Mostrar o estilo código: fotos viram arte de caracteres animada com o código aparecendo.',
+  estilo: 'codigo',
+  paleta: { fundo: '#05070B', texto: '#E6EDF3', primaria: '#12B886', destaque: '#FFB454' },
+  musica: { clima: 'energetico', descricao: 'batida eletrônica escura' },
+  legendas: false,
+  personagens: [],
+  cenas: [
+    cena({ layout: 'ascii', titulo: 'vibe.coding_process', fundo: 'escuro', imagem: { ...SEM_IMAGEM, fonte: 'referencia', referencia: 'ref3' }, duracaoMinima: 5.4 }),
+    cena({ layout: 'impacto', titulo: 'Código vira imagem. Imagem vira cliente.', destaques: ['cliente.'], fundo: 'escuro', transicao: 'zoom', animacaoTexto: 'subir', duracaoMinima: 2.4 }),
+    cena({ layout: 'ascii', titulo: 'produto.render()', fundo: 'escuro', transicao: 'fade', imagem: { ...SEM_IMAGEM, fonte: 'referencia', referencia: 'ref2', recorte: true }, duracaoMinima: 4.6 }),
+    cena({ layout: 'lista', titulo: 'O que a gente entrega', destaques: ['entrega'], itens: ['Sites que vendem', 'Logotipos', 'Vídeos com IA', 'Orçamento claro'], fundo: 'escuro', transicao: 'empurrar', animacaoTexto: 'digitar', duracaoMinima: 3.6 }),
+    cena({ layout: 'cta', titulo: 'Seu comércio, em código', destaques: ['código'], subtitulo: 'Peça o seu', fundo: 'escuro', transicao: 'deslizar', animacaoTexto: 'digitar', duracaoMinima: 3.6 }),
+  ],
+  legendaPost: 'Código virando imagem. Fale com a VIBE CODING PROCESS e tenha site, logo e vídeos que atraem clientes.',
+  hashtags: ['#creativecoding', '#ascii', '#comerciolocal', '#vibecoding'],
+};
+
 export const roteiroTeste: RoteiroIA = {
   titulo: 'Teste de todos os layouts',
   ideia: 'Padaria de bairro mostrando o cupcake novo.',
@@ -62,6 +81,7 @@ export const roteiroTeste: RoteiroIA = {
 const IMAGENS_TESTE: Record<string, { src: string; tipo: 'foto' | 'recorte' }> = {
   ref1: { src: 'demo/foto-loja.jpg', tipo: 'foto' },
   ref2: { src: 'demo/cupcake.png', tipo: 'recorte' },
+  ref3: { src: 'demo/logo-vcp.png', tipo: 'foto' },
 };
 
 /** Monta o VideoSpec sem nenhuma IA: fala com tempo estimado (sem áudio) e imagens locais. */

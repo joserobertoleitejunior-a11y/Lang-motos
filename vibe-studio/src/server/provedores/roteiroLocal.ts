@@ -75,6 +75,12 @@ export function roteiroLocal(pedido: Pedido, marca: Marca | null, refs: Referenc
     narracao: comVoz ? (zap ? 'Chame a gente no WhatsApp!' : 'Venha conhecer!') : '', transicao: 'limpar', duracaoMinima: comVoz ? null : 3.6,
   }));
 
+  if (pedido.estilo === 'codigo') {
+    const primeira = cenas[0];
+    if (primeira.imagem.fonte === 'referencia') { primeira.layout = 'ascii'; primeira.titulo = (marca?.nome ?? 'ascii.lab').toLowerCase().replace(/\s+/g, '_'); primeira.destaques = []; primeira.duracaoMinima = 5.2; }
+    cenas.forEach((c) => { c.fundo = c.layout === 'impacto' ? 'marca' : 'escuro'; });
+  }
+
   const cores = marca?.cores ?? [];
   return {
     titulo: marca ? `${marca.nome} — vídeo` : titulo(frases[0]),

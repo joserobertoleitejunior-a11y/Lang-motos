@@ -14,7 +14,7 @@ import * as z from 'zod/v4';
 
 export const LAYOUTS = [
   'abertura', 'texto', 'texto-imagem', 'personagem', 'numero', 'celular',
-  'lista', 'produto', 'comparacao', 'impacto', 'foto', 'cta',
+  'lista', 'produto', 'comparacao', 'impacto', 'foto', 'cta', 'ascii',
 ] as const;
 export type Layout = (typeof LAYOUTS)[number];
 
@@ -32,9 +32,10 @@ export const DESCRICAO_LAYOUT: Record<Layout, string> = {
   impacto: 'Tela inteira na cor da marca com 1 a 3 palavras gigantes. Para viradas e frases de efeito.',
   foto: 'Foto ou arte em tela cheia, com movimento de câmera e o título por cima.',
   cta: 'Encerramento: logo, chamada (título) e contato. Sempre a última cena.',
+  ascii: 'Estilo "código virando imagem": a foto vira arte de caracteres animada, com o código aparecendo embaixo. Exige imagem (foto ou recorte). O título vira a linha de dados no topo. Ótimo para tecnologia, marca da agência e abertura diferente.',
 };
 
-export const ESTILOS = ['fofo-3d', 'moderno', 'impacto', 'elegante', 'minimalista'] as const;
+export const ESTILOS = ['fofo-3d', 'moderno', 'impacto', 'elegante', 'minimalista', 'codigo'] as const;
 export type Estilo = (typeof ESTILOS)[number];
 
 export const CLIMAS = ['alegre', 'tranquilo', 'energetico', 'elegante', 'nenhuma'] as const;

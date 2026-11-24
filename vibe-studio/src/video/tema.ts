@@ -19,6 +19,7 @@ export const TEMAS: Record<Estilo, Tema> = {
   moderno: { fonteTitulo: 'Bricolage Grotesque', pesoTitulo: 800, fonteTexto: 'Inter', pesoTexto: 600, caixaAlta: false, espacamento: '-0.035em', alturaLinha: 1.0, raio: 0.03, bolhas: false },
   impacto: { fonteTitulo: 'Anton', pesoTitulo: 400, fonteTexto: 'Inter', pesoTexto: 700, caixaAlta: true, espacamento: '0.005em', alturaLinha: 1.02, raio: 0.02, bolhas: false },
   elegante: { fonteTitulo: 'Playfair Display', pesoTitulo: 700, fonteTexto: 'Inter', pesoTexto: 500, caixaAlta: false, espacamento: '-0.015em', alturaLinha: 1.08, raio: 0.03, bolhas: false },
+  codigo: { fonteTitulo: 'JetBrains Mono', pesoTitulo: 700, fonteTexto: 'JetBrains Mono', pesoTexto: 400, caixaAlta: false, espacamento: '-0.02em', alturaLinha: 1.12, raio: 0.012, bolhas: false },
   minimalista: { fonteTitulo: 'Inter', pesoTitulo: 800, fonteTexto: 'Inter', pesoTexto: 500, caixaAlta: false, espacamento: '-0.045em', alturaLinha: 1.0, raio: 0.03, bolhas: false },
 };
 
@@ -31,6 +32,7 @@ export const ARQUIVOS_FONTES: { family: string; weight: string; style?: string; 
   { family: 'Anton', weight: '400', arquivo: 'anton-latin-400-normal.woff2' },
   ...[600, 700, 800].map((w) => ({ family: 'Playfair Display', weight: String(w), arquivo: `playfair-display-latin-${w}-normal.woff2` })),
   { family: 'Playfair Display', weight: '700', style: 'italic', arquivo: 'playfair-display-latin-700-italic.woff2' },
+  ...[400, 700].map((w) => ({ family: 'JetBrains Mono', weight: String(w), arquivo: `jetbrains-mono-latin-${w}-normal.woff2` })),
   ...[600, 700].map((w) => ({ family: 'Caveat', weight: String(w), arquivo: `caveat-latin-${w}-normal.woff2` })),
 ];
 

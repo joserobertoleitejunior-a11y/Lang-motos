@@ -7,14 +7,14 @@ import { bundle } from '@remotion/bundler';
 import { renderMedia, renderStill, selectComposition } from '@remotion/renderer';
 import fs from 'node:fs';
 import path from 'node:path';
-import { montarDemo, roteiroDemo, roteiroTeste } from '../src/shared/demo';
+import { montarDemo, roteiroAscii, roteiroDemo, roteiroTeste } from '../src/shared/demo';
 import { iniciosDasCenas } from '../src/shared/linhaDoTempo';
 import type { Formato } from '../src/shared/spec';
 import { normalizarVolume } from '../src/server/posProducao';
 
 const [modo = 'quadros', qual = 'demo', formato = '9:16', saida] = process.argv.slice(2);
 const navegador = process.env.CHROME_PATH || '/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell';
-const roteiro = qual === 'teste' ? roteiroTeste : roteiroDemo;
+const roteiro = qual === 'teste' ? roteiroTeste : qual === 'ascii' ? roteiroAscii : roteiroDemo;
 const spec = montarDemo(roteiro, formato as Formato, qual === 'teste' ? { nome: 'Padaria Pão Dourado', contato: { whatsapp: '11987654321', instagram: 'paodourado' } } : { nome: 'VIBE CODING PROCESS' });
 
 const t0 = Date.now();
@@ -24,7 +24,7 @@ const inputProps = { spec };
 const composition = await selectComposition({ serveUrl, id: 'Video', inputProps, browserExecutable: navegador });
 
 if (modo === 'quadros') {
-  const pasta = path.resolve('out/quadros');
+  const pasta = path.resolve(process.env.PASTA_QUADROS || 'out/quadros');
   fs.mkdirSync(pasta, { recursive: true });
   const inicios = iniciosDasCenas(spec);
   const extra = (process.env.EXTRA ?? '').split(',').filter(Boolean).map(Number);
