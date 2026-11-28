@@ -1,0 +1,12 @@
+{
+  "name": "vibe-coding-process",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site da Vibe Coding Process: soluções com IA para o comércio local.",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8080",
+    "test": "node tests/e2e.mjs",
+    "lint": "npx --yes @biomejs/biome@1.9.4 lint assets/js tests"
+  }
+}

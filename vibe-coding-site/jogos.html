@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VCP Arcade · jogos feitos de letras</title>
+<meta name="description" content="Cobrinha, Quebra-blocos, Voo, Blocos, Invasores, Pong e Areia de letras: jogos clássicos desenhados só com letras pela Vibe Coding Process.">
+<meta name="theme-color" content="#080808">
+<link rel="canonical" href="https://joserobertoleitejunior-a11y.github.io/vibe-coding-process/jogos.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="VCP Arcade · jogos feitos de letras">
+<meta property="og:description" content="Jogos clássicos desenhados só com letras. Bata o recorde e desafie um amigo.">
+<meta property="og:url" content="https://joserobertoleitejunior-a11y.github.io/vibe-coding-process/jogos.html">
+<meta property="og:image" content="https://joserobertoleitejunior-a11y.github.io/vibe-coding-process/assets/img/arcade.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,600;1,500;1,600&display=swap">
+<link rel="stylesheet" href="assets/css/site.css">
+<style>
+  body { min-height: 100svh; display: flex; flex-direction: column; }
+  .so-arcade { width: 100%; flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 14px; padding-block: 14px 24px; }
+  .so-arcade .topo-min { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .so-arcade .arc { width: 100%; }
+  .so-arcade .topo-min a { font-family: var(--f-rotulo); letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.85rem; text-decoration: none; }
+  @media (min-width: 900px) and (min-height: 700px) { .so-arcade .arc-tela { aspect-ratio: auto; height: min(70vh, 680px); } }
+</style>
+</head>
+<body>
+<main class="miolo so-arcade">
+  <div class="topo-min">
+    <a class="marca" href="./" aria-label="Voltar ao site da Vibe Coding Process">
+      <span class="mini-cubo" aria-hidden="true"><span class="cena"><i class="face f1"></i><i class="face f2"></i><i class="face f3"></i><i class="face f4"></i><i class="face f5"></i><i class="face f6"></i></span></span>
+      <b>Vibe Coding<span>Process</span></b>
+    </a>
+    <a href="./#contato">Quer um site assim? Fale com a gente →</a>
+  </div>
+  <h1 class="sr">VCP Arcade</h1>
+  <div id="vcp-arcade" class="arc" aria-label="VCP Arcade"><p class="arc-carregando mono">carregando o arcade…</p></div>
+</main>
+<script type="module">
+  import { criarArcade } from './assets/js/arcade/arcade.js';
+  const raiz = document.getElementById('vcp-arcade');
+  criarArcade(raiz).then((a) => { window.__arcade = a; const id = location.hash.slice(1); const i = a.jogos.findIndex((j) => j.id === id); if (i >= 0) a.iniciar(i); })
+    .catch((e) => { raiz.innerHTML = '<p class="arc-carregando mono">Este aparelho não conseguiu abrir o arcade (WebGL indisponível). Tente em outro navegador.</p>'; console.error(e); });
+</script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Gerador da imagem de compartilhamento</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Cormorant+Garamond:ital,wght@1,600&display=swap">
+<link rel="stylesheet" href="../assets/css/site.css">
+<style>
+  body { margin: 0; width: 1200px; height: 630px; overflow: hidden; background: #080808; }
+  .og { position: relative; width: 1200px; height: 630px; display: grid; grid-template-columns: 640px 560px; align-items: center; }
+  .og .txt { padding: 0 0 0 72px; }
+  .og h1 { font-family: var(--f-display); font-style: italic; font-weight: 600; font-size: 74px; line-height: 0.98; margin: 18px 0 10px; color: var(--creme); }
+  .og h1 em { display: block; font-style: normal; font-family: var(--f-rotulo); font-weight: 800; color: var(--ouro-claro); font-size: 52px; letter-spacing: 0.02em; margin-top: 8px; }
+  .og .marca { margin-top: 26px; }
+  .og canvas { width: 560px; height: 630px; display: block; }
+  .og .borda { position: absolute; inset: 18px; border: 1px solid rgba(201,168,76,.28); border-radius: 22px; pointer-events: none; }
+  .modo-cartao .og { display: none; }
+  .cartao { display: none; width: 960px; height: 600px; background: radial-gradient(120% 90% at 80% 10%, #1b2a4d, #0b1220 60%); color: #f5f5f0; font-family: 'Barlow Condensed', sans-serif; position: relative; overflow: hidden; }
+  .modo-cartao .cartao { display: block; }
+  .cartao .t { position: absolute; left: 64px; top: 70px; }
+  .cartao small { letter-spacing: .32em; color: #c9a24f; font-weight: 700; font-size: 18px; }
+  .cartao h2 { font-size: 92px; margin: 10px 0 0; font-weight: 900; letter-spacing: .02em; line-height: .95; }
+  .cartao p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 40px; margin: 10px 0 0; color: #d9d2c0; }
+  .cartao .mods { position: absolute; left: 64px; right: 64px; bottom: 64px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .cartao .mod { border: 1px solid rgba(201,162,79,.45); border-radius: 16px; padding: 22px 20px; background: rgba(255,255,255,.04); }
+  .cartao .mod b { display: block; font-size: 30px; letter-spacing: .06em; }
+  .cartao .mod span { color: #9aa6bd; font-family: 'Barlow', sans-serif; font-size: 17px; }
+  .cartao .selo { position: absolute; right: 64px; top: 78px; color: #c9a24f; font-size: 18px; letter-spacing: .24em; font-weight: 700; }
+</style></head>
+<body>
+<div class="og">
+  <div class="txt">
+    <p class="rotulo">Itapetininga · SP — soluções com IA</p>
+    <h1>Soluções com IA para o comércio <em>que quer vender mais</em></h1>
+    <span class="marca"><b>Vibe Coding<span>Process</span></b></span>
+  </div>
+  <canvas id="c"></canvas>
+  <i class="borda"></i>
+</div>
+<div class="cartao">
+  <div class="t"><small>PLATAFORMA VCP · EM DESENVOLVIMENTO</small><h2>CONFERE AÍ</h2><p>Aqui seu caixa bate.</p></div>
+  <span class="selo">PDV · GESTÃO</span>
+  <div class="mods">
+    <div class="mod"><b>PDV</b><span>vender no balcão</span></div>
+    <div class="mod"><b>ESTOQUE</b><span>entrada e saída</span></div>
+    <div class="mod"><b>FINANCEIRO</b><span>caixa do dia</span></div>
+    <div class="mod"><b>DELIVERY</b><span>pedidos do zap</span></div>
+  </div>
+</div>
+<script type="module">
+  import { criarLetras, prepararFonte } from '../assets/js/letras.js';
+  import { desenharCubo } from '../assets/js/cubo.js';
+  if (location.search.includes('cartao')) document.body.classList.add('modo-cartao');
+  await document.fonts.ready; await prepararFonte();
+  const canvas = document.getElementById('c');
+  const letras = criarLetras(canvas, { celula: 6, fundo: 0.6, preservar: true });
+  const f = document.createElement('canvas'); f.width = 660; f.height = 600; const ctx = f.getContext('2d'); ctx.setTransform(3, 0, 0, 3, 0, 0);
+  ctx.fillStyle = '#000'; ctx.fillRect(0, 0, 220, 200);
+  desenharCubo(ctx, { cx: 110, cy: 100, tamanho: 64, rotY: 0.62, rotX: 0.4, tempo: 2, faces: ['IA', 'VCP', 'APPS', 'BOTS', 'SITES', 'SP'] });
+  const W = canvas.clientWidth, H = canvas.clientHeight, e = Math.min(W / 220, H / 200);
+  letras.desenhar(f, { x: (W - 220 * e) / 2, y: (H - 200 * e) / 2, w: 220 * e, h: 200 * e }, 3);
+  window.pronto = true;
+</script>
+</body></html>

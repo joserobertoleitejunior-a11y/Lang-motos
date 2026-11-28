@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /ferramentas/
+
+Sitemap: https://joserobertoleitejunior-a11y.github.io/vibe-coding-process/sitemap.xml

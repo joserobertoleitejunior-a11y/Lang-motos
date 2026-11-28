@@ -20,6 +20,8 @@ export function criarUI(app: HTMLElement, projetos: Projeto[], a: Acoes) {
   const bLista = btn('▤ Quadros', '', () => alternar(lista), 'blista');
   const bAj = btn('☼ Ajustes', '', () => alternar(ajustes), 'baj');
   const bCod = btn('</> Código', '', a.codigo, 'bcod');
+  const voltar = (window as unknown as { __MUNDO_VOLTAR?: string }).__MUNDO_VOLTAR;
+  if (voltar) { const v = el<HTMLAnchorElement>('a', 'bvoltar', 'bt vidro', '← Site VCP'); v.href = voltar; dock.prepend(v); }
 
   const lista = el('div', 'lista', 'vidro');
   projetos.forEach((p, i) => {

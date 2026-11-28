@@ -51,3 +51,20 @@ fs.writeFileSync(path.join(dist, 'index.html'), `<!doctype html>\n<html lang="pt
 // fragmento para o Artifact (sem html/head/body)
 fs.writeFileSync(path.join(dist, 'artefato.html'), `<title>${titulo}</title>\n<meta name="claude:viewport-fit-sides" content="cover">\n${fontes}\n<style>${css}</style>\n${corpo}\n`);
 console.log('ok', Math.round(js.length / 1024) + ' KB de código,', Object.keys(imagens).length, 'imagens,', Math.round(fs.statSync(path.join(dist, 'index.html')).size / 1024) + ' KB no total');
+
+// 4) versão para o site da Vibe Coding (SITE_DIR=../../vibe-coding-process/mundo): imagens em arquivos, código em mundo.js
+if (process.env.SITE_DIR) {
+  const destino = path.resolve(process.env.SITE_DIR);
+  fs.mkdirSync(path.join(destino, 'img'), { recursive: true });
+  const caminhos = {};
+  for (const p of projetos) {
+    fs.copyFileSync(path.join(jpgDir, p.imagem + '.jpg'), path.join(destino, 'img', p.imagem + '.jpg'));
+    caminhos[p.imagem] = 'img/' + p.imagem + '.jpg';
+  }
+  fs.writeFileSync(path.join(destino, 'mundo.js'), r.outputFiles[0].text);
+  const base = 'https://joserobertoleitejunior-a11y.github.io/vibe-coding-process/';
+  const meta = `<meta name="description" content="Passeie por uma paisagem 3D feita em código pela Vibe Coding Process: lago com ondas, vento nas árvores, animais e os nossos projetos pendurados no ar."><link rel="canonical" href="${base}mundo/"><meta property="og:title" content="Mundo VCP 3D"><meta property="og:description" content="Uma paisagem inteira feita em código, com os projetos da Vibe Coding Process flutuando sobre o lago."><meta property="og:type" content="website"><meta property="og:url" content="${base}mundo/"><meta property="og:image" content="${base}assets/img/mundo.jpg"><meta name="twitter:card" content="summary_large_image"><link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">`;
+  const dadosSite = `<script>window.__MUNDO_PROJETOS=${JSON.stringify(projetos)};window.__MUNDO_IMAGENS=${JSON.stringify(caminhos)};window.__MUNDO_FONTE=${JSON.stringify(fonte)};window.__MUNDO_CODIGO=${JSON.stringify(codigo)};window.__MUNDO_VOLTAR='../';</script>`;
+  fs.writeFileSync(path.join(destino, 'index.html'), `<!doctype html>\n<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b1020"><title>${titulo} · Vibe Coding Process</title>${meta}${fontes}<style>html,body{margin:0;background:#0b1020}${css}</style></head><body><div id="app"></div>\n${dadosSite}\n<script src="mundo.js"></script></body></html>\n`);
+  console.log('site:', destino);
+}

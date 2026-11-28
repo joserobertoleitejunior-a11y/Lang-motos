@@ -1,0 +1,14 @@
+# Publicação na Netlify (opcional): o site é estático, sem build.
+[build]
+  publish = "."
+  command = ""
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"
+
+[[headers]]
+  for = "/mundo/img/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800"

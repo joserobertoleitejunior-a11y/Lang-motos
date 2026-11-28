@@ -1,11 +1,110 @@
 [
- {"id":"lang-motos","titulo":"Lang Motos","tag":"Site · Oficina de motos","descricao":"Site completo para oficina e loja de motos: serviços, catálogo, localização e contato direto no WhatsApp.","url":"https://joserobertoleitejunior-a11y.github.io/lang-motos/","cor":"#ff6a2b","imagem":"lang-motos","cliente":true},
- {"id":"san-comercio","titulo":"San Comércio","tag":"Site · Comércio local","descricao":"Vitrine digital para comércio de bairro: produtos, ofertas e pedido rápido pelo celular.","url":"https://joserobertoleitejunior-a11y.github.io/San-comercio/","cor":"#3bd16f","imagem":"san-comercio","cliente":true},
- {"id":"remop","titulo":"Remop Retífica","tag":"Site · Retífica de motores","descricao":"Presença profissional para retífica: serviços, diferenciais, orçamento e atendimento guiado.","url":"https://joserobertoleitejunior-a11y.github.io/remop-retifica/","cor":"#4d9bff","imagem":"remop-retifica","cliente":true},
- {"id":"vcp-studio","titulo":"VCP Studio","tag":"App · Vídeos com IA","descricao":"Estúdio que cria vídeos curtos para o comércio local: roteiro, voz, imagens e render em um só lugar.","url":"https://claude.ai/artifact/JufFdGtkVCxHbeYk7hoiqf","cor":"#a77bff","imagem":"vcp-studio"},
- {"id":"logotipos","titulo":"Criador de Logotipos","tag":"Ferramenta · Identidade visual","descricao":"Gera marcas para pequenos negócios: símbolo, paleta e tipografia prontos para usar.","url":null,"cor":"#ffb400","imagem":"logotipos"},
- {"id":"sites","titulo":"Criador de Sites","tag":"Ferramenta · Engenharia reversa","descricao":"Analisa sites existentes e monta um novo no padrão VCP, com preço calculado por página.","url":null,"cor":"#2ee6c8","imagem":"sites"},
- {"id":"videos","titulo":"Vídeos em Código","tag":"Vídeo · Estilo ASCII","descricao":"Vídeos curtos feitos inteiramente em código, no estilo letras coloridas sobre fundo escuro.","url":null,"cor":"#ff4f7b","imagem":"videos"},
- {"id":"codigo","titulo":"Código Aberto","tag":"Bastidores · Como é feito","descricao":"Tudo aqui é gerado por código: terreno, ventos, ondas, árvores e animais. Sem imagens prontas.","url":null,"cor":"#7ad7ff","imagem":"codigo"},
- {"id":"seu-projeto","titulo":"Seu negócio aqui","tag":"Vibe Coding Process","descricao":"Quer um quadro assim para o seu comércio? Fale com Jose Roberto pelo Instagram.","url":null,"cor":"#ffd24a","imagem":"seu-projeto"}
+ {
+  "id": "pizza-em-dobro",
+  "titulo": "Pizza em Dobro",
+  "tag": "Pizzaria · pedidos e caixa",
+  "descricao": "Pizzaria com pedido pelo site, cardápio, caixa e painel da equipe.",
+  "url": "https://pizzaria-pizza-em-dobro.com.br/",
+  "cor": "#ff5a3c",
+  "imagem": "pizza-em-dobro"
+ },
+ {
+  "id": "rafael",
+  "titulo": "Rafael Cabeleireiros",
+  "tag": "Barbearia · agenda online",
+  "descricao": "Agendamento por profissional, caixa e galeria de cortes.",
+  "url": "https://joserobertoleitejunior-a11y.github.io/rafael-cabeleireiros-/",
+  "cor": "#e4c97e",
+  "imagem": "rafael-cabeleireiros"
+ },
+ {
+  "id": "imperio",
+  "titulo": "Império do EPS",
+  "tag": "Fábrica · calculadora de obra",
+  "descricao": "Fábrica do Blocão com calculadora de obra, peça em 3D e orçamento no WhatsApp.",
+  "url": "https://humberto-imperio-dos-eps.netlify.app/",
+  "cor": "#3b6dff",
+  "imagem": "imperio-do-eps"
+ },
+ {
+  "id": "nova-era",
+  "titulo": "Nova Era",
+  "tag": "Pré-moldados · app de carga",
+  "descricao": "Pré-moldados e concreto, com app de conferência de carga para a expedição.",
+  "url": "https://joserobertoleitejunior-a11y.github.io/NOVA-ERA-/",
+  "cor": "#ff3b3b",
+  "imagem": "nova-era"
+ },
+ {
+  "id": "miquira",
+  "titulo": "Auto Posto Miquira III",
+  "tag": "Posto · assistente com IA",
+  "descricao": "Assistente com IA que tira dúvidas e agenda troca de óleo.",
+  "url": null,
+  "cor": "#ffd400",
+  "imagem": "auto-posto-miquira"
+ },
+ {
+  "id": "av5",
+  "titulo": "Comercial Av 5",
+  "tag": "Materiais · orçamento",
+  "descricao": "Materiais de construção com vitrine e orçamento direto no WhatsApp.",
+  "url": null,
+  "cor": "#ffc107",
+  "imagem": "comercial-av5"
+ },
+ {
+  "id": "san-comercio",
+  "titulo": "San Comércio",
+  "tag": "Comércio · catálogo",
+  "descricao": "Mangueiras e conexões com catálogo de quase 9 mil itens.",
+  "url": "https://joserobertoleitejunior-a11y.github.io/San-comercio/",
+  "cor": "#3bd16f",
+  "imagem": "san-comercio"
+ },
+ {
+  "id": "remop",
+  "titulo": "Remop Retífica",
+  "tag": "Retífica · orçamento",
+  "descricao": "Retífica de motores com serviços, orçamento e atendimento guiado.",
+  "url": "https://joserobertoleitejunior-a11y.github.io/remop-retifica/",
+  "cor": "#4d9bff",
+  "imagem": "remop-retifica"
+ },
+ {
+  "id": "lang-motos",
+  "titulo": "Lang Motos",
+  "tag": "Oficina de motos · desde 1997",
+  "descricao": "Oficina e loja de motos com serviços, peças e contato rápido.",
+  "url": "https://joserobertoleitejunior-a11y.github.io/lang-motos/",
+  "cor": "#ff6a2b",
+  "imagem": "lang-motos"
+ },
+ {
+  "id": "matriz",
+  "titulo": "Matriz",
+  "tag": "Plataforma VCP",
+  "descricao": "Um app só para agendar, pedir delivery e chamar profissionais da cidade.",
+  "url": "https://vb-espaco.joserobertoleitejunior.workers.dev/",
+  "cor": "#ff9a3c",
+  "imagem": "matriz"
+ },
+ {
+  "id": "arcade",
+  "titulo": "VCP Arcade",
+  "tag": "Jogos feitos de letras",
+  "descricao": "Cobrinha, Quebra-blocos, Voo, Blocos, Invasores, Pong e Areia, tudo desenhado com letras.",
+  "url": "../jogos.html",
+  "cor": "#46e08a",
+  "imagem": "arcade"
+ },
+ {
+  "id": "seu-projeto",
+  "titulo": "Seu negócio aqui",
+  "tag": "Vibe Coding Process",
+  "descricao": "Quer um quadro assim para o seu comércio? Conte o seu projeto e a mensagem sai pronta no WhatsApp.",
+  "url": "../#contato",
+  "cor": "#ffd24a",
+  "imagem": "seu-projeto"
+ }
 ]

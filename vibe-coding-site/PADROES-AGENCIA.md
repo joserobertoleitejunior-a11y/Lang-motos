@@ -1,0 +1,206 @@
+# PADRÕES-AGENCIA.md
+### VIBE CODING PROCESS — arquivo mestre de padrões
+> Criado por José. Define as regras fixas que **todo projeto novo** da agência segue, independente do cliente, do stack específico ou de qual agente/modelo de IA está executando o código.
+>
+> **Como usar**: cole este arquivo na raiz de todo projeto novo (`PADROES-AGENCIA.md`) e referencie ele no início de qualquer sessão de execução — humana ou de IA. É o "contrato" que qualquer agente deve respeitar sem precisar ser lembrado toda vez. Se um agente de IA sugerir algo que contradiz este arquivo, este arquivo vence.
+
+---
+
+## 0. Contexto do projeto (preencher a cada novo projeto)
+
+```
+Nome do projeto: Site da Vibe Coding Process (institucional + Arcade de letras + Mundo VCP 3D)
+Cliente: a própria agência (José Roberto)
+Stack principal: Site estático (HTML/CSS/JS puro, módulos ES, sem build) + WebGL próprio (motor de letras) + Mundo 3D (Three.js, gerado pelo vibe-studio/mundo)
+Repositório: github.com/joserobertoleitejunior-a11y/vibe-coding-process
+Ambiente de produção: GitHub Pages (ou Netlify, conectando este repositório ao site vibecodingprocess.netlify.app)
+Domínio(s) de produção: joserobertoleitejunior-a11y.github.io/vibe-coding-process (provisório até o domínio próprio)
+Responsável técnico: José
+Data de início deste ciclo: 2026-11-28
+```
+
+---
+
+## 1. Governança de tarefa e versionamento
+
+**Regra fixa**: toda tarefa — correção, melhoria ou funcionalidade nova — nasce como **Issue** antes de virar código. Nada é "só um ajuste rápido" sem rastro.
+
+- Toda Issue é categorizada como `bug`, `melhoria` ou `feature`, com uma frase descrevendo o critério de pronto (o que precisa ser verdade pra Issue fechar).
+- Todo Pull Request (ou commit, se o projeto não usar PR) **menciona a Issue correspondente** na descrição (ex: `Resolve #12`).
+- **Padrão de commit**: `tipo(escopo): descrição curta` — ex: `fix(pedidos): corrige cálculo de frete no checkout`, `feat(whatsapp): adiciona webhook de status de mensagem`. Tipos aceitos: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`.
+- Nenhum código entra na branch principal (`main`/`master`) direto — sempre via branch de trabalho (`feature/nome`, `fix/nome`) e PR, mesmo trabalhando sozinho. É o que permite reverter um erro sem reescrever tudo.
+- **Definição de Pronto (Definition of Done)** de qualquer tarefa: código revisado (por você ou pela IA em modo crítico) + testado manualmente no mínimo + sem erro novo no Sentry + Issue referenciada e fechada.
+
+**Por quê**: sem isso, cada bot/site vira um projeto órfão sem histórico — o padrão exato que fazia os bots anteriores não durarem: ninguém sabia o que tinha mudado da última vez que funcionava.
+
+---
+
+## 2. Padrão de motion e loading (toda interface, sem exceção)
+
+**Regra fixa**: todo elemento de interface que muda de estado precisa comunicar isso visualmente. Não é decoração — é requisito de qualidade, igual "o botão precisa funcionar".
+
+Aplicar em 100% das telas:
+- **Skeleton loading** em qualquer conteúdo que carrega de uma API/banco (nunca tela em branco ou spinner genérico solto).
+- **Lazy loading** de imagens e componentes fora da viewport inicial.
+- **Animação suave de entrada/saída** em modais, listas, trocas de tela (respeitando `prefers-reduced-motion` do usuário — acessibilidade também é padrão, não exceção).
+- **Feedback de progresso** em qualquer ação que leva mais de ~300ms (enviar pedido, salvar, upload) — botão precisa mostrar estado de carregando e ficar desabilitado, pra evitar duplo clique/pedido duplicado.
+- **Estado de erro visível**: toda ação que pode falhar (rede, validação) tem um estado visual de erro, não só um console.log silencioso.
+
+**Divisão de responsabilidade das libs** (padrão já validado):
+- **GSAP + ScrollTrigger** → narrativa de scroll, transições de seção.
+- **Anime.js** → microinterações leves (contadores, ícones reativos, feedback de clique).
+- **Motion.dev** → interações com física real (swipe, inércia, modais com spring).
+- **3D (Three.js, se aplicável)** → restrito a 1–2 momentos de destaque (hero), nunca espalhado pela interface inteira.
+
+**Por quê**: restrição no visual pesado (3D/hero) + consistência no feedback leve (loading/transição) é o que separa um produto "profissional" de um "protótipo".
+
+---
+
+## 3. Observabilidade, qualidade de código e testes (requisito de nascença)
+
+### 3.1 Observabilidade
+- Erro em produção precisa ser visível **antes** do cliente reclamar.
+- Ferramenta padrão: **Sentry** (captura de erro em tempo real, front e back).
+- Se o stack usar Supabase Edge Functions: logar exceções explicitamente e conectar ao Sentry via SDK compatível — Edge Functions não capturam erro automaticamente como um servidor tradicional.
+- Alerta configurado (e-mail ou similar) pra erro crítico — não adianta o erro estar no painel se ninguém olha o painel todo dia.
+- Alternativas aceitáveis conforme o projeto: Datadog, New Relic, OpenTelemetry.
+
+### 3.2 Qualidade e lint de código
+- Lint automático rodando antes de qualquer merge (Biome é o padrão da agência para JS/TS).
+- **Proibido por padrão**: `!important` em excesso, inline style descontrolado, função com mais de ~80 linhas sem quebrar em partes menores, event handler inline no HTML (`onclick="..."`).
+- **Estrutura de arquivo**: nunca um único HTML/JS de milhares de linhas — separar por componente/módulo desde o primeiro commit, mesmo em projeto pequeno. Isso já foi identificado como dívida técnica grave em projeto anterior da agência — não repetir.
+
+### 3.3 Testes
+- Testes unitários nas funções críticas (cálculo de pedido, autenticação, regras de negócio).
+- Teste de integração no que toca banco de dados (RLS, multi-tenant — crítico em qualquer projeto com `company_id`).
+- Teste end-to-end no fluxo principal de conversão (ex: fazer um pedido do início ao fim). Ferramenta padrão: **Playwright**.
+- Meta mínima: fluxo de pagamento/pedido nunca vai pra produção sem pelo menos um teste E2E cobrindo o caminho feliz.
+
+**Por quê**: é a diferença entre descobrir que o bot caiu porque o cliente ligou reclamando, e descobrir porque o Sentry mandou um alerta 2 minutos antes.
+
+---
+
+## 4. Segurança (não negociável, checado antes de todo deploy)
+
+- **Nenhuma chave de API, senha ou token no código-fonte.** Tudo em variável de ambiente (`.env`, nunca commitado — `.env` sempre no `.gitignore` desde o primeiro commit).
+- Toda chave de API pública usada no frontend (ex: Google Maps) precisa ter **restrição de domínio** configurada no provedor — uma chave solta sem restrição é convite a abuso e custo inesperado.
+- Todo banco multi-tenant (Supabase/Postgres) tem **Row Level Security (RLS) ativada em toda tabela**, sem exceção — nunca confiar só na lógica do frontend pra isolar dado de cliente.
+- Toda tabela nova criada já nasce com política de RLS escrita junto, na mesma migration — nunca "depois eu configuro a segurança".
+- Autenticação de rota administrativa (`/owner`, painel interno) separada da autenticação do cliente final, com verificação de papel (role) no backend, não só escondendo o link no frontend.
+- Webhooks (Meta, Asaas, etc.) validam assinatura/origem da requisição antes de processar — nunca aceitar payload sem checar que veio de onde diz que veio.
+
+**Por quê**: chave de API exposta e regra de banco não verificada já foram apontadas como falha real em projeto anterior da agência — isso é o item que mais rápido vira prejuízo financeiro ou vazamento de dado de cliente.
+
+---
+
+## 5. Acessibilidade e responsividade (requisito, não capricho)
+
+- HTML semântico (`<header>`, `<nav>`, `<main>`, `<button>`) em vez de `<div>` genérica pra tudo — impacta SEO e acessibilidade ao mesmo tempo.
+- Toda imagem com `alt` descritivo; todo ícone clicável sem texto visível tem `aria-label`.
+- Todo formulário e fluxo interativo navegável por teclado, não só por toque/mouse.
+- Media queries desde o primeiro layout — nunca desenhar só pra desktop e "depois adaptar pro celular". A maioria dos clientes finais (donos de loja) e dos usuários finais (quem compra) está no celular.
+- Contraste de cor testado (mínimo AA de WCAG) — texto claro sobre fundo claro já foi problema real em projeto anterior.
+
+**Por quê**: acessibilidade malfeita também é SEO malfeito e experiência ruim no celular — que é onde a agência e os clientes dela vivem.
+
+---
+
+## 6. Arquitetura multi-tenant (quando o projeto for SaaS interno da agência)
+
+- Núcleo fixo (motor, lógica, automações) é construído **uma vez** e nunca reescrito por cliente.
+- Camada de configuração por cliente (identidade visual, catálogo, número de WhatsApp, textos) é **dado**, não código novo.
+- Todo módulo pago (ex: bot de WhatsApp, totem, NF-e) é ativável/desativável por cliente via flag (`company_modules` ou equivalente) — nunca um fork do projeto.
+- Todo dado sensível de um cliente (WABA, credenciais externas) é dele — se ele sair da agência, ele sai com o histórico e os ativos dele. Isso é requisito de confiança, não só técnico.
+
+*Não se aplica a este site (página institucional, sem banco de dados). Vale para os produtos da agência (Matriz, Confere Aí, SaaS de WhatsApp).*
+
+---
+
+## 7. Deploy e rollback
+
+- Deploy de produção nunca é manual "na mão" — passa por um pipeline (mesmo simples) que roda lint + teste antes de subir.
+- Toda mudança em produção pode ser revertida em minutos: branch/tag da última versão estável sempre identificável.
+- Migration de banco é sempre reversível ou testada em ambiente de staging antes de rodar em produção — nunca alterar schema direto na base de produção sem testar antes.
+- Backup de banco configurado e testado (não só "existe backup", mas "já restauramos um backup pra confirmar que funciona") antes do primeiro cliente real usar o sistema.
+
+**Status neste projeto**: site estático sem build. `npm test` roda os testes de ponta a ponta (Playwright) antes de publicar; `npm run lint` roda o Biome em `assets/js` e `tests`. Rollback: cada versão é um commit no Git — voltar é reverter o commit.
+
+---
+
+## 8. Checklist de início de projeto
+
+Antes de escrever a primeira linha de funcionalidade:
+
+- [x] Repositório Git criado
+- [x] Este arquivo (`PADROES-AGENCIA.md`) na raiz do projeto, seção 0 preenchida
+- [x] Nenhuma chave, senha ou token no código (o site não usa banco nem login; o painel admin do site antigo, com senha no navegador, **não** foi trazido)
+- [ ] Sentry: não plugado (site sem servidor e sem conta de cliente). Avaliar quando entrar o formulário com envio real
+- [x] Lint configurado (`npm run lint`, Biome)
+- [x] Testes de ponta a ponta (`npm test`): página sem rolagem lateral, portfólio, briefing → WhatsApp, arcade, Mundo 3D
+- [x] Definido: site institucional da agência, sem multi-tenant
+- [ ] Definido: domínio próprio e conta do Google Search Console (ação do José)
+
+---
+
+## 9. SEO e crescimento orgânico (checklist por projeto com página pública)
+
+Todo projeto com página voltada ao cliente final (não só ferramenta interna) passa por isso antes de considerar o SEO "pronto":
+
+**Técnico (código — parte da entrega, não opcional):**
+- [ ] `robots.txt` na raiz, bloqueando toda rota interna/administrativa (`Disallow`) e apontando pro `Sitemap:`
+- [ ] `sitemap.xml` na raiz, listando só as URLs que fazem sentido pro Google indexar (não lista área interna nem página que exige login)
+- [ ] `<title>` e `<meta name="description">` únicos e reais em toda página pública (nunca copiar o mesmo texto genérico em várias páginas)
+- [ ] Open Graph completo (`og:title`, `og:description`, `og:type`, `og:url`, `og:image` com URL absoluta) + `twitter:card` — sem isso o link compartilhado no WhatsApp/Instagram aparece sem preview, o que pesa muito pra um negócio que vende por WhatsApp
+- [ ] Dados estruturados Schema.org (`application/ld+json`) do tipo certo pro negócio (`Restaurant`, `LocalBusiness`, `Store`, etc.) — telefone, endereço, tipo de cozinha/produto, faixa de preço. Conecta com o Google Meu Negócio e habilita resultado rico na busca
+- [ ] `rel="canonical"` e `<html lang="...">` corretos
+- [ ] Nenhuma imagem grande embutida como base64 direto no HTML — sempre arquivo externo (cacheável, não infla o HTML a cada carregamento; se a mesma imagem aparece em várias páginas, extrair pra um arquivo só é ganho automático em todas)
+- [ ] Vídeo/imagem de fundo pesado (>1MB) comprimido antes de ir pro ar
+
+**Contas externas (ação do cliente/agência, não é código):**
+- [ ] Google Search Console — conta criada, propriedade verificada, sitemap enviado
+- [ ] Google Meu Negócio (Perfil da Empresa) — cadastrado e verificado (endereço, horário, fotos, categoria certa)
+- [ ] Google Analytics (GA4) instalado — sem isso o cliente não sabe quantas pessoas visitam nem de onde vêm
+- [ ] Domínio próprio (não subdomínio de plataforma tipo `.netlify.app`/`.vercel.app`) — pesa pra confiança do cliente final e pra ranqueamento
+- [ ] Palavra-chave principal do negócio definida (com o cliente, não advinhada) — título, descrição e conteúdo da home devem mirar nela
+
+**Status neste projeto (site VCP)** — 2026-11-28:
+- ✅ `robots.txt`, `sitemap.xml`, meta description, Open Graph com `og:image` absoluta, `twitter:card`, dados estruturados (`ProfessionalService`), canonical e `lang`
+- ✅ Imagens como arquivos (portfólio em JPEG leve, com `loading="lazy"`); o Mundo 3D também usa arquivos separados na versão do site
+- ⏳ Pendente (só o José pode fazer): Google Search Console, Google Meu Negócio, GA4 e domínio próprio. Ao trocar o endereço, atualizar canonical/og:url em `index.html`, `jogos.html`, `mundo/index.html`, `robots.txt` e `sitemap.xml`
+
+## 10. Pedido/registro repetido (todo sistema que grava venda, pedido ou agendamento)
+
+Regra: **o sistema nunca apaga nem junta registros sozinho — ele pergunta na hora e avisa depois.** E isso não pode deixar o trabalho do operador mais difícil: no dia normal ele não vê nada de diferente.
+
+- [ ] **Trava de duplo toque** em todo botão que grava (finalizar, enviar, salvar): o segundo toque não faz nada enquanto o primeiro não terminou.
+- [ ] **Mesmo cliente em poucos minutos** (telefone; ou nome, quando não é genérico tipo "Cliente WhatsApp"/"Balcão"), na hora de gravar:
+  - igualzinho ao anterior → **não grava de novo** e avisa qual registro já existe;
+  - diferente → **uma pergunta só**: "é atualização do anterior?" — Sim substitui o anterior (mesmo número); Não grava como novo.
+- [ ] **Relatório/dashboard avisa** os possíveis repetidos já gravados, com botão de cancelar o antigo — cancelar marca como cancelado (sai da conta), **nunca apaga**.
+- [ ] **Assistente de IA** recebe a lista de possíveis repetidos para explicar, mas não tira valores do total por conta própria.
+- [ ] Testes com casos reais: repetição verdadeira, cliente diferente, fora da janela, mesmo nome com telefone diferente, pedido igual (duplo toque) x atualização.
+
+Por que perguntar em vez de resolver sozinho: o mesmo cliente às vezes faz **dois pedidos de verdade** em poucos minutos (ex.: um pra entrega e outro pra retirada). Juntar/apagar automático erraria nesses casos e sumiria com venda real.
+
+**Status neste projeto**: não se aplica (o site não grava pedidos; o briefing só abre o WhatsApp com a mensagem pronta).
+
+---
+
+*Este arquivo é vivo — atualize conforme o VIBE CODING PROCESS evoluir. Toda mudança aqui deve refletir em todos os projetos ativos da agência, não só nos novos.*
+
+---
+
+## 11. Revisão semanal de saúde (todo sistema em produção)
+
+Rotina curta, **sem mudar comportamento**: só entra ajuste que não altera função nem layout, e tudo passa por teste antes de subir.
+
+Checklist (nesta ordem):
+1. **Testes** (`npm test`) verdes e **auditoria de dependências** (`npm audit --omit=dev`) sem falhas.
+2. **Peso e requisições da página pública**: imagens com `loading="lazy"` abaixo da dobra, nada novo pesado no carregamento inicial, fontes sem bloquear.
+3. **Consultas ao banco**: toda leitura de lista tem `limit` ou filtro de data (nada que cresce sozinho com o tempo).
+4. **O que vai pro ar**: `dist/` só com o que o público precisa (sem material interno, vídeos de trabalho, roteiros).
+5. **Erros reais**: olhar Sentry/observabilidade da semana e corrigir o que se repete.
+6. **Registrar** o que foi visto e o que ficou pendente, abaixo.
+
+### Registro
+**28/11/2026 — criação do site.** Testes: 6 ok. Lint: sem erros. Peso: página inicial leve (cubo e arcade só carregam perto da tela); Mundo 3D separado em `mundo/`.
